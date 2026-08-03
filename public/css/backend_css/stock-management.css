@@ -1,0 +1,249 @@
+   .mt-4 {
+     margin-top: 0.5rem !important;
+   }
+ /* Table Styles */
+         .attr-table {
+			 border-radius: 10px;
+			 overflow: hidden;
+			 background: #fff;
+			 transition: all 0.3s ease;
+         }
+         .attr-table-head th {
+			 background:#4e73df;
+			 color: #fff;
+			 font-weight: 600;
+			 text-align: center;
+			 vertical-align: middle;
+			 border: none;
+			 position: relative;
+			 cursor: pointer;
+         }
+         .sort-icon {
+			 font-size: 12px;
+			 margin-left: 5px;
+			 color: #e2e2e2;
+			 transition: transform 0.3s ease;
+         }
+         .attr-table-head th:hover {
+			background: linear-gradient(90deg, #224abe, #4e73df);
+         }
+         .attr-table tbody tr {
+			transition: background 0.3s, transform 0.2s;
+         }
+         .attr-table tbody tr:hover {
+			 background: #f1f1f1;
+			 transform: scale(1.01);
+         }
+         .attr-table tbody tr:nth-child(even) {
+			background: #fafafa;
+         }
+         /* Stock Stepper */
+         .stock-group {
+			 max-width: 110px;
+			 margin: auto;
+         }
+         .stock-input {
+			 width: 80px;
+			 text-align: center;
+			 border-radius: 5px;
+			 transition: background 0.2s ease;
+         }
+         .stock-input.updated {
+			background: #d4edda;
+         }
+         /* General Pagination Styles */
+		.pagination {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			margin: 20px 0;
+			list-style: none;
+			padding: 0;
+		}
+
+		.pagination li {
+			margin: 0 5px;
+		}
+
+		.pagination a,
+		.pagination span {
+			display: inline-block;
+			padding: 8px 16px;
+			color: black;
+			background-color: #f9f9f9;
+			border: 1px solid #4e73df;
+			border-radius: 5px;
+			text-decoration: none;
+			font-size: 14px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+
+		/* Hover effect */
+		.pagination a:hover,
+		.pagination span:hover {
+			background-color: #375a7f;
+			border-color: #375a7f;
+		}
+
+		/* Active page styles */
+		.pagination .active a {
+			background-color: #3b8bde;
+			border-color: #3b8bde;
+		}
+
+		/* Disabled page styles */
+		.pagination .disabled a,
+		.pagination .disabled span {
+			background-color: #ccc;
+			border-color: #ccc;
+			color: #6c757d;
+			cursor: not-allowed;
+		}
+
+		/* First and Last Page Styling */
+		.pagination .first,
+		.pagination .last {
+			font-weight: bold;
+		}
+
+		/* Next and Previous Button Styles */
+		.pagination .prev,
+		.pagination .next {
+			font-size: 16px;
+			font-weight: bold;
+		}
+
+		/* Small pagination */
+		.pagination.sm {
+			font-size: 12px;
+			padding: 0;
+		}
+
+		.pagination.sm a,
+		.pagination.sm span {
+			padding: 6px 12px;
+		}
+
+         /* Low stock highlight */
+         .low-stock {
+			background-color: #ffcccc !important;
+         }
+         .filter-form {
+			 max-width: 100%;
+			 margin: 20px auto;
+			 padding: 20px;
+			 border: 1px solid #ccc;
+			 border-radius: 8px;
+			 background-color: #f9f9f9;
+			 display: none; /* Hide the form by default */
+			 display: flex;
+			 flex-wrap: wrap;
+			 gap: 20px;
+         }
+         .filter-form label {
+			 font-weight: bold;
+			 margin-bottom: 5px;
+			 display: block;
+         }
+         .filter-form .form-group {
+			 flex: 1 1 calc(20% - 20px); /* Makes four columns */
+			 min-width: 180px; /* Prevents fields from getting too narrow */
+         }
+         .filter-form select,
+         .filter-form input {
+			 width: 100%;
+			 padding: 8px;
+			 margin-bottom: 15px;
+			 border: 1px solid #ccc;
+			 border-radius: 4px;
+         }
+         .filter-form button {
+			 padding: 5px 10px;
+			 background-color: #4CAF50;
+			 color: white;
+			 border: none;
+			 border-radius: 4px;
+			 cursor: pointer;
+			 margin-top: 30px;
+         }
+         .filter-form button:hover {
+			background-color: #45a049;
+         }
+         .filter-button {
+			 padding: 10px 20px;
+			 background-color: #007BFF;
+			 color: white;
+			 border: none;
+			 border-radius: 4px;
+			 cursor: pointer;
+			 margin-bottom: 20px;
+         }
+         .filter-button:hover {
+			background-color: #0056b3;
+         }
+         .select2-search__field {
+			height: 25px;
+         }
+         .filter-form select, .filter-form input {
+			 width: 100%;
+			 padding: 8px;
+			 margin-bottom: 6px;
+			 border: 1px solid #ccc;
+			 border-radius: 4px;
+         }
+         /* Loader style */
+         #loader {
+			 display: none; /* Hidden by default */
+			 position: fixed;
+			 top: 50%;
+			 left: 50%;
+			 transform: translate(-50%, -50%);
+			 z-index: 9999;  /* Ensure it's above other content */
+         }
+         .loader-spinner {
+			 border: 8px solid #f3f3f3; /* Light grey background */
+			 border-top: 8px solid #3498db; /* Blue color for the spinner */
+			 border-radius: 50%;
+			 width: 50px;
+			 height: 50px;
+			 animation: spin 2s linear infinite;
+         }
+         /* Animation for spinning */
+         @keyframes spin {
+			 0% { transform: rotate(0deg); }
+			 100% { transform: rotate(360deg); }
+         }
+         #table-data a { text-decoration: none; }
+		 .product-info{ text-align:center; }
+		 
+		 .text-right{ text-align:right !important; }
+		 .text-left{ text-align:left !important; }
+		 .backtobtn{ 
+			padding: 5px 10px;
+			background-color: #9E9E9E;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			text-decoration: none;
+		 }
+		 .stock-export-btn{ 
+			
+			background-color: #0d6efd;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			text-decoration: none;
+			margin-top:20px !important;
+			text-align:center;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			
+			list-style: none;
+			padding: 5px 10px;
+		 }
+		
+		 .mt7{ margin-top:7px; }

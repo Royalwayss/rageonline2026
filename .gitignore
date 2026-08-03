@@ -1,0 +1,21 @@
+/vendor
+/node_modules
+.env
+/storage/*.key
+/public/storage
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+
+# Ignore these folders, keep css/js tracked
+/assets
+/global
+/images
+/img
+/video

@@ -1,0 +1,712 @@
+<?php  use App\CustomFunction;
+if($orderDetails['order_address']['shipping_state'] =='Punjab'){
+	 $own_state = 'yes';
+ }else{
+	  $own_state = 'no';
+ } ?>
+<html>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <head>
+
+        <style type='text/css'>
+
+            
+
+
+                @import url('https://fonts.googleapis.com/css2?family=Covered+By+Your+Grace&display=swap');
+
+
+
+                .main-table {
+
+                    width: 700px;
+
+                }
+
+
+
+                .inner-table {
+
+                    border:1px solid #ddd;
+
+                }
+
+                
+
+                .address-details {
+
+                    width: 48%;
+
+                    border:2px solid #ddd;
+
+                    float: left;
+
+                    margin-right: 1%;
+
+                    margin-bottom: 10px;
+
+                }
+
+                .address-details th {
+
+                    background-color: #cccccc;
+
+                    color: #666666;
+
+                    padding: 5px;
+
+                    text-align: left;
+
+                }
+
+
+
+                 .address-details2 {
+
+                    width: 97%;
+
+                    border:2px solid #ddd;
+
+                    float: left;
+
+                }
+
+                .address-details2 th {
+
+                    background-color: #cccccc;
+
+                    color: #666666;
+
+                    padding: 5px;
+
+                    text-align: left;
+
+                }
+
+
+
+                .purple-bg {
+
+                    background-color: #cccccc;
+
+                    color: #666666;
+
+                }
+
+
+
+                .purple-bg .btm-table h3 {
+
+                    font-family: 'Covered By Your Grace', cursive;
+
+                }
+
+
+
+                .purple-bg .btm-table td {
+
+                    color: #fff;
+
+                }
+
+
+
+               /* .footer-btm {
+
+                    background-color: #43435d;
+
+                    width: 100%;
+
+                    padding: 10px;
+
+                }*/
+
+
+
+                /*.footer-btm .footer-btn a {
+
+                    background-color: #ffb8af;
+
+                    color: #43435d;
+
+                    padding: 5px;
+
+                    text-decoration: none;
+
+                }*/
+
+                @media only screen and (max-width: 767px) {
+
+                    .main-table {
+
+                        width: 100%;
+
+                    }
+
+                }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <table class="main-table" border='0' cellpadding='0' cellspacing='0'  style='border:#ddd 3px dashed; padding:5px;'>
+
+            <tr>
+
+                <td colspan='3'></td>
+
+            </tr>
+
+            <tr>
+
+                <td  align='center' valign='middle'><img border='0' width="100px" src="{{ asset('images/logo-new.png') }}" /></td>
+
+            </tr>
+
+            <tr>
+
+                <td>&nbsp;</td>
+
+            </tr>
+
+           
+
+            <tr>
+
+                <td>&nbsp;</td>
+
+            </tr>
+
+            <tr>
+
+                <td  align='center' valign='middle' style="background-color: #253746; padding: 10px 5px; color: #fff;">Order Confirmation</td>
+
+            </tr>
+               <tr>
+
+                <td>&nbsp;</td>
+
+            </tr>
+            <tr>
+
+                <td>Order#{{$orderDetails['id']}}</td>
+
+            </tr>
+
+            <tr>
+
+                <td align='center' valign='top'>
+
+                    <table class="inner-table" width='100%'>
+
+                        <tr>
+
+                            <td>&nbsp;</td>
+
+                        </tr>
+
+                       
+
+                        <tr>
+
+                            <td align='left' valign='top' class='style3'>&nbsp;</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td align='left' valign='top' class='style3'>
+							<b>Hello {{ $orderDetails['order_address']['billing_name'] }},</b><br><br>
+							Your order has been confirmed.We’ll notify your when your orderships.If you would like to view the status of yourorder,please
+							visit <span style="color:red">Your Orders</span> on deerclubonline.com.
+
+							
+							</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td align='left' valign='top' class='style3'>&nbsp;</td>
+
+                        </tr>
+
+                     
+
+                        <tr>
+
+                            <td align='left' valign='top' class='style3'>&nbsp;</td>
+
+                        </tr>
+
+                        <tr width="100%">
+
+                            <td>
+
+                                <table class="">
+								
+								  <!-- Billed to -->
+								  @if($orderDetails['order_address']['company_name'] !="" ||  $orderDetails['order_address']['gstin'] != '')
+								   <tr>
+
+                                          <td style="color:red">Billed to </td>
+
+                                     </tr>
+									 
+									 
+									 <tr>
+
+                                        <td width='50%'>
+
+                                            <table width='100%' border='0' align='left' cellpadding='3' cellspacing='0'>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['company_name'] }}</td>
+
+                                                </tr>
+                                                 <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>GSTIN: {{ $orderDetails['order_address']['gstin'] }}</td>
+
+                                                </tr>
+                                               <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['billing_name'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['billing_address'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['billing_city'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['billing_state'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['billing_postcode'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['billing_country'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td align='left' valign='middle' class='style3'><b>Phone: </b>{{ $orderDetails['order_address']['billing_mobile'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td height='5' align='left' valign='middle' class='top_text1'></td>
+
+                                                </tr>
+
+                                               
+
+                                            </table>
+
+                                        </td>
+
+                                    </tr>
+									   @endif
+									   
+									   
+									   
+								  <!-- Billed to -->
+								
+								
+								
+								
+
+                                    <tr>
+
+                                                    <td style="color:red">Delivery address </td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td width='50%'>
+
+                                            <table width='100%' border='0' align='left' cellpadding='3' cellspacing='0'>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['shipping_name'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['shipping_address'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['shipping_city'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['shipping_state'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td colspan='2' align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['shipping_postcode'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td align='left' valign='middle' class='style3'>{{ $orderDetails['order_address']['shipping_country'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td align='left' valign='middle' class='style3'><b>Phone: </b>{{ $orderDetails['order_address']['shipping_mobile'] }}</td>
+
+                                                </tr>
+
+                                                <tr>
+
+                                                    <td height='5' align='left' valign='middle' class='top_text1'></td>
+
+                                                </tr>
+
+                                            </table>
+
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+
+                                 <table class="">
+
+                                    <tr>
+
+                                                    <td style="color:red">OrderDetails </td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td width='50%'>
+
+                                            <table width='100%' border='0' align='left' cellpadding='3' cellspacing='0'>
+
+                                                <tr>
+
+                                                    <td>Order#{{$orderDetails['id']}}</td>
+
+                                                </tr>
+
+                                              
+                                                <tr>
+
+                                                    <td>Placed on <?php echo date('l,F d, Y',strtotime($orderDetails['created_at'])); ?>  <td>
+
+                                                </tr>
+
+
+                                              
+                                            </table>
+
+                                        </td>
+
+                                      
+                                    </tr>
+                                       <td style="color:red"> Amount </td>
+									  <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'><strong>Rs. {{ formatAmt($orderDetails['grand_total']) }} </strong></td>
+                                </table>
+
+                                
+                             
+                                <table class="address-details2">
+
+                                    <tr>
+
+                                        <th style="background-color:#253746!important">Items in your Order : {{ $orderDetails['id'] }} </th>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td width='50%'>
+
+                                            <table width='100%' border='0' align='left' cellpadding='3' cellspacing='0'>
+
+                                                <tr>
+
+                                                     <td align='left' valign='top' class='style3'>
+
+                                                        <table width='100%' border='0' align='left' cellpadding='3' cellspacing='1' bgcolor='ACA899'>
+
+                                                            <tr>
+
+                                                                <td width='10%' align='center' valign='top' class='style2' bgcolor='#cccccc'>Image</td> 
+                                                                <td width='10%' align='center' valign='top' class='style2' bgcolor='#cccccc'>Product Name</td> 
+
+                                                                <td width='8%' align='center' valign='top' class='style2' bgcolor='#f8f9fa'>Size</td>
+                                                                 
+																 <td width='8%' align='' valign='top' class='style2' bgcolor='#f8f9fa'>Color
+																  </td> 
+																  
+																 <td width='10%' align='center' valign='top' class='style2' bgcolor='#f8f9fa'>Category</td> 
+																 
+																
+																
+                                                                <td width='8%' align='center' valign='top' class='style2' bgcolor='#f8f9fa'>QTY</td>
+																
+<!--                                                                <td width='8%' align='center' valign='top' class='style2 text-center' bgcolor='#cccccc'>Price (Per Product)</td>
+																
+                                                                <td width='8%' align='center' valign='top' class='style2' bgcolor='#cccccc'>CGST</td>
+																
+																<td width='8%' align='center' valign='top' class='style2' bgcolor='#cccccc'>SGST</td>
+																
+																<td width='8%' align='center' valign='top' class='style2' bgcolor='#cccccc'>IGST</td>-->
+																
+                                                                <td width='20%' align='center' valign='top' class='style2 text-center' bgcolor='#f8f9fa'>Price</td>
+
+                                                            </tr>
+                                                            <?php $total_gst = 0;
+                                                                $gst_tot_percentage = 0;
+                                                              ?>
+                                                            @foreach($orderDetails['order_products'] as $pro)
+                                                            <?php $gst_tot_percentage = $pro['product_gst']; ?>
+                                                            <tr>
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>
+                                                              <?php if($pro['productdetail']['product_image']['image'] != ''){ ?>
+															  <img src="{{ asset('images/ProductImages/small/'.$pro['productdetail']['product_image']['image'])}}" class="img-fluid"  title="" />
+															  <?php } else { ?>
+															  <img src="{{asset('images/no-image-found.jpg')}}" class="img-fluid" style="width:100px;height:50" alt="" title="" />
+															   <?php } ?>
+															  
+																</td>
+																
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>{{ $pro['product_name'] }}</td>
+
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>{{ $pro['product_size'] }}</td>
+																
+																<td align='' valign='top' class='style3' bgcolor='#F7F7F7'>{{ $pro['productdetail']['color'] }}</td> 
+																
+                                                                
+																<td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>{{ $pro['category_name'] }}</td> 
+																
+																
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>{{ $pro['product_qty'] }}</td>
+                                                                
+                                                                
+                                                                <!--<td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>Rs. {{ abs(formatAmt(CustomFunction::gstunitcalculate($pro['product_price'],$pro['product_gst'],$pro['product_qty'])))}}</td>
+																
+																
+																<td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>
+																<?php 
+											                          if($own_state == 'yes'){?>{{ round(CustomFunction::sgstcalculate($pro['product_price'],$pro['product_gst'],$pro['product_qty']), 2)}} ( {{ $pro['product_gst']/2 }}%)
+											                       <?php } else { echo "(0%) Rs.0"; } ?></td>
+															   
+																<td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>
+																<?php 
+											                          if($own_state == 'yes'){?>{{ round(CustomFunction::sgstcalculate($pro['product_price'],$pro['product_gst'],$pro['product_qty']), 2)}} ( {{ $pro['product_gst']/2 }}%)
+											                       <?php } else { echo "(0%) Rs.0"; } ?></td>
+																<td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>
+																<?php 
+                                                
+																if($own_state == 'no'){ ?>
+																{{ round(CustomFunction::igstcalculate($pro['product_price'],$pro['product_gst'],$pro['product_qty']),2)}} ( {{ $pro['product_gst'] }}%)
+																<?php } else { echo "(0%) Rs.0"; } ?>
+																</td>-->
+																
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>Rs. {{ formatAmt($pro['subtotal'])}}</td>
+
+                                                            </tr>
+                                                            <?php
+
+															$total_gst += CustomFunction::igstcalculate($pro['product_price'],$pro['product_gst'],$pro['product_qty']);
+
+															?>
+                                                            @endforeach
+                                                             <!--<tr>
+
+                                                                <td colspan='10' align='right' valign='top' class='style3' bgcolor='#F7F7F7'>Total GST:</td>
+
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>Rs. {{formatAmt($total_gst)}} ( {{ $gst_tot_percentage }} %)</td>
+
+                                                            </tr>-->
+															
+                                                            
+															@if(!empty($orderDetails['order_discount']))
+
+                                                                <tr>
+
+                                                                    <td colspan='10' align='right' valign='top' class='style3' bgcolor='#F7F7F7'>Order Discount</td>
+
+                                                                    <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>Rs. {{ formatAmt($orderDetails['order_discount']) }}</td>
+
+                                                                </tr>
+
+                                                            @endif
+															
+															
+															
+															
+															
+															
+															
+															
+															
+															<tr>
+
+                                                                <td colspan='10' align='right' valign='top' class='style3' bgcolor='#F7F7F7'>Coupon Discount</td>
+
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>Rs. {{ formatAmt($orderDetails['coupon_discount']) }}</td>
+
+                                                            </tr>
+
+                                                            @if($orderDetails['shipping_charges'])
+
+                                                                <tr>
+
+                                                                    <td colspan='10' align='right' valign='top' class='style3' bgcolor='#F7F7F7'>Shipping Charges</td>
+
+                                                                    <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'>Rs. {{ formatAmt($orderDetails['shipping_charges']) }}</td>
+
+                                                                </tr>
+
+                                                            @endif
+
+                                                            <tr>
+
+                                                                <td colspan='10' align='right' valign='top' class='style3' bgcolor='#F7F7F7'>Grand Total</td>
+
+                                                                <td align='center' valign='top' class='style3' bgcolor='#F7F7F7'><strong>Rs. {{ formatAmt($orderDetails['grand_total']) }} </strong></td>
+
+                                                            </tr>
+
+                                                        </table>
+
+                                                    </td>
+
+                                                </tr>
+
+                                            </table>
+
+                                        </td>
+
+                                    </tr>
+
+                                </table>
+
+                            </td>
+
+                        </tr>
+
+                        
+
+                        <tr>
+
+                            <td align='left' valign='top' class='style3'>&nbsp;</td>
+
+                        </tr>
+
+
+
+                        
+                        
+
+                        
+
+                        <tr>
+
+                            <td align='left' valign='top' class='style3'>
+
+                                <table width='90%' border='0' align='left'>
+
+                                    <tr>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td colspan='3' class='style3'>&nbsp;</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td colspan='3' class='style3'>&nbsp;</td>
+
+                                    </tr>
+
+                                     <tr>
+
+                                        <td colspan='3' class='style3'>
+
+                                        <b>Thank you for shopping with Deer Club!</b><br>
+										This email was sent from a notification-only address that cannot accept incoming email.Please do not reply to this message</td>
+
+                                    </tr>
+
+                                    <tr>
+
+                                        <td colspan='3' class='style3'>&nbsp;</td>
+
+                                    </tr>
+
+                                    
+
+                                    <tr>
+
+                                        
+
+                                    </tr>
+
+                                </table>
+
+                            </td>
+
+                        </tr>
+
+                    </table>
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </body>
+
+</html>
+
+
