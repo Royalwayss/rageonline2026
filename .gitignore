@@ -13,9 +13,9 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 
-# Ignore these folders, keep css/js tracked
-/assets
-/global
-/images
-/img
-/video
+# Correct path - these are inside public/
+/public/assets
+/public/global
+/public/images
+/public/img
+/public/video
