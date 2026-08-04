@@ -74,7 +74,7 @@ class AdminController extends Controller
                 'password' => 'bail|required',
             ];
             $customMessages = [
-            	//Add custom Messages here
+            	// Add custom Messages here
             ];
             $this->validate($request, $rules, $customMessages);
     		if(Auth::guard('admin')->attempt($request->only('email','password'))) {
