@@ -58,7 +58,9 @@ class RazorpayController extends Controller
     }
 	
 	public function webhook_razorpay(Request $request){	   
-		
+		return response()->json([
+				'status'=>true,
+				]);
 		$data = $request->getContent();
 		$signature = $request->header('X-Razorpay-Signature');
 		
@@ -118,9 +120,9 @@ class RazorpayController extends Controller
 
     public function dopayment(Request $request) {
         if($request->ajax()){
-            return response()->json([
-                    'status'=>true,
-                ]); exit; die();
+           // return response()->json([  'status'=>true, ]); exit; die();
+                   
+                
 			
 			$data = $request->all();
             $details = $this->order->where('razorpay_order_id',$data['data']['razorpay_order_id'])->orderby('id','DESC')->first();
