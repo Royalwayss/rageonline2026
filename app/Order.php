@@ -52,9 +52,13 @@ class Order extends Model
 					
 					$admin_mail =   config('constants.admin_mail');
 						   foreach($admin_mail as $email){
-								Mail::send('emailtemplate.to_admin.order-success-email', $messageData, function($message) use ($email){
-									$message->to($email)->subject('New Order has been placed at '.config('constants.project_name'));
-								}); 
+								try {
+									Mail::send('emailtemplate.to_admin.order-success-email', $messageData, function($message) use ($email){
+										$message->to($email)->subject('New Order has been placed at '.config('constants.project_name'));
+									}); 
+								} catch (\Exception $e) {
+									// mail failure ignored, continue execution
+								}
 							}
 				}
 				$orderDetails = Order::with(['getuser','order_products','order_address'])->where('id',$orderid)->first();
@@ -72,9 +76,13 @@ class Order extends Model
 					
 						
 							foreach($emails as $email){
-								Mail::send('emailtemplate.to_user.order-success-email', $messageData, function($message) use ($email){
-									$message->to($email)->subject('Thanks for Placing the Order with '.config('constants.project_name'));
-								}); 
+								try {
+									Mail::send('emailtemplate.to_user.order-success-email', $messageData, function($message) use ($email){
+										$message->to($email)->subject('Thanks for Placing the Order with '.config('constants.project_name'));
+									}); 
+								} catch (\Exception $e) {
+									// mail failure ignored, continue execution
+								}
 							}
 							
 					
@@ -94,9 +102,13 @@ class Order extends Model
                 'orderDetails' => $orderDetails
             ];
             
-            Mail::send('emails.order-success-email', $messageData, function($message) use ($email){
-                $message->to($email)->subject('Order Placed with '.config('constants.project_name'));
-            });
+            try {
+                Mail::send('emails.order-success-email', $messageData, function($message) use ($email){
+                    $message->to($email)->subject('Order Placed with '.config('constants.project_name'));
+                });
+            } catch (\Exception $e) {
+                // mail failure ignored, continue execution
+            }
         }
     }
 	

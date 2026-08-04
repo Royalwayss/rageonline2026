@@ -573,45 +573,52 @@ class ProductsController extends Controller
             return 'ok';
         }
     }
-    public function stockupdatemail($pcode){
+   public function stockupdatemail($pcode){
      
-             if($pcode){
-                $product = Product::with(['attributes'])->where('product_code',$pcode)->get()->toArray();
-                foreach($product as $attrKeyId => $product_val){
-                    $getCategories = Category::where('id',$product_val['category_id'])->select('seo_unique')->get()->toArray();
-                    for($i=0;$i<count($product_val['attributes']);$i++){
-                        $notifies = Notifies::where('notifycode',$pcode)->where('notifysize',$product_val['attributes'][$i]['size'])->where('status',0)->get()->toArray();
-                        if(count($notifies)>0){
-                            if($product_val['attributes'][$i]['size']==$notifies[0]['notifysize']){
-                                $prodattr = $product_val['attributes'][$i];
-                            }
-                            $productImages = ProductImage::where('product_id',$product_val['id'])->get()->toArray();
-                                if(count($productImages)>0){
-                                   $productImg =  $productImages[0]['image'];
-                                }else{
-                                    $productImg = '';
-                                    
-                                }
-                                     if(env('MAIL_MODE') =="live"){
-                                        $email = $notifies[0]['email'];  
-                                           $messageData = [
-                                                'data' => $product[0],
-                                                'image' => $productImg,
-                                                'attr' => $prodattr,
-                                                'user' =>$notifies[0],
-                                                'url'=>$getCategories[0]
-                                            ];
-                                        Mail::send('emails.notifyrequest', $messageData, function($message) use ($email){
-                                            $message->to($email)->subject('Back in Stock!');
-                                        });
-                                    }                           
-                                   Notifies::where('notifycode',$pcode)->where('notifysize',$product_val['attributes'][$i]['size'])->where('status',0)->update(['status'=>'1']);
-                            }
-                        }
+    if($pcode){
+        $product = Product::with(['attributes'])->where('product_code',$pcode)->get()->toArray();
+        foreach($product as $attrKeyId => $product_val){
+            $getCategories = Category::where('id',$product_val['category_id'])->select('seo_unique')->get()->toArray();
+            for($i=0;$i<count($product_val['attributes']);$i++){
+                $notifies = Notifies::where('notifycode',$pcode)->where('notifysize',$product_val['attributes'][$i]['size'])->where('status',0)->get()->toArray();
+                if(count($notifies)>0){
+                    if($product_val['attributes'][$i]['size']==$notifies[0]['notifysize']){
+                        $prodattr = $product_val['attributes'][$i];
                     }
-                }       
+                    $productImages = ProductImage::where('product_id',$product_val['id'])->get()->toArray();
+                    if(count($productImages)>0){
+                       $productImg =  $productImages[0]['image'];
+                    }else{
+                        $productImg = '';
+                    }
+
+                    if(env('MAIL_MODE') =="live"){
+                        $email = $notifies[0]['email'];  
+                        $messageData = [
+                            'data' => $product[0],
+                            'image' => $productImg,
+                            'attr' => $prodattr,
+                            'user' =>$notifies[0],
+                            'url'=>$getCategories[0]
+                        ];
+
+                        try {
+                            Mail::send('emails.notifyrequest', $messageData, function($message) use ($email){
+                                $message->to($email)->subject('Back in Stock!');
+                            });
+                        } catch (\Exception $e) {
+                            //\Log::error('Stock notify mail failed for '.$email.': '.$e->getMessage());
+                        }
+                    }                           
+                    Notifies::where('notifycode',$pcode)->where('notifysize',$product_val['attributes'][$i]['size'])->where('status',0)->update(['status'=>'1']);
+                }
             }
+        }       
+    }
+}		
 			
+			
+				
 			
 			
 			
