@@ -106,10 +106,10 @@
 			   <div id="order_summary">
 				   @include('front.checkout.order_summary')
                </div>
-                <div class="row"
-                <div id="order-notes">
+                <div class="row">
+               <?php /* <div id="order-notes">
 				           <p id="reward-points">🎉 Get 10% of your order value as Reward Points on every order — redeemable on your next purchase!</p>
-				   </div>
+				   </div> */ ?>
                <div id="points-redemption-box" @if(empty($availablePoints)) style="display:none;" @endif>
                   <p id="available-points-text" >
 				  
