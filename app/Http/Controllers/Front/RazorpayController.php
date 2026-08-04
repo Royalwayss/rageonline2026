@@ -106,7 +106,7 @@ class RazorpayController extends Controller
 				}
 				
 				Order::update_stock($details->id);
-				Order::creditRewardPoints($details->id);
+				//Order::creditRewardPoints($details->id);
 				return response()->json([
 				'status'=>true,
 				]);

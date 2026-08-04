@@ -170,6 +170,8 @@ class Order extends Model
 	 
 	 
 	  public static function creditRewardPoints($orderId){ 
+		  
+		  /*
 		  return true;
 		  die();
 		 
@@ -190,13 +192,13 @@ class Order extends Model
 			'type'        => 'earned',
 			'description' => 'Reward points for Order #' . $orderId,
 		]);
-		
+		*/
 		
 	  }
 	  
 	  
 	  public static function redeemRewardPoints($orderId)
-		{
+		{ /*
 			return true;
 		     die();
 			
@@ -217,7 +219,7 @@ class Order extends Model
 				'points'      => $pointsUsed,
 				'type'        => 'redeemed',
 				'description' => 'Redeemed on Order #' . $orderId,
-			]);
+			]); */
 		}
 	 
 	 
