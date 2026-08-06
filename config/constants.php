@@ -14,7 +14,7 @@ return [
 	'return_address' => 'India',
 	'website_url' => 'www.rageonline.co.in',
 	'base_url' => $base_url,
-	'admin_mail' => array('rwpttech@gmail.com'),
+	'admin_mail' => array('info@rageonline.co.in','rageindiaonline@gmail.com','aakashbansal1988@gmail.com'),
 ];
 
 /* array('info@rageonline.co.in','rageindiaonline@gmail.com','aakashbansal1988@gmail.com') */
