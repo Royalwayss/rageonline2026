@@ -21,6 +21,7 @@ yarn-error.log
 
 # Correct path - these are inside public/
 /public/assets
+/public/assets_old
 /public/global
 /public/images
 /public/img
