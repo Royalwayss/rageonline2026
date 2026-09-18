@@ -89,28 +89,34 @@ class ListingController extends Controller
                     $search['size'] = $ageGroups;
                     $getproducts->join('product_attributes','product_attributes.product_id','=','products.id')->wherein('product_attributes.size',$ageGroups)->where('product_attributes.status',1)->groupby('product_attributes.product_id'); 
                 }
-    			if(isset($data['price']) && !empty($data['price'])){ 
-                    $selPrice =  $data['price'];
-					$search['price'] =  explode('~',$selPrice);
-    				$priceArr = $data['price']; 
-                    $getproducts = $getproducts->where(function($q) use($priceArr) { 
-                        $price0Explode =  explode('-',$priceArr); 
-                        $q->whereBetween('products.final_price', [$price0Explode['0'], $price0Explode['1']]);
-                        
-						/*if(isset($priceArr[1])){
-                          $price1Explode =  explode('-',$priceArr[1]);
-                            $q->orwhereBetween('products.final_price', [$price1Explode[0], $price1Explode[1]]);  
-                        }
-                        if(isset($priceArr[2])){
-                          $price2Explode =  explode('-',$priceArr[2]);
-                            $q->orwhereBetween('products.final_price', [$price2Explode[0], $price2Explode[1]]);  
-                        }
-                        if(isset($priceArr[3])){
-                          $price3Explode =  explode('-',$priceArr[3]);
-                            $q->orwhereBetween('products.final_price', [$price3Explode[0], $price3Explode[1]]);  
-                        } */
-                    });
-    			}
+    			if (isset($data['price']) && !empty($data['price'])) {
+
+					$selPrice = $data['price'];
+					$search['price'] = explode('~', $selPrice);
+					$priceArr = $search['price'];
+                     $search['price'] = $priceArr;
+					$getproducts = $getproducts->where(function ($q) use ($priceArr) {
+
+						foreach ($priceArr as $index => $range) {
+
+							$rangeExplode = explode('-', $range);
+
+							$min = $rangeExplode[0];
+							$max = isset($rangeExplode[1]) && $rangeExplode[1] !== 'plus'
+								? $rangeExplode[1]
+								: PHP_INT_MAX;
+
+							if ($index === 0) {
+								$q->whereBetween('products.final_price', [$min, $max]);
+							} else {
+								$q->orWhereBetween('products.final_price', [$min, $max]);
+							}
+
+						}
+
+					});
+
+				}
 				
 				
 				
@@ -551,13 +557,27 @@ class ListingController extends Controller
 			  $pricings['single_product_price'] = $single_product_price;
 			  $pricings['quick_view_single_product_price'] = $quick_view_single_product_price;
 				 
-				 
+				 $current_stock = $details['pro_attrs'][0]['stock'];
+
+					if ($current_stock >= 3) {
+						$stock_class = '';
+						$sizeStockText  = 'In Stock – Dispatches within 24 hours';
+					} elseif ($current_stock == 2) {
+						$stock_class = 'low-stock';
+						$sizeStockText  = 'Only 2 Left – High demand, order soon to secure yours';
+					} elseif ($current_stock == 1) {
+						$stock_class = 'low-stock';
+						$sizeStockText  = 'Only 1 Left – High demand, order soon to secure yours';
+					} else {
+						$stock_class = 'out-of-stock';
+						$sizeStockText  = 'Out of Stock';
+					}
 				 /*<button type="submit" onclick=notifyme("'.$data['size'].'","'.$details['product_code'].'"); style="background-color:red;cursor: pointer;"  class="btn-cart single_add_to_cart_button button alt mt-4"> Sold out </button> */
 				 if($details['pro_attrs'][0]['stock'] == 0){
-					$button = '<button type="submit" style="cursor: pointer;" name="wishlist" class="addWishList"><i class="whishlist-icon fa fa-heart"></i></button> ';
-					 return response()->json(['status'=>false,'data'=>$pricings,'message'=>'Selected size is not available at the moment','button'=>$button,'wishlist_count'=>$check_wishlist_count,]);
+					 $button = '<button type="submit" style="cursor: pointer;" name="wishlist" class="addWishList"><i class="whishlist-icon fa fa-heart"></i></button> ';
+					 return response()->json(['status'=>false,'data'=>$pricings,'sizeStockText'=>$sizeStockText,'message'=>'Selected size is not available at the moment','button'=>$button,'wishlist_count'=>$check_wishlist_count,]);
 				 }else{
-                return response()->json(['status'=>true,'data'=>$pricings,'message'=>'ok','wishlist_count'=>$check_wishlist_count,'button'=>$button]);
+                      return response()->json(['status'=>true,'data'=>$pricings,'sizeStockText'=>$sizeStockText, 'message'=>'ok','wishlist_count'=>$check_wishlist_count,'button'=>$button]);
 				 }
 		   }else{
 				

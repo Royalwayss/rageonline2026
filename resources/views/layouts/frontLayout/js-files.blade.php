@@ -5,35 +5,15 @@ if(isset($page)){ $page = $page; } else { $page = '';}
  ?>
 @yield('javascript')
 <!-- JS here -->
- <script src="{{ asset('js/bootstrap.bundle.min.js') }}" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script type="text/javascript" src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script> 
-    <script type="text/javascript" src="https://unpkg.com/aos@2.3.0/dist/aos.js"></script>
-    <script type="text/javascript" src="{{ asset('js/jquery.scrollbar.min.js')}}"></script>
-    <script type="text/javascript" src="{{ asset('js/jquery.scrollUp.min.js')}}"></script>
-    <script type="text/javascript" src="{{ asset('js/jquery-ui.js')}}"></script>
-    <script type="text/javascript" src="{{ asset('js/jquery-ui.min.js')}}"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Glide.js/3.2.0/glide.min.js"></script>
-    <script type="text/javascript" src="https://unpkg.com/swiper@6.8.4/swiper-bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
-    <script src="{{ asset('js/script.js?v=2.5') }}"></script>
-	
-	
-	
-	<script type="text/javascript">
-        AOS.init({
-          duration: 1200,
-        })
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+  integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+  integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-        let glide = new Glide(".glide", {
-          type: "carousel",
-          perView: 1,
-          startAt: 0,
-          focusAt: "center",
-          autoplay: 5000 //Optional (5 seg)
-        }).mount();
-    </script>	
-	
-	
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="{{ asset('assets/js/scripts.js') }}?v=2.0"></script>

@@ -1,7 +1,6 @@
 <?php 
 use Illuminate\Support\Facades\DB;
-
-
+ use App\Product; 
 
     function formatAmt($amount){
         list ($number, $decimal) = explode('.', sprintf('%.2f', floatval($amount)));
@@ -620,6 +619,34 @@ function get_city_options($state_id) {
 
 
 
+if (!function_exists('productPriceHtml')) {
+    /**
+     * Renders the price + discount markup for a product card.
+     * Usage in Blade: {!! productPriceHtml($product) !!}
+     */
+    function productPriceHtml($product)
+    {
+        $price = Product::ProductPrice($product['category_id'], $product);
+
+        if ($product['current_discount'] == 'product' || $product['current_discount'] == 'category') {
+
+            if ($product['current_discount'] == 'product') {
+                $discount_percentage = $product['product_discount'];
+            } else {
+                $discount_percentage = $product['category']['category_discount'];
+            }
+
+            $original_price = round((float) str_replace(',', '', formatAmt($product['product_price'])));
+
+            return '<span class="sale-price">INR '.$price.'</span>'
+                 . '<del>INR '.$original_price.'</del>'
+                 . '<span class="discount">'.$discount_percentage.'% OFF</span>';
+
+        }
+
+        return '<span class="sale-price">INR '.$price.'</span>';
+    }
+}
 
 
 

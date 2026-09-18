@@ -224,12 +224,12 @@ Route::prefix('/admin')->group(function(){
 	});
 
 });
-Route::get('/home', [HomeController::class, 'index'])->name('home');
+//Route::get('/home', [HomeController::class, 'index'])->name('home');
 Route::post('login', [ 'as' => 'login', 'uses' => [BaseCustomerController::class, 'checkAuth']]);
 	/*Frontend Routes*/
 Route::group([], function(){
 	
-	Route::get('/',[IndexController::class, 'index']);
+	Route::get('/',[IndexController::class, 'index'])->name('home');
 	Route::get('/index-demo',[IndexController::class, 'indexDemo']);
 	Route::get('/indexx',[IndexController::class, 'indexx']);
 	Route::get('/index_demo',[IndexController::class, 'indexx']);
