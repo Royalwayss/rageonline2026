@@ -134,7 +134,7 @@
 
                 <div class="auth-bottom">
                     <span>New to Rage?</span>
-                    <a href="{{ url('register') }}">Create An Account</a>
+                    <a href="{{ url('signup') }}">Create An Account</a>
                 </div>
 
             </div>

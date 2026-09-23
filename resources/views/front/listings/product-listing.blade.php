@@ -5,7 +5,7 @@
                                 
 								<div class="row">
                                     @foreach($getproducts as $key=> $product)
-									<?php
+									<?php 
 										$product_image = '';
 										if(!empty($product['product_image'])){
 											$product_image= $product['product_image']['image'];
@@ -23,9 +23,13 @@
 														<img src="{{asset('images/no-image-found.jpg')}}"  alt="{{ $product['product_name'] }}" title="{{ $product['product_name'] }}" width="600" height="778" style="height: 364px;" />
 													@endif
                                                 </a>
-                                                <a href="{{ $product_link }}" data-href="javascript:void(0)">
-                                                    <i class="fa-regular fa-heart"></i>
-                                                </a>
+                                                <a href="javascript:void(0)" class="addWishList WishList-{{ $product['id'] }}" data-productid="{{ $product['id'] }}">
+                                                    @if($product['is_wishlisted'] == '1')
+														<i class="fa-heart fa-solid" style="color: rgb(147, 47, 47);"></i>
+													@else
+														<i class="fa-regular fa-heart"></i>
+													@endif	
+												</a>
                                                 <div class="cart-btn">
                                                     <a href="{{ $product_link }}" class="link-btn black">Add to Cart</a>
                                                     <a href="{{ $product_link }}" class="link-btn brown">Buy Now</a>
@@ -64,6 +68,26 @@
                                     Load More
                                 </button> */ ?>
                             </div>
+							
+							
+							
+							@empty(count($getproducts)) 
+							<div class="listing-empty-state">
+								<i class="fa-solid fa-magnifying-glass"></i>
+								<h3>No Products Found</h3>
+								@if(!empty($search))
+								<p>We couldn't find any pieces matching your current filters. Try adjusting or clearing them to see more results.</p>
+								<button type="button" class="primary-btn filter-all-clear">
+									Clear All Filters
+								</button>
+								@endif
+							</div>
+							@endempty
+							
+							
+							
+							
+							
                         </div>
                    
                 

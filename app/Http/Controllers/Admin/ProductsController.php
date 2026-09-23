@@ -277,6 +277,17 @@ class ProductsController extends Controller
 				$product->best_seller = 'No';
 			}
 			
+			 if(isset($data['is_featured']) && $data['is_featured'] == 'Yes'){
+				$product->is_featured = $data['is_featured'];
+			}else{
+				$product->is_featured = 'No';
+			}
+			
+			
+			
+			
+			
+			
 			if(isset($data['status']) && $data['status'] == 1){
 				$product->status = $data['status'];
 			}else{

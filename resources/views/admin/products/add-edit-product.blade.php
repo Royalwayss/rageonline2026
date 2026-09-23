@@ -311,6 +311,13 @@ use App\Productcolor;
                                     </div>
                                 </div>
 								<div class="clearfix"></div>
+								 <div class="form-group col-md-6">
+                                    <label class="col-md-6 control-label">Is Featured:</label>
+                                    <div class="col-md-6">
+                                        <input name="is_featured" type="checkbox"  value="Yes" class="rage_checkbox" <?php if(!empty($productdata)){ if($productdata['is_featured'] == 'Yes' ) { echo 'checked'; } }?>>
+                                    </div>
+                                </div>
+								<div class="clearfix"></div>
 								<div class="form-group col-md-9">
                                     <label class="col-md-4 control-label">Select Size Chart </label>
                                     <div class="col-md-8">

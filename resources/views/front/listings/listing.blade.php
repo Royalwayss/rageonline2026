@@ -399,7 +399,7 @@
         });
 
         // Desktop "Clear All" — same behavior as .clear-filter above.
-        $(document).on('click', '.filter-clear-btn', function () {
+        $(document).on('click', '.filter-all-clear', function () {
             $('.filterAjax').prop('checked', false);
             filterproducts({});
         });

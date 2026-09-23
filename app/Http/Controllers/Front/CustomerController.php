@@ -126,11 +126,8 @@ class CustomerController extends Controller
 	
 	
 
-    public function register(Request $request){
+    public function signup(Request $request){
         if($request->ajax()){
-			
-			
-			
 			
 			   $recaptchaResponse = $request->input('g-recaptcha-response');
                 
@@ -157,22 +154,31 @@ class CustomerController extends Controller
 			
 			if(empty($recaptchaResponse)) {
 					
-					return response()->json(['status'=>false,'message'=>'Something went wrong, please try again later.']);
+					//return response()->json(['status'=>false,'message'=>'Something went wrong, please try again later.']);
 					
 				}
 			
 			$validation_data = $request->all(); 
-	 	    $validation_data['name'] = CustomFunction::charactersOnly( $validation_data['name']);
+	 	    $validation_data['first_name'] = CustomFunction::charactersOnly( $validation_data['first_name']);
 		
             $validator = Validator::make($validation_data, [
-                    'name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-                    'mobile'=>'required|numeric|digits:10',
+                    'first_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+                    'mobile'=>'required|numeric|digits_between:7,15',
                     'email' => 'required|string|regex:/^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i|max:255|unique:users',
                     'password' => 'required|string|min:6',
                     /*'password_confirmation' => 'required|string|min:6',*/
                 ],
                 [
-                    'email.regex'=>'This email is not a valid email address'
+                    'first_name.required' => 'Enter your first name.',
+                    'first_name.regex' => 'Enter a valid first name.',
+                    'mobile.required' => 'Enter a valid mobile number.',
+                    'mobile.numeric' => 'Enter a valid mobile number.',
+                    'mobile.digits_between' => 'Mobile number must be between 7 and 15 digits.',
+                    'email.required' => 'Enter your email address.',
+                    'email.regex' => 'This email is not a valid email address',
+                    'email.unique' => 'An account with this email already exists.',
+                    'password.required' => 'Enter a password.',
+                    'password.min' => 'Password must be at least 6 characters.',
                 ]);
             if($validator->passes()) {
                 $data = $request->all();
@@ -180,16 +186,21 @@ class CustomerController extends Controller
                 $data['country'] ='India';
                 $data['status'] =1;
                 $data['password'] = bcrypt($data['password']);
-                $data['name'] = $data['name'];
+                $data['name'] = $data['first_name'];
 				
-				 if($data['dob'] != ''){
+				if($data['last_name'] != ''){
+					$data['name'] .= ' '.$data['last_name'];
+				}
+				/* if($data['dob'] != ''){
 					     $birth_date = str_replace("/","-",$data['dob']);
 					     $dob = date("Y-m-d", strtotime($birth_date));  
 				}else{
 					   $dob = '';
-				} 
-		
+				} */
+		 $dob = '';
                 $data['dob'] = $dob;
+				unset($data['first_name']);
+				unset($data['last_name']);
                 User::create($data);
                 if(Auth::guard('web')->attempt($request->only('email','password'))) {
                     $this->updatingCartSessionToUser();
@@ -231,7 +242,13 @@ class CustomerController extends Controller
                 return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
             }
         }else{
-            return redirect::to('/');
+            if(Auth::check()){
+				 return redirect::to('/');
+			 }else{
+				$title = 'Register';
+				$catseo = 'Register';
+				return view('front.register')->with(compact('title','catseo'));
+			 }
         }
     }
     
@@ -360,7 +377,7 @@ class CustomerController extends Controller
         $blueDartTracking ='';
         $awb = 0; $catseo = ''; $page = '';
         $accountSlugs = array('orders','settings','dashboard','wishlists','address');
-        $orders = array();$orderDetails= array(); $address = array();
+        $orders = array();$orderDetails= array(); $address = array(); $shippingAddresses = [];
         if(in_array($slug,$accountSlugs)){
             if($slug=="orders"){
                 if(isset($_GET['order_id']) && !empty($_GET['order_id'])){
@@ -427,6 +444,8 @@ class CustomerController extends Controller
 				$catseo = 'wishlist';
 				$page = 'wishlist';
 			}elseif($slug=="address"){
+				$shippingAddresses = ShippingAddress::where('user_id', Auth::id())->orderBy('is_default', 'desc')->orderBy('id', 'desc')->get();
+
 				$address['shipping'] = ShippingAddress::where('user_id',Auth::user()->id)->first();
 				$address['billing'] = BillingAddress::where('user_id',Auth::user()->id)->first();
 				$catseo = 'address';
@@ -434,8 +453,8 @@ class CustomerController extends Controller
             $title="Dashboard";
              $wishlists =Wishlist::wishlists();
             $states = State::orderby('name','ASC')->pluck('name')->toArray();
-           // echo "<pre>"; print_r($orderDetails); exit;
-            return view('front.account.account')->with(compact('title','catseo','orders','slug','orderDetails','wishlists','address','states','blueDartTracking','awb','page'));
+           // echo "<pre>"; print_r($orderDetails); exit; 
+            return view('front.account.account')->with(compact('title','catseo','orders','slug','orderDetails','wishlists','address','states','blueDartTracking','awb','shippingAddresses','page'));
         }else{
             abort(404);
         }
@@ -528,15 +547,15 @@ class CustomerController extends Controller
 			
 						$billingAddress->user_id =Auth::user()->id;
 						$billingAddress->is_default ='yes';
-						$billingAddress->name = $data['name'];
-						$billingAddress->first_name =$data['name'];
-						$billingAddress->mobile =$data['mobile'];
-						$billingAddress->alternative_number =$data['alternative_number'];
-						$billingAddress->postcode =$data['postcode'];
-						$billingAddress->address =$data['address'];
+						$billingAddress->name = $data['billing_name'];
+						$billingAddress->first_name =$data['billing_name'];
+						$billingAddress->mobile =$data['billing_mobile'];
+						$billingAddress->alternative_number =$data['billing_alternative_number'];
+						$billingAddress->postcode =$data['billing_postcode'];
+						$billingAddress->address =$data['billing_address'];
 						$billingAddress->country ='India';
-						$billingAddress->state =$data['state'];
-						$billingAddress->city =$data['city'];
+						$billingAddress->state =$data['billing_state'];
+						$billingAddress->city =$data['billing_city']; 
 						$billingAddress->save();
 					
 				

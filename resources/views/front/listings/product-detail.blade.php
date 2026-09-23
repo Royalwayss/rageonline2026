@@ -61,8 +61,12 @@
                                     <span class="gallery-zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> Zoom</span>
                                 </a>
 
-                                <button type="button" class="detail-wishlist addWishList" aria-label="Add to Wishlist" data-productid="{{ $productdetails['id'] }}" page-type="listing">
-                                    <i class="far fa-heart"></i>
+                                <button type="button" class="detail-wishlist addWishList WishList-{{ $productdetails['id'] }}" aria-label="Add to Wishlist" data-productid="{{ $productdetails['id'] }}" page-type="listing">
+                                    @if($productdetails['is_wishlisted'] == '1')
+									    <i class="fa-heart fa-solid" style="color: rgb(147, 47, 47);"></i>
+									@else
+										<i class="fa-regular fa-heart"></i>
+									@endif	
                                 </button>
 
                                 <button type="button" class="detail-share-btn" id="detailShareBtn" aria-label="Share Piece" title="Share Piece" data-bs-toggle="modal" data-bs-target="#shareModal">
@@ -101,7 +105,7 @@
 
                             @if(!empty($productdetails['product_description']))
                             <div class="detail-description">
-                                <p>{{ $productdetails['product_description'] }}</p>
+                               <?php echo  $productdetails['product_description']; ?>
                             </div>
                             @endif
 
@@ -140,26 +144,35 @@
                                 </div>
 
                                 <div class="size-options">
-                                    <?php $first_available_stock = null; ?>
-                                    @foreach($size_array as $attrkey => $attribute)
-                                        <?php
-                                            $stock = ProductAttribute::stock($productdetails['id'], $attribute);
-                                            if ($first_available_stock === null) {
-                                                $first_available_stock = $stock;
+                                    <?php
+                                        $first_available_stock = null;
+                                        $checked_size_key = 0;
+                                        $found_available = false;
+                                        foreach ($size_array as $sk => $sa) {
+                                            $s = ProductAttribute::stock($productdetails['id'], $sa);
+                                            if ($s && !$found_available) {
+                                                $checked_size_key = $sk;
+                                                $first_available_stock = $s;
+                                                $found_available = true;
                                             }
+                                        }
+                                    ?>
+                                    @foreach($size_array as $attrkey => $attribute)
+                                        <?php 
+                                            $stock = ProductAttribute::stock($productdetails['id'], $attribute);
                                         ?>
-                                        <label class="{{ $attrkey === 0 ? 'active' : '' }} {{ !$stock ? 'disabled' : '' }}">
+                                        <label class="{{ $attrkey === $checked_size_key ? 'active' : '' }} {{ !$stock ? 'disabled' : '' }}">
                                             <input style="width:200px;" type="radio" id="{{ $attribute }}" name="size" value="{{ $attribute }}"
                                                 data-proid="{{ $productdetails['id'] }}"
                                                 data-catid="{{ $productdetails['category']['id'] }}"
                                                 data-stock="{{ $stock }}"
                                                 page-type="listing"
-                                                {{ $attrkey === 0 ? 'checked' : '' }}
+                                                {{ $attrkey === $checked_size_key ? 'checked' : '' }}
                                                 {{ !$stock ? 'disabled' : '' }}>
                                             <span>{{ $attribute }}</span>
                                         </label>
                                     @endforeach
-                                    <input type="hidden" id="listing-product_size">
+                                    <input type="hidden" id="listing-product_size" value="{{ $size_array[0] }}">
                                 </div>
 
                                 <div class="size-stock-status {{ ($first_available_stock !== null && $first_available_stock <= 2) ? 'low-stock' : '' }}" id="sizeStockStatus">
@@ -274,7 +287,7 @@
     </section>
 
     <!-- YOU MAY ALSO LIKE -->
-    @if(!empty($get_related_products))
+    @if(!empty($get_related_products)) 
     <section class="related-products">
         <div class="container-fluid">
 
@@ -286,7 +299,7 @@
             <div class="swiper relatedSwiper">
                 <div class="swiper-wrapper">
                     @foreach($get_related_products as $key => $relProduct)
-                        <?php
+                        <?php  
                             $rel_product_image = '';
                             if (!empty($relProduct['productimages'])) {
                                 $rel_product_image = $relProduct['productimages'][0]['image'];
@@ -303,8 +316,12 @@
                                         @endif
                                     </a>
 
-                                    <a href="javascript:void(0)" class="addWishList" data-productid="{{ $relProduct['id'] }}" page-type="listing">
-                                        <i class="fa-regular fa-heart"></i>
+                                    <a href="javascript:void(0)" class="addWishList WishList-{{ $relProduct->id }}" data-productid="{{ $relProduct['id'] }}" page-type="listing">
+                                        @if($relProduct['is_wishlisted'] == '1')
+												<i class="fa-heart fa-solid" style="color: rgb(147, 47, 47);"></i>
+										@else
+												<i class="fa-regular fa-heart"></i>
+										@endif	
                                     </a>
 
                                     <div class="cart-btn">

@@ -10,7 +10,14 @@ use DB;
 use Auth;
 class Product extends Model
 {
-    public function product_categories(){
+    
+	public function wishlist()
+	{
+		return $this->hasMany(\App\Wishlist::class, 'product_id');
+	}
+	
+	
+	public function product_categories(){
         return $this->belongsToMany('App\ProductCategory','product_categories','product_id','category_id');
     }
 
@@ -56,7 +63,11 @@ class Product extends Model
             $query->where('seo_url','!=',$proseo);
         },'groups'=>function($query) use($proseo){
             $query->where('seo_url','!=',$proseo);
-        }])->where('seo_url',$proseo)->where('status',1)->first();
+        }])
+        ->withExists(['wishlist as is_wishlisted' => function($query){
+            $query->where('user_id', Auth::id());
+        }])
+        ->where('seo_url',$proseo)->where('status',1)->first();
         $getproductdetails = json_decode(json_encode($getproductdetails),true);
         $response = array('status'=>false);
         if(!empty($getproductdetails)){

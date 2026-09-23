@@ -5,12 +5,10 @@
     use App\Cart;
     use App\CouponCode;
     use App\GiftOffer;
-    use App\ShippingAddress;
 
     $total_gst = '0';
     $subtotal = 0;
     $address_type = 'shipping';
-	 $addresses = ShippingAddress::where('user_id',Auth::user()->id)->get();  $address_count = 0;
 ?>
 <style>
 #points-redemption-box {
@@ -68,29 +66,11 @@
                                 <h3>Shipping Address</h3>
                             </div>
 
-                            {{-- STATIC PLACEHOLDER: new design's sample saved-address UI.
-                                 Not wired to real data or the checkout form yet.
-                                 #OrderPlace currently has no shipping_* fields in it,
-                                 so /check-order will fail address validation until
-                                 this section is connected to real data. --}}
-                            <div class="saved-address-list">
-                                 @foreach($addresses as $address)
-								<label class="saved-address-card active">
-                                    <input type="radio" name="saved_address" value="1" checked>
-                                    <span class="address-radio"></span>
-                                    <div class="saved-address-content">
-                                        <strong>Royalways</strong>
-                                        <p>
-                                            123 Model Town, Ludhiana,
-                                            Punjab - 141002, India
-                                        </p>
-                                        <p>+91 98765 43210</p>
-                                    </div>
-                                </label>
-                                @endforeach
-                                
-                            </div>
-                            <button type="button" class="add-address-btn" data-bs-toggle="modal" data-bs-target="#addressModal">
+                            {{-- Real saved shipping addresses. The controller rendering
+                                 this page must pass $shippingAddresses - see note below. --}}
+                            @include('front.checkout.address-list')
+                            <p class="address-err error-message" id="address-err"> </p>
+                            <button type="button" class="add-address-btn" onclick="loadAddressForm('shipping', 0)">
                                 <i class="fa-solid fa-plus"></i>
                                 Add Address
                             </button>
@@ -100,8 +80,7 @@
                                 <textarea name="comments" class="form-control" id="order_comments" placeholder="Notes about your order, e.g. special notes for delivery." rows="3"></textarea>
                             </div>
                         </div>
-                    
-					</div>
+                    </div>
 
                     <!-- RIGHT SIDE -->
                     <div class="col-lg-5 col-12">
@@ -173,7 +152,7 @@
                                 <h4>Payment Method</h4>
 
                                 <label class="payment-option active">
-                                    <input id="payment_method_phonepe" type="radio" class="input-radio" name="paymentMode" value="razorpay" data-order_button_text="Proceed to Razorpay" checked>
+                                    <input id="payment_method_phonepe" type="radio" class="input-radio" name="paymentMode" value="razorpay" data-order_button_text="Proceed to Razorpay">
 
                                     <div class="payment-info">
                                         <strong>
@@ -223,182 +202,11 @@
         </div>
     </section>
 
-    {{-- STATIC PLACEHOLDER MODAL: not wired to real data yet --}}
+    {{-- Modal shell - body is loaded via AJAX by loadAddressForm() --}}
     <div class="modal fade" id="addressModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-
-                    <div class="address-form-section">
-                        <h4>Shipping Address</h4>
-
-                        <div class="row">
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>First Name</label>
-                                    <input type="text" class="form-control" placeholder="First name">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Mobile</label>
-                                    <div class="mobile-input">
-                                        <span>+91</span>
-                                        <input type="tel" class="form-control" placeholder="Enter mobile number">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Alternative Mobile Number</label>
-                                    <input type="tel" class="form-control" placeholder="Alternative mobile">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Address</label>
-                                    <input type="text" class="form-control" placeholder="House number, street, area">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Country</label>
-                                    <select class="form-select">
-                                        <option selected>India</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>State/Province</label>
-                                    <select class="form-select">
-                                        <option selected disabled>Select state</option>
-                                        <option>Punjab</option>
-                                        <option>Haryana</option>
-                                        <option>Delhi</option>
-                                        <option>Chandigarh</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>City</label>
-                                    <input type="text" class="form-control" placeholder="City">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Zip Code</label>
-                                    <input type="text" class="form-control" placeholder="Zip code">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="billing-check">
-                        <label>
-                            <input type="checkbox" id="billingSame" checked>
-                            <span>Billing address same as shipping address</span>
-                        </label>
-                    </div>
-
-                    <div class="billing-form-section" id="billingForm">
-                        <h4>Billing Address</h4>
-
-                        <div class="row">
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>First Name</label>
-                                    <input type="text" class="form-control" placeholder="First name">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Mobile</label>
-                                    <div class="mobile-input">
-                                        <span>+91</span>
-                                        <input type="tel" class="form-control" placeholder="Enter mobile number">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Alternative Mobile Number</label>
-                                    <input type="tel" class="form-control" placeholder="Alternative mobile">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Address</label>
-                                    <input type="text" class="form-control" placeholder="House number, street, area">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Country</label>
-                                    <select class="form-select">
-                                        <option selected>India</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>State/Province</label>
-                                    <select class="form-select">
-                                        <option selected disabled>Select state</option>
-                                        <option>Punjab</option>
-                                        <option>Haryana</option>
-                                        <option>Delhi</option>
-                                        <option>Chandigarh</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>City</label>
-                                    <input type="text" class="form-control" placeholder="City">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6 col-12">
-                                <div class="form-field">
-                                    <label>Zip Code</label>
-                                    <input type="text" class="form-control" placeholder="Zip code">
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="modal-cancel" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="primary-btn save-address-btn">Save Address</button>
-                </div>
-
+            <div class="modal-content" id="addressModalContent">
+                <!-- AJAX-loaded content goes here -->
             </div>
         </div>
     </div>
@@ -410,12 +218,26 @@
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
 <script>
 
-    // Static address UI (placeholder - not wired to real data yet)
+    // Address book - real AJAX wiring
     $(document).on('click', '.saved-address-card', function() {
         $('.saved-address-card').removeClass('active');
         $(this).addClass('active');
         $(this).find('input[type=radio]').prop('checked', true);
     });
+
+    function loadAddressForm(type, id) {
+        $('.PleaseWaitDiv').show();
+        $.ajax({
+            url: '/address/form/' + type + '/' + id,
+            type: 'GET',
+            success: function(html) {
+                $('.PleaseWaitDiv').hide();
+                $('#addressModalContent').html(html);
+                var modal = new bootstrap.Modal(document.getElementById('addressModal'));
+                modal.show();
+            }
+        });
+    }
 
     $(document).on('change', '#billingSame', function() {
         if ($(this).is(':checked')) {
@@ -425,14 +247,74 @@
         }
     });
 
-    $(document).on('click', '.save-address-btn', function() {
-        var modalEl = document.getElementById('addressModal');
-        var modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
-        if (typeof RageToast !== 'undefined') {
-            RageToast.show('Delivery destination saved!', 'fa-location-dot');
-        }
+    $(document).on('submit', '#addressForm', function(e) {
+        e.preventDefault();
+        $('.PleaseWaitDiv').show();
+        var formdata = $('#addressForm').serialize();
+        $.ajax({
+            url: '/address/save',
+            type: 'POST',
+            data: formdata,
+            success: function(data) {
+                $('.PleaseWaitDiv').hide();
+                $('.err').html('');
+                if (!data.status) {
+                    if (data.type == 'validation') {
+                        $.each(data.errors, function(i, error) {
+                            $('#' + i).html(error);
+                        });
+                    } else {
+                        alert(data.message);
+                    }
+                } else {
+                    $('#addressListWrap').replaceWith(data.view);
+                    var modalEl = document.getElementById('addressModal');
+                    var modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    if (typeof RageToast !== 'undefined') {
+                        RageToast.show(data.message, 'fa-location-dot');
+                    }
+                }
+            }
+        });
     });
+
+    function deleteAddress(id) {
+        if (!confirm('Remove this address?')) {
+            return;
+        }
+        $('.PleaseWaitDiv').show();
+        $.ajax({
+            url: '/address/delete',
+            type: 'POST',
+            data: { _token: "{{ csrf_token() }}", id: id },
+            success: function(data) {
+                $('.PleaseWaitDiv').hide();
+                if (data.status) {
+                    $('#addressListWrap').replaceWith(data.view);
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+    }
+
+    function setDefaultAddress(id) {
+        $('.PleaseWaitDiv').show();
+        $.ajax({
+            url: '/address/set-default',
+            type: 'POST',
+            data: { _token: "{{ csrf_token() }}", id: id },
+            success: function(data) {
+                $('.PleaseWaitDiv').hide();
+                if (data.status) {
+                    $('#addressListWrap').replaceWith(data.view);
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+    }
 
     // Payment option card selection (visual)
     $(document).on('click', '.payment-option', function() {
@@ -521,12 +403,11 @@
                     if (data.type == "validation") {
                         var err_no = 0;
                         $.each(data.errors, function(i, error) {
-                            err_no = err_no + 1;
-                            $('#Address-' + i).html(error);
-                            if (err_no == 1) {
-                                $("#" + i).focus();
-                            }
-                        });
+							alert(error);
+							return false; // stops $.each after the first item
+						});
+						
+						
                     }
                 } else {
                     $('#OrderPlace').attr('action', data.action);

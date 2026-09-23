@@ -223,7 +223,7 @@
                                             <p>{{$product['product_qty']}}</p>
                                         </td>
                                         <td>
-                                            <p>Rs. {{ abs(formatAmt(CustomFunction::gstunitcalculate($product['product_price'],$product['product_gst'],1)))}}</p>
+                                            <p>Rs. {{ formatAmt(abs(CustomFunction::gstunitcalculate($product['product_price'], $product['product_gst'], 1))) }}</p>
                                         </td>
 										<td>
                                             <p> 

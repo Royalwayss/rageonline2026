@@ -53,7 +53,7 @@ class BannerController extends Controller
                 $num = ++$i;
                 $records["data"][] = array(     
                 $num,
-                '<img style="width:250px;" src="'.url('images/BannerImages/'.$image['image']).'"/>',
+                '<img style="width:250px;" src="'.url('images/banners/'.$image['image']).'"/>',
                 $image['type'],
                 '<div  id="'.$image['id'].'" rel="banner_images" class="bootstrap-switch  bootstrap-switch-'.$checked.'  bootstrap-switch-wrapper bootstrap-switch-animate toogle_switch">
                 <div class="bootstrap-switch-container" ><span class="bootstrap-switch-handle-on bootstrap-switch-primary">&nbsp;Active&nbsp;&nbsp;</span><label class="bootstrap-switch-label">&nbsp;</label><span class="bootstrap-switch-handle-off bootstrap-switch-default">&nbsp;Inactive&nbsp;</span></div></div>',  
@@ -88,20 +88,19 @@ class BannerController extends Controller
             $banner->link= $data['link'];
             $banner->sort= $data['sort'];
             $banner->status = 1;
-            if($request->hasFile('image')){
-                if ($request->file('image')->isValid()) {
-                    $file = $request->file('image');
-                    $img = Image::make($file);
-                    $destination = public_path('/images/BannerImages/');
-                    if(!empty($bannerdata) &&  $bannerdata['image'] !="" && file_exists($destination.$bannerdata['image'])){
-                        unlink($destination.$bannerdata['image']);
-                    }
-                    $ext = $file->getClientOriginalExtension();
-                    $bannerFilename = "banner-".Str::random(5).date('h-i-s').".".$ext;
-                    $img->save($destination.$bannerFilename);
-                    $banner->image= $bannerFilename;
-                }
-            }
+			if ($request->hasFile('image')) {
+				if ($request->file('image')->isValid()) {
+					$file = $request->file('image');
+					$destination = public_path('/images/banners/');
+					if (!empty($bannerdata) && $bannerdata['image'] != "" && file_exists($destination.$bannerdata['image'])) {
+						unlink($destination.$bannerdata['image']);
+					}
+					$ext = $file->getClientOriginalExtension();
+					$bannerFilename = "banner-".Str::random(5).date('h-i-s').".".$ext;
+					$file->move($destination, $bannerFilename);
+					$banner->image = $bannerFilename;
+				}
+			}
             $banner->save();
             return redirect()->action('App\Http\Controllers\Admin\BannerController@bannerImages')->with('flash_message_success',$message);
         }

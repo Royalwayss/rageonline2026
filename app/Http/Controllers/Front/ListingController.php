@@ -55,8 +55,11 @@ class ListingController extends Controller
         $sortname ="";$selPrice="";$proage="";
         //echo "<pre>"; print_r($response); exit;
     	if($response['status']){
-    		$catids = $response['catids'];
-    		$getproducts = Product::with(['productimages','product_image','category','attributes'])->where('products.status',1)->join('categories','categories.id','=','products.category_id')->select('products.*','categories.category_discount',DB::raw("(case when products.product_discount = 0 then categories.category_discount else  products.product_discount end ) as 'item_discount'"));
+    		$catids = $response['catids']; 
+    		$getproducts = Product::with(['productimages','product_image','category','attributes'])->where('products.status',1)->join('categories','categories.id','=','products.category_id')->select('products.*','categories.category_discount',DB::raw("(case when products.product_discount = 0 then categories.category_discount else  products.product_discount end ) as 'item_discount'"))
+    			->withExists(['wishlist as is_wishlisted' => function($query){
+    				$query->where('user_id', Auth::id());
+    			}]);
 			$search = array();
     		if($request->isMethod('get')){
     			$data = $request->all();
@@ -225,13 +228,25 @@ class ListingController extends Controller
                     $title="New Arrivals";
                     $getproducts = Product::with('attributes')->where(['status'=>1,'new_arrival'=>'yes'])->orderby('id','DESC')->paginate(1000);
                 }else{
-                    $getproducts = Product::with('attributes')->join('categories','categories.id','=','products.category_id')->select('products.*','categories.name')->where(function ($q) use ($string) {
-                        $q->where('products.product_name', 'like', '%'.trim($string).'%')->orWhere('products.short_description', 'like', '%'.trim($string).'%')->orWhere('categories.name', 'like', '%'.trim($string).'%')->orWhere('products.product_code', 'like', '%'.trim($string).'%');
-                    })->whereExists( function ($query)  {
-                        $query->from('categories')
-                        ->whereRaw('products.category_id = categories.id')
-                        ->where('categories.status',1);
-                    })->where('products.status',1)->orderby('id','DESC')->paginate(1000);
+                    $getproducts = Product::with('attributes')
+					->join('categories', 'categories.id', '=', 'products.category_id')
+					->leftJoin('categories as parent_categories', 'parent_categories.id', '=', 'categories.parent_id')
+					->select('products.*', 'categories.name', 'parent_categories.name as parent_category_name')
+					->where(function ($q) use ($string) {
+						$q->where('products.product_name', 'like', '%'.trim($string).'%')
+						  ->orWhere('products.short_description', 'like', '%'.trim($string).'%')
+						  ->orWhere('categories.name', 'like', '%'.trim($string).'%')
+						  ->orWhere('parent_categories.name', 'like', '%'.trim($string).'%')
+						  ->orWhere('products.product_code', 'like', '%'.trim($string).'%');
+					})
+					->whereExists(function ($query) {
+						$query->from('categories')
+							  ->whereRaw('products.category_id = categories.id')
+							  ->where('categories.status', 1);
+					})
+					->where('products.status', 1)
+					->orderby('id', 'DESC') 
+					->paginate(1000); 
                     $title = $string;
                 }
 			}else{
@@ -291,7 +306,52 @@ class ListingController extends Controller
             return redirect()->action('App\Http\Controllers\Front\IndexController@index');
         }
     }
-     public function sale(Request $request){ 
+    
+	public function searchSuggestions(Request $request)
+    {
+        $string = trim($request->input('q'));
+
+        if (strlen($string) < 3) {
+            return response()->json([
+                'status' => false,
+                'count'  => 0,
+                'total'  => 0,
+                'html'   => '',
+            ]);
+        }
+
+        $baseQuery = Product::with(['attributes', 'productimages', 'category'])
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->leftJoin('categories as parent_categories', 'parent_categories.id', '=', 'categories.parent_id')
+            ->select('products.*', 'categories.name', 'parent_categories.name as parent_category_name')
+            ->where(function ($q) use ($string) {
+                $q->where('products.product_name', 'like', '%'.$string.'%')
+                  ->orWhere('products.short_description', 'like', '%'.$string.'%')
+                  ->orWhere('categories.name', 'like', '%'.$string.'%')
+                  ->orWhere('parent_categories.name', 'like', '%'.$string.'%')
+                  ->orWhere('products.product_code', 'like', '%'.$string.'%');
+            })
+            ->whereExists(function ($query) {
+                $query->from('categories')
+                      ->whereRaw('products.category_id = categories.id')
+                      ->where('categories.status', 1);
+            })
+            ->where('products.status', 1);
+
+        $total = $baseQuery->count();
+
+        $getsearchproducts = $baseQuery->orderby('products.id', 'DESC')->limit(6)->get();
+
+        return response()->json([
+            'status' => true,
+            'count'  => count($getsearchproducts),
+            'total'  => $total,
+            'html'   => (string) View::make('front.listings.search-suggestion-cards')->with(compact('getsearchproducts')),
+        ]);
+    }
+	
+	
+	public function sale(Request $request){ 
             $sortname ="";$selPrice="";$proage="";$search = array(); $string = '';
             $title="Sales";
 			$catdetails['parent_id'] = '';
@@ -371,11 +431,10 @@ class ListingController extends Controller
 			 
             if(Auth::check()){
 				$data = $request->all();  
-				if((isset($data['size']) && isset($data['qty'] )) && $data['qty'] != '' && $data['size'] != ''){
+				if(isset($data['qty'] ) && $data['qty'] != ''){
 						
 						$checkifExits = Wishlist::where([
 							'user_id'=>Auth::user()->id,
-							'size' => $data['size'],
 							'product_id' => $data['proid'],
 						])->count();
 						
@@ -384,7 +443,7 @@ class ListingController extends Controller
 							$wishlist = new Wishlist;
 							$wishlist->user_id = Auth::user()->id;
 							$wishlist->product_id = $data['proid'];
-							$wishlist->size = $data['size'];
+							//$wishlist->size = $data['size'];
 							$wishlist->qty = $data['qty'];
 							$wishlist->save();
 							return response()->json(['status'=>true,'login'=>true,'message'=>'set','alert_message'=>$cartmessage]);
@@ -392,8 +451,6 @@ class ListingController extends Controller
 						    $cartmessage = 'Product remove successfully in wishlist';
 							Wishlist::where([
 								'user_id'=>Auth::user()->id,
-								'qty' => $data['qty'],
-								'size' => $data['size'],
 								'product_id' => $data['proid'],
 							])->delete();
 							return response()->json(['status'=>true,'login'=>true,'message'=>'unset','alert_message'=>$cartmessage]);
@@ -450,13 +507,23 @@ class ListingController extends Controller
             
 			
 			$catids = explode(',', $response['productdetails']['category_id']);
-			$get_related_products = Product::with(['productimages','product_image','category'])->where('products.status',1)->join('categories','categories.id','=','products.category_id')->select('products.*','categories.category_discount',DB::raw("(case when products.product_discount = 0 then categories.category_discount else  products.product_discount end ) as 'item_discount'"));
+			$get_related_products = Product::with(['product_image','category'])
+				->where('products.status',1)
+				->join('categories','categories.id','=','products.category_id')
+				->select('products.*','categories.category_discount',DB::raw("(case when products.product_discount = 0 then categories.category_discount else  products.product_discount end ) as 'item_discount'"))
+				->withExists(['wishlist as is_wishlisted' => function($query){
+					$query->where('user_id', Auth::id());
+				}]);
+
 			$get_related_products = $get_related_products->leftjoin('product_categories','product_categories.product_id','=','products.id')->join('categories as cats','cats.id','=','product_categories.category_id')->wherein('product_categories.category_id',$catids)->groupby('product_categories.product_id');
-			$get_related_products = $get_related_products->where('products.id','!=',$productdetails['id'])->whereExists( function ($query)  {
-                $query->from('categories')
-                ->whereRaw('products.category_id = categories.id')
-                ->where('status',1);
-            })->paginate(100);
+			$get_related_products = $get_related_products->where('products.id','!=',$productdetails['id'])->groupby('products.id')->whereExists( function ($query)  {
+				$query->from('categories')
+				->whereRaw('products.category_id = categories.id')
+				->where('status',1);
+			})->limit(12)->get();
+
+			//$get_related_products = json_decode(json_encode($get_related_products),true);
+			
 			$page = 'product-detail';
             return view('front.listings.product-detail')->with(compact('productname','title','metadescription','metakeywords','productdetails','get_related_products','recentitems','catdetails','sizechart','page'));
         }else{
@@ -969,10 +1036,13 @@ class ListingController extends Controller
 		$user  = User::where('id',Auth()->user()->id)->first();
 		$availablePoints = $user->loyalty_points;
 		
+		$shippingAddresses = ShippingAddress::where('user_id', Auth::id())
+		->orderBy('is_default', 'desc')
+		->orderBy('id', 'desc')
+		->get();
 		
 		
-		
-        return view('front.checkout.order-checkout')->with(compact('title','catseo','metakeywords','metadescription','cartPricing','cartitems','states','address','availablePoints','page'));
+        return view('front.checkout.order-checkout')->with(compact('title','catseo','metakeywords','metadescription','cartPricing','cartitems','states','address','availablePoints','shippingAddresses','page'));
     }
 	public function check_order_address($data){
 		$validation_data = $data;
@@ -1014,14 +1084,46 @@ class ListingController extends Controller
 		if($request->isMethod('post')){
             $data = $request->all();
 			
-			$validator = $this->check_order_address($request->all());
 			
-            if($validator->passes()){
+			$check_order_error = [];
+			
+			
+			$shipping = ShippingAddress::where('user_id', Auth::id())->count();
+			$billing = BillingAddress::where('user_id', Auth::id())->count();
+			
+			if(empty($shipping)){
+				$check_order_error[] =  'Enter the shipping address';
+			}
+			
+			if(empty($billing)){
+				$check_order_error[] =  'Enter the billing address';
+			}
+			
+			
+			
+			
+			
+			if (!isset($data['paymentMode']) || $data['paymentMode'] == '') {
+						$check_order_error[] = 'Select the payment method';
+			}
+			
+			
+			
+			
+			
+			$order_error = implode(', ', $check_order_error);
+			
+			
+			
+			
+			//$validator = $this->check_order_address($request->all());
+			
+            if(empty($order_error)){
 				
 				
 				
 				
-					
+					/*
 				$CheckShippingAddress = ShippingAddress::addresses();
 				if(!empty($CheckShippingAddress)){
 					$shipping_address_id =  $CheckShippingAddress['id'];
@@ -1043,12 +1145,14 @@ class ListingController extends Controller
 				$save_shipping_address->user_id = $user_id;
 				$save_shipping_address->is_default = 'yes';
 				$save_shipping_address->save();
-				
+				*/
 				
 				 $action = url('/place-orders');
 				 return response()->json(['status'=>true,'type'=>'validation','action'=>$action,'message'=>'ok']); 
 			}else{
-				return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]); 
+				
+				$errors['order_error'] = $order_error;
+				return response()->json(['status'=>false,'type'=>'validation','errors'=>$errors]); 
 				
 			}
 		}
@@ -1058,13 +1162,13 @@ class ListingController extends Controller
         if($request->isMethod('post')){ 
 
 			$update_stock = 1;
-			$validator = $this->check_order_address($request->all());
+			/*$validator = $this->check_order_address($request->all());
 			
 			if(!$validator->passes()){
 				 return redirect()->action('App\Http\Controllers\Front\ListingController@orderCheckout')->with('flash_message_error','Enter the Billing Address and Billing Address');
 				 die();
 			}
-			
+			*/
             $data = $request->all();
             $cartitems = Cart::cartitems();
 			
@@ -1077,7 +1181,7 @@ class ListingController extends Controller
                 return redirect()->action('App\Http\Controllers\Front\ListingController@cart')->with('flash_message_error','Please add products in cart before placing an order.');
             }
             $shippingAddress = DB::table('shipping_addresses')->where('user_id',Auth::user()->id)->where('is_default','yes')->first();
-           
+          
 		    if(empty($shippingAddress)){
                 return redirect()->action('App\Http\Controllers\Front\ListingController@orderCheckout')->with('flash_message_error','Enter the Billing Address and Billing Address');
             }

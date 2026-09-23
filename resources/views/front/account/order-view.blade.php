@@ -1,564 +1,513 @@
-@extends('layouts.frontLayout.front-layout')
-@section('content')
-<?php 
-   $sizeArr=[]; ?>
-<main>
-   <div class="container">
-      <div class="row">
-         <div class="col-12">
-            <?php 
-               use App\ExchangeRequest;
-               use App\Order;
-               use App\Product;
-               use App\OrderProduct;
-               use App\CustomFunction;
-               use App\ReturnRequest;
-               ?>
-            <!-- Order Detail Page Html Starts -->
-            @if(Session::has('flash_message_error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-               <strong>Error! </strong> {!! session('flash_message_error') !!}
-               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-               <span aria-hidden="true">&times;</span>
-               </button>
+<?php
+    use App\ExchangeRequest;
+    use App\Order;
+    use App\Product;
+    use App\OrderProduct;
+    use App\CustomFunction;
+    use App\ReturnRequest;
+
+    if ($order->payment_method == 'bank_deposit') {
+        $payment_method = 'Bank deposit';
+    } else {
+        $payment_method = $order->payment_method;
+    }
+
+    if (@$order->order_address->shipping_state == 'Punjab') {
+        $own_state = 'yes';
+    } else {
+        $own_state = 'no';
+    }
+
+    $order_products_summery = order_products_summery($order);
+
+    $product_gst_array = $priceArr = [];
+    $total_gst_ = 0;
+
+    foreach ($order_products_summery['products'] as $p) {
+        $priceArr[] = $p['subtotal'];
+        $product_gst_array[] = $p['product_gst'];
+    }
+
+    $shipping_gst = '0';
+    $shipping_charges = '0';
+    $shipping_gst_amt = '0';
+    if (!empty($product_gst_array)) {
+        $shipping_gst = in_array('18', $product_gst_array) ? '18' : '5';
+    }
+    if (!empty($order['shipping_charges'])) {
+        $igstcalculate = igstcalculate($order['shipping_charges'], $shipping_gst);
+        $shipping_gst_amt = round($igstcalculate);
+        $shipping_charges = AmountFormat($order['shipping_charges']);
+    }
+
+    // Status badge mapping - same real order_status values used on the
+    // Orders list page (Successful/Payment Captured/COD Confirmed/Pending/
+    // Shipped/Delivered/Cancelled/Payment Failure/Payment Refunded/Abandoned).
+    $status_groups = [
+        'captured'  => ['Successful', 'Payment Captured'],
+        'confirmed' => ['COD Confirmed'],
+        'pending'   => ['Pending', 'Shipped'],
+        'cancelled' => ['Cancelled', 'Payment Failure', 'Payment Refunded', 'Abandoned'],
+    ];
+    $status_group = '';
+    foreach ($status_groups as $group => $values) {
+        if (in_array($order->order_status, $values)) {
+            $status_group = $group;
+        }
+    }
+    $status_class_map = ['captured' => 'success', 'confirmed' => 'success', 'pending' => 'pending', 'cancelled' => 'cancelled'];
+    $status_class = $status_class_map[$status_group] ?? 'neutral';
+    $status_icon_map = ['success' => 'fa-solid fa-circle-check', 'pending' => 'fa-solid fa-clock', 'cancelled' => 'fa-solid fa-circle-xmark', 'neutral' => 'fa-solid fa-circle'];
+    $status_icon = $status_icon_map[$status_class];
+
+    // Stepper completion driven by the real order_status only - no fake
+    // AWB/timestamps invented for steps this system doesn't actually track.
+    $step_placed = true; // always true - order exists
+    $step_payment = in_array($order->order_status, ['Successful', 'Payment Captured', 'COD Confirmed']);
+    $step_packed = in_array($order->order_status, ['Shipped', 'Delivered']);
+    $step_transit = in_array($order->order_status, ['Shipped', 'Delivered']);
+    $step_delivered = ($order->order_status == 'Delivered');
+    $is_cancelled = in_array($order->order_status, ['Cancelled', 'Payment Failure', 'Payment Refunded', 'Abandoned']);
+?>
+
+@if(Session::has('flash_message_error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong>Error! </strong> {!! session('flash_message_error') !!}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+@if(Session::has('flash_message_success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <strong>Success! </strong> {!! session('flash_message_success') !!}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
+<div class="account-content-grid">
+    <div class="luxury-card order-detail-master-card">
+
+        <!-- TOP BAR -->
+        <div class="order-detail-header-bar">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <a href="{{ url('account/orders') }}" class="back-orders-link">
+                    <i class="fa-solid fa-arrow-left-long"></i>
+                    <span>All Orders</span>
+                </a>
+                <span class="header-sep">/</span>
+                <h2 class="order-id-title">Order #{{ $order->id }}</h2>
+                <span class="order-status {{ $status_class }}">
+                    <i class="{{ $status_icon }}"></i> {{ ucwords($order->order_status) }}
+                </span>
             </div>
-            @endif
-            @if(Session::has('flash_message_success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-               <strong>Success! </strong> {!! session('flash_message_success') !!}
-               <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-               <span aria-hidden="true">&times;</span>
-               </button>
+
+            <div class="order-detail-actions">
+                <button type="button" class="luxury-action-btn" onclick="window.print();">
+                    <i class="fa-solid fa-print"></i>
+                    <span>Print Receipt</span>
+                </button>
+                {{-- TODO: dummy link, wire up real invoice download route later --}}
+                <a href="javascript:void(0);" target="_blank" class="luxury-action-btn primary">
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download Invoice</span>
+                </a>
             </div>
-            @endif
-            @if(isset($_GET['order_id']) && !empty($_GET['order_id']))
-            @else
-            <div class="row accTabsInfo OrderView">
-               <div class="col-12">
-                  <a class="View-BackBtn" href="{{ url('account/orders') }}"> Back </a>
-               </div>
-               <div class="col-12">
-                  <h4 class="booster-font">Order ID - {{ $order->id }} </h4>
-               </div>
-               <div class="col-sm-12 col-12 mt-1">
-                  <?php 
-                     if($order->payment_method == 'bank_deposit') { $payment_method = 'Bank deposit'; }  else { $payment_method = $order->payment_method;  }
-                     
-                     
-                     if(@$order->order_address->shipping_state =='Punjab'){
-                     $own_state = 'yes';
-                     }else{
-                     $own_state = 'no';
-                     }
-                     $total_gst_ = 0;
-                     
-                     ?>
-                  <div class="row">
-                     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 no-pd">
-                        <div id="no-more-tables">
-                           <p><strong>Payment Method: </strong>{{
-                              CustomFunction::get_payment_method($order->payment_method) }}
-                           <p>
-                           <p><strong>Order Date: </strong>{{date('d F Y h:ia',strtotime($order->created_at))}}
-                           </p>
-                           <div class="table-responsive">
-                              <table class="table-bordered cf no-pd table table-bordered">
-                                 <thead class="cf">
-                                    <tr>
-                                        <th></th>
-                                       <th style="width:20%">Product Details</th>
-                                       <th>MRP</th>
-                                       <th>DIS</th>
-                                       <th>UNIT PRICE</th>
-                                       <th>TAXABLE VALUE</th>
-                                       <th>GST</th>
-                                       <th>QTY</th>
-                                       <th>TOTAL</th>
-									  
-                                    </tr>
-                                 </thead>
-                                 <?php 
-                                    $order_products_summery = order_products_summery($order);
-                                    
-                                    
-                                                             
-                                    $product_gst_array = $priceArr = array();
-                                                                                 $total_gst_ = 0; 					 
-                                                             ?>
-                                 @foreach($order_products_summery['products'] as $order_product_summery)
-                                 <?php  
-                                    $priceArr[] = $order_product_summery['subtotal'];
-                                    $sizeArr[] = $order_product_summery['product_size'];
-                                    
-                                    
-                                    $product_gst_array[] = $order_product_summery['product_gst'];
-                                    $unit_price = $order_product_summery['subtotal']/$order_product_summery['product_qty'];
-                                    ?>
-                                 <tr>
-                                    <td data-title="Product Action">
-                                       <?php 
-                                          $check_returnrequest =  ReturnRequest::where('order_product_id',$order_product_summery['id'])->first();
-                                          
-                                          if(!empty($check_returnrequest)){
-                                           
-                                           echo $check_returnrequest->action.' Request Status:<br> ';
-                                           
-                                           if(empty($check_returnrequest->reply_status)){
-                                          	 echo '<span style="color:green">Request in processing</span>';
-                                           }else{
-                                          	 $reply_status = $check_returnrequest->reply_status;
-                                          	 
-                                          	 if($reply_status == 'Request Rejected'){
-                                                      echo '<span style="color:red">'.$reply_status.'</span>';
-                                          	 }else{
-                                          		      echo '<span style="color:green">'.$reply_status.'</span>';
-                                          	 }
-                                          	 
-                                          
-                                           }
-                                           
-                                           
-                                          }
-                                           
-                                           
-                                            
-                                           
-                                           ?>
-                                    </td>
-                                    
-									<td data-title="Product name">
-                                       <a
-                                          href="{{ $order_product_summery['product_link'] }}">
-                                       @if(isset($order_product_summery['image']))
-                                       <img style="border:0px;"
-                                          src="{{ asset('images/ProductImages/medium/'.$order_product_summery['image']) }}"
-                                          height="50px" width="50px">
-                                       @else
-                                       <img style="border:0px;"
-                                          src="{{asset('images/no-image-found.jpg')}}" height="50px"
-                                          width="50px">
-                                       @endif
-                                       </a> 
-                                       <a target="_block" style="color:#9d3d49"
-                                          href="{{ $order_product_summery['product_link'] }}">{{
-                                       $order_product_summery['product_name'] }}</a>
-                                       <b><br>Code</b>: {{ $order_product_summery['product_code'] }}
-                                       <b><br>Category</b>: {{ $order_product_summery['category_name'] }}
-                                       <b><br>Sku</b>: {{ $order_product_summery['product_sku'] }}
-                                       <b><br>Size</b>: {{ $order_product_summery['product_size'] }}
-                                    </td>
-                                    <td data-title=" ">{{ AmountFormat($order_product_summery['mrp']) }}</td>
-                                    <td data-title=" ">{{ AmountFormat($order_product_summery['product_discount']) }}</td>
-                                    <td data-title=" ">{{ AmountFormat($order_product_summery['unit_price']) }}</td>
-                                    <td data-title=" ">{{ AmountFormat($order_product_summery['taxable_value']) }}</td>
-                                    <td data-title="">
-                                       <?php 
-                                          $product_gst =  $order_product_summery['product_gst'];
-                                          $gst_amount =  $order_product_summery['product_gst_amount'];
-                                          $total_gst_ += $gst_amount;
-                                          if($own_state == 'no'){
-                                          	echo '<b>'.AmountFormat($order_product_summery['IGST']).'</b><br>';
-                                          	echo 'IGST - '.$gst_amount.' ('.$order_product_summery['product_gst'] .'%)';
-                                          }else{
-                                          	echo '<b>'.AmountFormat($gst_amount).'</b><br>';
-                                          	echo 'CGST - '.($order_product_summery['CGST']).' ('.($product_gst/2) .'%)<br>';
-                                          	echo 'SGST - '.($order_product_summery['SGST']).' ('.($product_gst/2) .'%)';
-                                          } 
-                                          ?>
-                                    </td>
-                                    <td data-title="Unit Price">
-                                       {{ AmountFormat($order_product_summery['product_qty']) }}
-                                    </td>
-                                  
-                                    <td data-title="Sub Total Price">
-                                       {{ AmountFormat($order_product_summery['sub_total']) }}
-                                    </td>
-									
-                                 </tr>
-                                 @endforeach
-                                 <?php 
-								    $grandtotal = array_sum($priceArr);
-                                    $shipping_gst = '0';
-                                    $shipping_charges = '0';
-                                    $shipping_gst_amt = '0';
-                                    if(!empty($product_gst_array)){
-                                    	
-                                    	if(in_array('18',$product_gst_array)){
-                                    		$shipping_gst = '18';
-                                    	}else{
-                                    		$shipping_gst = '5';
-                                    	}
-                                    	
-                                    }
-                                    
-                                    if(!empty($order['shipping_charges'])){
-                                    	
-                                    	$igstcalculate = igstcalculate($order['shipping_charges'],$shipping_gst);
-                                        $shipping_gst_amt = round($igstcalculate);
-                                        $shipping_charges = AmountFormat($order['shipping_charges']);
-                                    }
-                                    
-                                    
-                                    
-                                    ?>
-                                 <tr>
-                                    <td data-title="Sub Total :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Total Amount
-                                       :&nbsp;</b><span>
-                                       {{ AmountFormat($order_products_summery['total_amount']) }} </span>
-                                    </td>
-                                 </tr>
-								 
-								 
-								 @if(!empty($order_products_summery['discount']))
-								 
-								 <tr>
-                                    <td data-title="Sub Total :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Discount
-                                       :&nbsp;</b><span>
-                                       {{ AmountFormat($order_products_summery['discount']) }} </span>
-                                    </td>
-                                 </tr>
-								 @endif 
-								 
-								 
-								
-								 
-								 
-								 
-                                 <tr>
-                                    <td data-title="Sub Total :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Subtotal
-                                       :&nbsp;</b><span>
-                                       {{AmountFormat( $order_products_summery['subtotal'] ) }} </span>
-                                    </td>
-                                 </tr>
-								 
-								 
-								  <tr>
-                                    <td data-title="Sub Total :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Taxable Value
-                                       :&nbsp;</b><span>
-                                       {{AmountFormat( $order_products_summery['taxable_value'] ) }} </span>
-                                    </td>
-                                 </tr>
-								 
-								  <tr>
-                                    <td data-title="Sub Total :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">GST
-                                       :&nbsp;</b><span>
-                                       {{ AmountFormat( $order_products_summery['total_product_gst_amount'] + $shipping_gst_amt)  }} </span>
-                                    </td>
-                                 </tr>
-								 
-								 
-								 
-                                 @if(!empty($order->shipping_charges))
-                                 <tr>
-                                    <td data-title="Discount :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Shipping Amount  :&nbsp;</b>
-                                       <span>  {{ AmountFormat($order->shipping_charges) }} </span>
-                                       <br><small style="font-weight: 100;font-size: 0.875em;">(Including {{ $shipping_gst }}% GST)</small>
-                                    </td>
-                                 </tr>
-                                 @endif
-                                 <?php /* ?>
-                                 @if(!empty($order->order_discount))
-                                 <tr>
-                                    <td data-title="Sub Total :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Order Discount ({{ $order->order_discount_percentage }}%) 
-                                       :&nbsp;</b><span>
-                                       {{AmountFormat($order->order_discount) }} </span>
-                                    </td>
-                                 </tr>
-                                 @endif
-                                 <tr>
-                                    <td data-title="Discount :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Coupon Discount :&nbsp;</b>
-                                       <span>  {{ AmountFormat($order->coupon_discount-$order->prepaid_discount) }} </span>
-                                    </td>
-                                 </tr>
-                                 <?php */ ?>
-                                 @if(!empty($order->prepaid_discount))
-                                 <tr>
-                                    <td data-title="Discount :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Prepaid Discount(5%) :&nbsp;</b>
-                                       <span>  {{ AmountFormat($order->prepaid_discount) }} </span>
-                                    </td>
-                                 </tr>
-                                 @endif
-								 
-								 
-								 
-								  @if(!empty($order->amount_redeemed))
-                                 <tr>
-                                    <td data-title="Discount :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Amount Redeemed  :&nbsp;</b>
-                                       <span>  {{ AmountFormat($order->amount_redeemed) }} </span>
-                                       <br><small style="font-weight: 100;font-size: 0.875em;">(by {{ $order->points_redeemed }} Points)</small>
-                                    </td>
-                                 </tr>
-                                 @endif
-								 
-								 
-								 
-								 
-								 
-								 
-								 
-								  @if(isset($order_products_summery['round_of']) && !empty($order_products_summery['round_of']))
-									
-								 <tr>
-                                    <td data-title="Discount :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Total :&nbsp;</b>
-                                       <span>  {{ AmountFormat($order->grand_total_without_round_of) }} </span>
-                                    </td>
-                                 </tr>
-								 
-								  <tr>
-                                    <td data-title="Discount :" align="right" valign="top" colspan="10"><b
-                                       class="visible-lg visible-md visible-sm">Round Of :&nbsp;</b>
-                                       <span>  {{ $order_products_summery['round_of'] }} </span>
-                                    </td>
-                                 </tr>
-                                 @endif
-								 
-								 
-								 
-								 
-                                 <tr>
-                                    <td align="left" valign="top" colspan="5">
-									@if(!empty($order->coupon_code))
-									 
-                                       <span class="visible-lg visible-md visible-sm">Applied Coupon Code :&nbsp;</span>
-                                       <span>  {{ $order->coupon_code }} </span>
-									   @endif
-                                    </td>
-									<td data-title="Grand Total :" align="right" valign="top" colspan="5"><b
-                                       class="visible-lg visible-md visible-sm">Grand Total :&nbsp;</b>
-                                       <span>  {{AmountFormat($order->grand_total)}} </span>
-                                    </td>
-                                 </tr>
-                                 <tr class="visible-lg visible-md">
-                                    <th colspan="4">
-                                       <h5 class="bold">Billing Address</h5>
-                                    </th>
-                                    <th colspan="5">
-                                       <h5 class="bold">Shipping Address</h5>
-                                    </th>
-                                 </tr>
-                                 <tr>
-                                    <td colspan="4" data-title="Invoice Address"
-                                       style="background-color:white">
-                                       <table class="table-responsive">
-                                          <tr>
-                                             <td ><b>Name:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_name }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Mobile:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_mobile }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Alternative Mobile:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_alternative_number }}
-                                             </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Address:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_address }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Postcode:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_postcode }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>City:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_city }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Statte:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_state }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Country:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->billing_country }} </td>
-                                          </tr>
-                                       </table>
-                                    </td>
-                                    <td colspan="5" data-title="Invoice Address"
-                                       style="background-color:white">
-                                       <table class="table-responsive">
-                                          <tr>
-                                             <td style="width:60%"><b>Name:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_name }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Mobile:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_mobile }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Alternative Mobile:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_alternative_number }}
-                                             </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Address:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_address }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Postcode:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_postcode }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>City:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_city }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>State</b></td>
-                                             <td>{{ @$order->order_address->shipping_state }} </td>
-                                          </tr>
-                                          <tr>
-                                             <td><b>Country:&nbsp;</b></td>
-                                             <td>{{ @$order->order_address->shipping_country }} </td>
-                                          </tr>
-                                       </table>
-                                    </td>
-                                 </tr>
-                              </table>
-                           </div>
+        </div>
+
+        <!-- SHIPMENT STEPPER (driven by real order_status only) -->
+        @if(!$is_cancelled)
+        <div class="shipment-stepper-box mt-4">
+            <div class="stepper-title-row">
+                <div>
+                    <h3>Shipment Timeline</h3>
+                    <p>Payment Method: <strong>{{ CustomFunction::get_payment_method($order->payment_method) }}</strong></p>
+                </div>
+                <a href="https://wa.me/917986158756?text={{ urlencode('Track Order #'.$order->id) }}" target="_blank" class="live-track-btn">
+                    <i class="fa-brands fa-whatsapp"></i> Live Tracking Support
+                </a>
+            </div>
+
+            <div class="luxury-stepper">
+                <div class="step-item completed">
+                    <div class="step-icon"><i class="fa-solid fa-cart-check"></i></div>
+                    <div class="step-content">
+                        <strong>Order Placed</strong>
+                        <span>{{ date('d M Y, h:i A', strtotime($order->created_at)) }}</span>
+                    </div>
+                </div>
+
+                <div class="step-connector {{ $step_payment ? 'completed' : '' }}"></div>
+
+                <div class="step-item {{ $step_payment ? 'completed' : ($step_placed ? 'current' : '') }}">
+                    <div class="step-icon"><i class="fa-solid fa-credit-card"></i></div>
+                    <div class="step-content">
+                        <strong>Payment Verified</strong>
+                        <span>{{ ucwords($order->order_status) }}</span>
+                    </div>
+                </div>
+
+                <div class="step-connector {{ $step_packed ? 'completed' : '' }}"></div>
+
+                <div class="step-item {{ $step_packed ? 'completed' : ($step_payment ? 'current' : '') }}">
+                    <div class="step-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="step-content">
+                        <strong>Packed</strong>
+                    </div>
+                </div>
+
+                <div class="step-connector {{ $step_transit ? 'completed' : '' }}"></div>
+
+                <div class="step-item {{ $step_delivered ? 'completed' : ($step_transit ? 'current' : '') }}">
+                    <div class="step-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                    <div class="step-content">
+                        <strong>In Transit</strong>
+                    </div>
+                </div>
+
+                <div class="step-connector {{ $step_delivered ? 'completed' : '' }}"></div>
+
+                <div class="step-item {{ $step_delivered ? 'completed' : '' }}">
+                    <div class="step-icon"><i class="fa-solid fa-house-chimney"></i></div>
+                    <div class="step-content">
+                        <strong>Delivered</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        <!-- PURCHASED ITEMS -->
+        <div class="order-items-container mt-4">
+            <h3 class="section-subhead">Purchased Item{{ count($order_products_summery['products']) > 1 ? 's' : '' }}</h3>
+
+            @foreach($order_products_summery['products'] as $order_product_summery)
+                <?php
+                    $unit_price = $order_product_summery['subtotal'] / $order_product_summery['product_qty'];
+                    $check_returnrequest = ReturnRequest::where('order_product_id', $order_product_summery['id'])->first();
+                ?>
+                <div class="order-product-card">
+                    <div class="order-prod-img">
+                        <a href="{{ $order_product_summery['product_link'] }}">
+                            @if(isset($order_product_summery['image']))
+                                <img src="{{ asset('images/ProductImages/medium/'.$order_product_summery['image']) }}" alt="{{ $order_product_summery['product_name'] }}">
+                            @else
+                                <img src="{{ asset('images/no-image-found.jpg') }}" alt="{{ $order_product_summery['product_name'] }}">
+                            @endif
+                        </a>
+                    </div>
+
+                    <div class="order-prod-info">
+                        <h4>
+                            <a target="_blank" href="{{ $order_product_summery['product_link'] }}">{{ $order_product_summery['product_name'] }}</a>
+                        </h4>
+                        <div class="prod-specs-grid">
+                            <div class="spec-chip">
+                                <span class="lbl">Code:</span>
+                                <strong class="val">{{ $order_product_summery['product_code'] }}</strong>
+                            </div>
+                            <div class="spec-chip">
+                                <span class="lbl">Category:</span>
+                                <strong class="val">{{ $order_product_summery['category_name'] }}</strong>
+                            </div>
+                            <div class="spec-chip">
+                                <span class="lbl">SKU:</span>
+                                <strong class="val">{{ $order_product_summery['product_sku'] }}</strong>
+                            </div>
+                            <div class="spec-chip">
+                                <span class="lbl">Size:</span>
+                                <strong class="val">{{ $order_product_summery['product_size'] }}</strong>
+                            </div>
                         </div>
-                     </div>
-                     <div class="clearfix"></div>
-                  </div>
-               </div>
-            </div>
-            @endif
-            <div class="modal " id="returnItem">
-               <div class="modal-dialog">
-                  <div class="modal-content">
-                     <!-- Modal Header -->
-                     <div class="modal-header">
-                        <h4 class="modal-title">Exchange Item</h4>
-                        <button type="button" style="border: transparent; background-color:transparent;"
-                           data-dismiss="alert" aria-label="Close" class="close"><span
-                           class="fas fa-times"></span></button>
-                     </div>
-                     <form method="post" action="{{url('/return-order-item')}}" id="return-form"
-                        enctype="multipart/form-data">
-                        @csrf
-                        <!-- Modal body -->
-                        <div class="modal-body">
-                           <div class="container">
-                              <div class="row">
-                                 <div class="col">
-                                    <label for="return_reason" class="col-form-label">Reason for
-                                    Exchange:</label>
-                                    <select name="return_reason" class="form-control return_items" required>
-                                       <option value="">Please Select</option>
-                                       <option value="Incorrect product received">Incorrect product
-                                          received
-                                       </option>
-                                       <option value="Received product is defective">Received product is
-                                          defective
-                                       </option>
-                                       <option value="A Part of the product is missing">A Part of the
-                                          product is missing
-                                       </option>
-                                       <option value="Wrong size received">Wrong size received</option>
-                                       <option value="Size Issue">Size Issue</option>
-                                       <option value="Others">Others</option>
-                                    </select>
-                                 </div>
-                              </div>
-                              <div class="row">
-                                 <div class="col">
-                                    <label for="message-text" class="col-form-label">Required Size:</label>
-                                    <input name="required_size" placeholder="Size" class="form-control"
-                                       required>
-                                 </div>
-                              </div>
-                              <div class="row">
-                                 <div class="col">
-                                    <label for="message-text" class="col-form-label">Comments:</label>
-                                    <input type="hidden" name="order_product_id">
-                                    <input type="hidden" name="sku">
-                                    <textarea name="reason" placeholder="Comments"
-                                       class="form-control return_items" id="message-text"
-                                       required></textarea>
-                                 </div>
-                              </div>
-                              <div class="row">
-                                 <div class="col">
-                                    <label for="exampleFormControlFile1">Choose file (if any)</label>
-                                    <input type="file" class="form-control-file return_items"
-                                       id="exampleFormControlFile1" name="file">
-                                    <span style="color:red">Note:-Max file size is 2MB</span>
-                                 </div>
-                              </div>
-                           </div>
+
+                        @if(!empty($check_returnrequest))
+                        <div class="return-status-note">
+                            {{ $check_returnrequest->action }} Request Status:
+                            @if(empty($check_returnrequest->reply_status))
+                                <span class="text-success">Request in processing</span>
+                            @else
+                                <span class="{{ $check_returnrequest->reply_status == 'Request Rejected' ? 'text-danger' : 'text-success' }}">{{ $check_returnrequest->reply_status }}</span>
+                            @endif
                         </div>
-                        <!-- Modal footer -->
-                        <div class="modal-footer">
-                           <button type="submit" class="btn btn-success"
-                              style="background-color: #28a745;color:white">Submit</button>
-                           <button type="button" class="close btn btn-danger"
-                              style="background-color: #dc3545;color:white" data-dismiss="alert"
-                              aria-label="Close"> Close</button>
+                        @else
+                            <button type="button" class="address-action-btn returnItem mt-2" data-orderproid="{{ $order_product_summery['id'] }}" data-sku="{{ $order_product_summery['product_sku'] }}">
+                                <i class="fa-solid fa-rotate-left"></i> Request Exchange / Return
+                            </button>
+                        @endif
+                    </div>
+
+                    <div class="order-prod-pricing">
+                        <div class="price-col">
+                            <span class="lbl">MRP</span>
+                            <strong class="val">{{ AmountFormat($order_product_summery['mrp']) }}</strong>
                         </div>
-                  </div>
-                  </form>
-               </div>
+                        <div class="price-col">
+                            <span class="lbl">Discount</span>
+                            <strong class="val">{{ AmountFormat($order_product_summery['product_discount']) }}</strong>
+                        </div>
+                        <div class="price-col">
+                            <span class="lbl">Unit Price</span>
+                            <strong class="val">{{ AmountFormat($unit_price) }}</strong>
+                        </div>
+                        <div class="price-col">
+                            <span class="lbl">Taxable Value</span>
+                            <strong class="val">{{ AmountFormat($order_product_summery['taxable_value']) }}</strong>
+                        </div>
+                        <div class="price-col">
+                            <span class="lbl">GST</span>
+                            <strong class="val">
+                                <?php
+                                    $product_gst = $order_product_summery['product_gst'];
+                                    $gst_amount = $order_product_summery['product_gst_amount'];
+                                    $total_gst_ += $gst_amount;
+                                ?>
+                                @if($own_state == 'no')
+                                    {{ AmountFormat($order_product_summery['IGST']) }}<br>
+                                    <small>IGST - {{ $gst_amount }} ({{ $product_gst }}%)</small>
+                                @else
+                                    {{ AmountFormat($gst_amount) }}<br>
+                                    <small>CGST - {{ $order_product_summery['CGST'] }} ({{ $product_gst/2 }}%)<br>
+                                    SGST - {{ $order_product_summery['SGST'] }} ({{ $product_gst/2 }}%)</small>
+                                @endif
+                            </strong>
+                        </div>
+                        <div class="price-col">
+                            <span class="lbl">Qty</span>
+                            <strong class="val">{{ $order_product_summery['product_qty'] }}</strong>
+                        </div>
+                        <div class="price-col text-end">
+                            <span class="lbl">Subtotal</span>
+                            <strong class="val total">{{ AmountFormat($order_product_summery['sub_total']) }}</strong>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+
+        </div>
+
+        <!-- DESTINATION & BILLING BREAKDOWN -->
+        <div class="order-summary-grid mt-4">
+            <div class="row g-4">
+
+                <!-- BILLING ADDRESS -->
+                <div class="col-lg-4 col-12">
+                    <div class="order-card-box">
+                        <div class="box-head">
+                            <i class="fa-solid fa-file-invoice"></i>
+                            <h4>Billing Address</h4>
+                        </div>
+                        <div class="box-content">
+                            <strong class="recipient">{{ @$order->order_address->billing_name }}</strong>
+                            <p class="address-text">
+                                {{ @$order->order_address->billing_address }}<br>
+                                {{ @$order->order_address->billing_city }}, {{ @$order->order_address->billing_state }} - {{ @$order->order_address->billing_postcode }}<br>
+                                {{ @$order->order_address->billing_country }}
+                            </p>
+                            <div class="meta-row">
+                                <span><i class="fa-solid fa-phone"></i> {{ @$order->order_address->billing_mobile }}</span>
+                                @if(!empty($order->order_address->billing_alternative_number))
+                                <span><i class="fa-solid fa-phone"></i> {{ $order->order_address->billing_alternative_number }} (Alt)</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SHIPPING ADDRESS -->
+                <div class="col-lg-4 col-12">
+                    <div class="order-card-box">
+                        <div class="box-head">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <h4>Delivery Destination</h4>
+                        </div>
+                        <div class="box-content">
+                            <strong class="recipient">{{ @$order->order_address->shipping_name }}</strong>
+                            <p class="address-text">
+                                {{ @$order->order_address->shipping_address }}<br>
+                                {{ @$order->order_address->shipping_city }}, {{ @$order->order_address->shipping_state }} - {{ @$order->order_address->shipping_postcode }}<br>
+                                {{ @$order->order_address->shipping_country }}
+                            </p>
+                            <div class="meta-row">
+                                <span><i class="fa-solid fa-phone"></i> {{ @$order->order_address->shipping_mobile }}</span>
+                                @if(!empty($order->order_address->shipping_alternative_number))
+                                <span><i class="fa-solid fa-phone"></i> {{ $order->order_address->shipping_alternative_number }} (Alt)</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FINANCIAL BREAKDOWN -->
+                <div class="col-lg-4 col-12">
+                    <div class="order-card-box payment-summary-box">
+                        <div class="box-head">
+                            <i class="fa-solid fa-receipt"></i>
+                            <h4>Payment Breakdown</h4>
+                        </div>
+                        <div class="box-content">
+
+                            <div class="breakdown-row">
+                                <span>Total Amount</span>
+                                <strong>{{ AmountFormat($order_products_summery['total_amount']) }}</strong>
+                            </div>
+
+                            @if(!empty($order_products_summery['discount']))
+                            <div class="breakdown-row">
+                                <span>Discount</span>
+                                <strong>{{ AmountFormat($order_products_summery['discount']) }}</strong>
+                            </div>
+                            @endif
+
+                            <div class="breakdown-row">
+                                <span>Subtotal</span>
+                                <strong>{{ AmountFormat($order_products_summery['subtotal']) }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>Taxable Value</span>
+                                <strong>{{ AmountFormat($order_products_summery['taxable_value']) }}</strong>
+                            </div>
+
+                            <div class="breakdown-row">
+                                <span>GST</span>
+                                <strong>{{ AmountFormat($order_products_summery['total_product_gst_amount'] + $shipping_gst_amt) }}</strong>
+                            </div>
+
+                            @if(!empty($order->shipping_charges))
+                            <div class="breakdown-row">
+                                <span>Shipping Amount <br><small>(Including {{ $shipping_gst }}% GST)</small></span>
+                                <strong>{{ AmountFormat($order->shipping_charges) }}</strong>
+                            </div>
+                            @endif
+
+                            @if(!empty($order->prepaid_discount))
+                            <div class="breakdown-row">
+                                <span>Prepaid Discount (5%)</span>
+                                <strong>{{ AmountFormat($order->prepaid_discount) }}</strong>
+                            </div>
+                            @endif
+
+                            @if(!empty($order->amount_redeemed))
+                            <div class="breakdown-row">
+                                <span>Amount Redeemed <br><small>(by {{ $order->points_redeemed }} Points)</small></span>
+                                <strong>{{ AmountFormat($order->amount_redeemed) }}</strong>
+                            </div>
+                            @endif
+
+                            @if(isset($order_products_summery['round_of']) && !empty($order_products_summery['round_of']))
+                            <div class="breakdown-row">
+                                <span>Total</span>
+                                <strong>{{ AmountFormat($order->grand_total_without_round_of) }}</strong>
+                            </div>
+                            <div class="breakdown-row">
+                                <span>Round Of</span>
+                                <strong>{{ $order_products_summery['round_of'] }}</strong>
+                            </div>
+                            @endif
+
+                            @if(!empty($order->coupon_code))
+                            <div class="breakdown-row">
+                                <span>Applied Coupon Code</span>
+                                <strong>{{ $order->coupon_code }}</strong>
+                            </div>
+                            @endif
+
+                            <div class="breakdown-row grand-total">
+                                <span>Grand Total</span>
+                                <strong>{{ AmountFormat($order->grand_total) }}</strong>
+                            </div>
+
+                            <div class="payment-method-footer mt-3">
+                                <span class="lbl">Payment Mode:</span>
+                                <span class="val"><i class="fa-solid fa-credit-card"></i> {{ CustomFunction::get_payment_method($order->payment_method) }}</span>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
-         </div>
-         @section('javascript')
-         @parent
-         <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
-         <script type="text/javascript">
-            $(document).ready(function() {
-                $(document).on('click', '.returnItem', function() {
-                    var orderproid = $(this).data('orderproid');
-                    var sku = $(this).data('sku');
-                    $('[name=sku]').val(sku);
-                    $('[name=order_product_id]').val(orderproid);
-                    $('#returnItem').modal('show');
-                })
-            })
-            
-            
-            $(document).on('click', '.close', function() {
-                $("#returnItem").modal('hide');
-            });
-            
-            
-            $(document).on('click', '.triggerOrderDetails', function() {
-            
-                $(".collapse").css("display", "block");
-            });
-            $(document).ready(function() {
-            
-                /*$.validator.addMethod('filesize', function (value, element, arg) {
-                    var minsize=1000; // min 1kb
-                    if(element.files[0].size<=arg){
-                        return true;
-                    }else{
-                        return false;
-                    }
-                });  */
-                $('#return-form').validate({ // initialize the plugin
-                    rules: {
-                        return_reason: {
-                            required: true
-                        }
-            
-                    }
-                });
-            
-            });
-         </script>
-         @stop
-      </div>
-   </div>
-</main>
+        </div>
+
+    </div>
+</div>
+
+
+<!-- Exchange / Return Item modal -->
+<div class="modal fade" id="returnItem" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content review-modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Exchange Item</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="post" action="{{ url('/return-order-item') }}" id="return-form" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+
+                    <div class="review-field">
+                        <label for="return_reason">Reason for Exchange</label>
+                        <select name="return_reason" class="form-control return_items" required>
+                            <option value="">Please Select</option>
+                            <option value="Incorrect product received">Incorrect product received</option>
+                            <option value="Received product is defective">Received product is defective</option>
+                            <option value="A Part of the product is missing">A Part of the product is missing</option>
+                            <option value="Wrong size received">Wrong size received</option>
+                            <option value="Size Issue">Size Issue</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+
+                    <div class="review-field">
+                        <label for="required_size">Required Size</label>
+                        <input name="required_size" placeholder="Size" class="form-control" required>
+                    </div>
+
+                    <div class="review-field">
+                        <label for="message-text">Comments</label>
+                        <input type="hidden" name="order_product_id">
+                        <input type="hidden" name="sku">
+                        <textarea name="reason" placeholder="Comments" class="form-control return_items" id="message-text" required></textarea>
+                    </div>
+
+                    <div class="review-field">
+                        <label for="exampleFormControlFile1">Choose file (if any)</label>
+                        <input type="file" class="form-control return_items" id="exampleFormControlFile1" name="file">
+                        <span style="color:red">Note: Max file size is 2MB</span>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="primary-btn">Submit</button>
+                    <button type="button" class="modal-cancel" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section('javascript')
+@parent
+<script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(document).on('click', '.returnItem', function() {
+            var orderproid = $(this).data('orderproid');
+            var sku = $(this).data('sku');
+            $('[name=sku]').val(sku);
+            $('[name=order_product_id]').val(orderproid);
+            $('#returnItem').modal('show');
+        });
+
+        $('#return-form').validate({
+            rules: {
+                return_reason: {
+                    required: true
+                }
+            }
+        });
+    });
+</script>
 @stop
-<style></style>

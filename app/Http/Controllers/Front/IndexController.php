@@ -23,6 +23,7 @@ use App\Order;
 use App\Notifies;
 use App\FranchiseEnquiry;
 use App\ProductReview;
+use App\Wishlist;
 use App\CustomFunction;
 use Redirect;
 use DB;
@@ -36,15 +37,25 @@ class IndexController extends Controller
         
     }
     //
-    public function index(){ 
+   public function index(){ 
 		$catseo = 'home';
     	$title="Winter Dresses  Online - Buy Women Kurtis, Cardigans, Knitted Tops, Kaftans, Sweaters, Jackets, Coats, Stoles, Capes & Ponchos | Rage";
     	$metakeywords ="women jackets, women cardigans, women sweaters, women capes, women ponchos, ladies kurtis, woolen kurtis, women winter clothing, women clothing online, knitted tops";
     	$metadescription="Discover wide range of women cardigans, coats, jackets, knitted tops, kurtis, sweaters & ponchos. Rage is one of the leading brand for women's in India offer online shopping for ladies cardigans, long coats, woolen kurtis, western dresses, designer tops, capes, tunics, stoles & stylish ponchos. Show online now!";
         $showPoup = $this->checkVistor();
-		$new_arrival_products = Product::with(['attributes','productimages','category'])->where(['status'=>1,'new_arrival'=>'yes'])->orderby('id','DESC')->skip(0)->take(10)->get();
-		$best_seller_products = Product::with(['attributes','productimages','category'])->where(['status'=>1,'best_seller'=>'yes'])->orderby('id','DESC')->skip(0)->take(10)->get();
-		return view('front.home2')->with(compact('catseo','title','metakeywords','metadescription','new_arrival_products','best_seller_products'));
+		$banners = BannerImage::where('type','home')->orderby('sort','asc')->get();
+		//$new_arrival_products = Product::with(['attributes','productimages','category'])->where(['status'=>1,'new_arrival'=>'yes'])->orderby('id','DESC')->skip(0)->take(10)->get();
+		$best_seller_products = Product::with(['attributes','productimages','category'])
+			->withExists(['wishlist as is_wishlisted' => function ($q) {
+				$q->where('user_id', Auth::id());
+			}])
+			->where(['status'=>1,'best_seller'=>'yes'])
+			->orderby('id','DESC')
+			->skip(0)
+			->take(10)
+			->get();
+		
+		return view('front.home2')->with(compact('catseo','title','metakeywords','metadescription','banners','best_seller_products'));
     }
 	 public function home2(){ 
 	    $catseo = 'home';
@@ -789,4 +800,4 @@ class IndexController extends Controller
 	}	
 	  
 	
-}		
+}

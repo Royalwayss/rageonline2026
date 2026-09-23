@@ -1,300 +1,550 @@
+<section class="account-content-grid">
+    <div class="container-fluid">
 
-<section class="dashboard--pg">
-	<div class="container">
-		<div class="row accTabsInfo">
-			@if(isset($_GET['r']) && $_GET['r'] =="success")
-						<div class="alert alert-success alert-dismissible">
-							<button type="button" class="close" data-dismiss="alert">&times;</button>
-							<strong>Success!</strong> Profile has been updated successfully! 
-						</div>
-					@endif
-			
-			<div class="col-sm-4 col-12 billing">
-				<div class="my-profile-data ">
-					
-					<!-- <h4 class="booster-font">My Profile</h4><hr />  -->
-					<h5>Hello {{Auth::user()->name}},</h5>
-					<hr />
-					<p><b>Email Id:</b> <span class="my-info" id="Admin_email_address">{{Auth::user()->email}}</span> <!-- <a href="javascript:;" style="color:blue" class="email_update" id="email_update"> Edit </a>  --></p>
-					<p><b>Phone No:</b> <span class="my-info">+91-{{Auth::user()->mobile}}</span></p>
-					<p><b>Address:</b> <span class="my-info">{{Auth::user()->address}}</span></p>
-					<p>@if(!empty(Auth::user()->city)) {{Auth::user()->city}},@endif @if(!empty(Auth::user()->state)) {{Auth::user()->state}}, @endif {{Auth::user()->postcode}}</p>
-				</div>
-			</div>
+        @if(isset($_GET['r']) && $_GET['r'] == "success")
+        <div class="alert alert-success alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <strong>Success!</strong> Profile has been updated successfully!
+        </div>
+        @endif
 
-			<!-- <div class="col-12 mt-4">
-			</div> -->
-			<div class="col-sm-8 col-12 billing edit-prf">
-				<h5 class="booster-font">Edit Profile</h5><hr />
-				<form id="MyAccountform" autocomplete="off" action="javascript:;" method="post">@csrf
-					@if(!empty(Auth::user()->loyalty_points))
-					<div class="row">
-					         <p id="profile-reward-points">🎁 You've earned {{ Auth::user()->loyalty_points }} Reward Points — redeemable on your next purchase!</p>
-					</div>
-					@endif
-					
-					<div class="row">
-						<div class="form-group">
-							<span class="edit-prf-lable"> Name :</span>
-							<input type="text" name="name" class="input-style form-control" placeholder="Enter Name" value="{{Auth::user()->name}}" />
-							<p class="err text-center" id="MyAccount-name" style="display: none;"></p>
-						</div>
-						
-						<div class="form-group">
-							<span class="edit-prf-lable">Mobile :</span>
-							<input type="number" name="mobile" class="input-style form-control" placeholder="Enter Mobile" value="{{Auth::user()->mobile}}"/>
-							<p class="err text-center" id="MyAccount-mobile" style="display: none;"></p>
-						</div>
-						
-						<div class="form-group">
-							<span class="edit-prf-lable">Mobile :</span>
-							<input type="number" name="alternative_number" class="input-style form-control" placeholder="Enter Alternative Mobile" value="{{Auth::user()->alternative_number}}"/>
-							<p class="err text-center" id="MyAccount-alternative_number" style="display: none;"></p>
-						</div>
-						
-						
-						
-						
-						
-						
-					<!--	<div class="form-group">
-							<span> Date of Birth :</span>
-							<input type="date" name="dob" class="input-style form-control" placeholder="" value="{{Auth::user()->dob}}" />
-							<p class="err text-center" id="MyAccount-dob" style="display: none;"></p>
-						</div> -->
-						<div class="form-group">
-							<span class="edit-prf-lable">Country :</span>
-							<select  class="form-control" name="">
-								<option value="India" selected>India</option>
-							</select>
-							<!--<input type="text" class="input-style form-control" name="state" placeholder="Enter State" value="{{Auth::user()->state}}"/>-->
-							<p class="err text-center" id="MyAccount-country" style="display: none;"></p>
-						</div>
-						<div class="form-group">
-							<span class="edit-prf-lable">Postcode :</span>
-							<input type="text" class="input-style form-control user_pincode" name="postcode" placeholder="Enter Postcode" value="{{Auth::user()->postcode}}"/>
-							<p class="err text-center" id="MyAccount-postcode" style="display: none;"></p>
-						</div>
-						<div class="form-group">
-							<span class="edit-prf-lable">State :</span>
-							<select  class="form-control user_state" name="state">
-							<option value=""> Select </option>
-							@foreach($states as $state)
-								<option value="{{$state}}" <?php if(Auth::user()->state==$state){ echo "selected"; } ?>>{{$state}}</option>
-							@endforeach
-							</select>
-							<!--<input type="text" class="input-style form-control" name="state" placeholder="Enter State" value="{{Auth::user()->state}}"/>-->
-							<p class="err text-center" id="MyAccount-state" style="display: none;"></p>
-						</div>
-						<div class="form-group">
-							<span class="edit-prf-lable">City :</span>
-							<input type="text" class="input-style form-control user_city" name="city" placeholder="Enter City" value="{{Auth::user()->city}}" />
-							<p class="err text-center" id="MyAccount-city" style="display: none;"></p>
-						</div>
-						
-						<div class="form-group address">
-							<span class="edit-prf-lable">Address</span>
-							<textarea class="input-style form-control" name="address" rows="3" placeholder="Enter Adresss">{{Auth::user()->address}}</textarea>
-							<p class="err text-center" id="MyAccount-address" style="display: none;"></p>
-						</div>
-						
-						<?php /*<div class="form-group">
-							<span>Accound Status :</span>
-							<select class="form-control" name="user_accound_status">
-							<option value="1" <?php if(Auth::user()->user_accound_status== '1'){ echo 'selected'; } ?>>Active </option>
-							<option value="0" <?php if(Auth::user()->user_accound_status== '0'){ echo 'selected'; } ?>>Deactive </option>
-							</select>
-							<p class="err text-center" id="MyAccount-postcode" style="display: none;"></p>
-						</div>*/ ?>
-						<div class="clearfix"></div>
-						<div class="col-md-12 col-12 mt-3">
-			                <div class="alert alert-danger print-error-msg text-center" style="display:none">
-			                    <ul></ul>
-			                </div>
-			                <button type="submit" class="accound_btn-style">Update</button>
-			            </div>
-					</div>
-				</form>
-			</div>
-		</div>
-	</div>
+        <div class="row g-4">
+
+            <!-- LEFT COLUMN: PROFILE SNAPSHOT -->
+            <div class="col-lg-4 col-12">
+
+                <div class="luxury-card profile-snapshot-card">
+                    <div class="luxury-card-head">
+                        <div class="head-icon">
+                            <i class="fa-regular fa-id-card"></i>
+                        </div>
+                        <div>
+                            <h2>Personal Snapshot</h2>
+                            <p>Your account identity</p>
+                        </div>
+                    </div>
+
+                    <div class="snapshot-body">
+
+                        <div class="snapshot-item">
+                            <div class="snapshot-label">Full Name</div>
+                            <div class="snapshot-value">{{ Auth::user()->name }}</div>
+                        </div>
+
+                        <div class="snapshot-item">
+                            <div class="snapshot-label">Email Address</div>
+                            <div class="snapshot-value">
+                                <span id="Admin_email_address">{{ Auth::user()->email }}</span>
+                                <a href="javascript:;" class="email_update" id="email_update">Edit</a>
+                            </div>
+                        </div>
+
+                        <div class="snapshot-item">
+                            <div class="snapshot-label">Primary Mobile</div>
+                            <div class="snapshot-value">
+                                <span>+91 {{ Auth::user()->mobile }}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <?php
+                    $default_shipping = \App\ShippingAddress::where('user_id', Auth::id())->where('is_default', 'yes')->first();
+                    $billing_address  = \App\BillingAddress::where('user_id',Auth::user()->id)->where('is_default','yes')->first();
+                   
+				
+				?>
+
+                <div class="luxury-card profile-snapshot-card mt-4">
+                    <div class="luxury-card-head">
+                        <div class="head-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+                        <div>
+                            <h2>Primary Delivery Location</h2>
+                            <p>Your default shipping address</p>
+                        </div>
+                    </div>
+
+                    <div class="snapshot-body">
+                        <div class="snapshot-item">
+                            <div class="snapshot-address-box">
+                                @if($default_shipping)
+                                <strong>{{ $default_shipping->name }}</strong>
+                                <p>
+                                    {{ $default_shipping->address }}, {{ $default_shipping->city }},
+                                    {{ $default_shipping->state }} - {{ $default_shipping->postcode }}, {{ $default_shipping->country }}
+                                </p>
+                                <p>+91 {{ $default_shipping->mobile }}</p>
+                                @else
+                                <p class="no-address-msg">No delivery address on file yet.</p>
+                                @endif
+                                <a href="{{ url('account/address') }}" class="manage-link">
+                                    <i class="fa-solid fa-location-dot"></i> Manage Addresses
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="luxury-card profile-snapshot-card mt-4">
+                    <div class="luxury-card-head">
+                        <div class="head-icon">
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </div>
+                        <div>
+                            <h2>Billing Address</h2>
+                            <p>Used for invoicing</p>
+                        </div>
+                    </div>
+
+                    <div class="snapshot-body">
+                        <div class="snapshot-item">
+                            <div class="snapshot-address-box">
+                                @if($billing_address)
+                                <strong>{{ $billing_address->name }}</strong>
+                                <p>
+                                    {{ $billing_address->address }}, {{ $billing_address->city }},
+                                    {{ $billing_address->state }} - {{ $billing_address->postcode }}, {{ $billing_address->country }}
+                                </p>
+                                <p>+91 {{ $billing_address->mobile }}</p>
+                                @else
+                                <p class="no-address-msg">No billing address on file yet.</p>
+                                @endif
+                                <a href="{{ url('account/address') }}" class="manage-link">
+                                    <i class="fa-solid fa-location-dot"></i> Manage Addresses
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @if(!empty(Auth::user()->loyalty_points))
+                <div class="luxury-card sizing-card mt-4">
+                    <div class="luxury-card-head">
+                        <div class="head-icon">
+                            <i class="fa-solid fa-gift"></i>
+                        </div>
+                        <div>
+                            <h2>Reward Points</h2>
+                            <p>Redeemable on your next purchase</p>
+                        </div>
+                    </div>
+
+                    <div class="sizing-body">
+                        <p id="profile-reward-points">🎁 You've earned {{ Auth::user()->loyalty_points }} Reward Points — redeemable on your next purchase!</p>
+                    </div>
+                </div>
+                @endif
+
+            </div>
+
+            <!-- RIGHT COLUMN: EDIT PROFILE -->
+            <div class="col-lg-8 col-12">
+                <div class="luxury-card profile-edit-card">
+                    <div class="luxury-card-head">
+                        <div class="head-icon">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </div>
+                        <div>
+                            <h2>Edit Profile Details</h2>
+                            <p>Keep your account details up to date for smooth checkout and deliveries</p>
+                        </div>
+                    </div>
+
+                    <form class="luxury-form" id="MyAccountform" autocomplete="off" action="javascript:;" method="post">
+                        @csrf
+
+                        <div class="form-section-title">
+                            <span>01</span> Personal Details
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="name">Full Name <span>*</span></label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-regular fa-user"></i>
+                                        <input type="text" name="name" id="name" class="form-control" placeholder="Enter name" value="{{ Auth::user()->name }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-name" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="mobile">Mobile <span>*</span></label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <input type="number" name="mobile" id="mobile" class="form-control" placeholder="Enter mobile" value="{{ Auth::user()->mobile }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-mobile" style="display: none;"></p>
+                                </div>
+                            </div>
+							
+							
+							<div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="alternative_number">Alternative Mobile <span>*</span></label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <input type="number" name="alternative_number" id="alternative_number" class="form-control" placeholder="Enter alternative mobile" value="{{ Auth::user()->alternative_number }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-alternative_number" style="display: none;"></p>
+                                </div>
+                            </div>
+							
+							
+							
+							
+							
+							
+
+                           
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="state">State</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-map"></i>
+                                        <select class="form-select user_state" name="state" id="state">
+                                            <option value="">Select</option>
+                                            @foreach($states as $state)
+                                            <option value="{{ $state }}" <?php if (Auth::user()->state == $state) { echo "selected"; } ?>>{{ $state }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <p class="err" id="MyAccount-state" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="city">City</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-city"></i>
+                                        <input type="text" class="form-control user_city" name="city" id="city" placeholder="Enter city" value="{{ Auth::user()->city }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-city" style="display: none;"></p>
+                                </div>
+                            </div>
+							
+							 <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="postcode">Postcode</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-signs-post"></i>
+                                        <input type="text" class="form-control user_pincode" name="postcode" id="postcode" placeholder="Enter postcode" value="{{ Auth::user()->postcode }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-postcode" style="display: none;"></p>
+                                </div>
+                            </div>
+							
+							
+							
+                            <div class="col-12">
+                                <div class="luxury-field">
+                                    <label for="address">Address</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <textarea name="address" id="address" class="form-control" rows="2" placeholder="Enter address">{{ Auth::user()->address }}</textarea>
+                                    </div>
+                                    <p class="err" id="MyAccount-address" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                           
+                           
+
+                        </div>
+
+                        <div class="form-section-title mt-4">
+                            <span>02</span> Primary Delivery Location
+                        </div>
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_name">Full Name</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-regular fa-user"></i>
+                                        <input type="text" class="form-control" name="billing_name" id="billing_name" placeholder="Enter name" value="{{ $billing_address->name ?? '' }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_name" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_mobile">Mobile</label>
+                                    <div class="mobile-input">
+                                        <span>+91</span>
+                                        <input type="text" class="form-control" name="billing_mobile" id="billing_mobile" placeholder="Enter mobile" value="{{ $billing_address->mobile ?? '' }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_mobile" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_alternative_number">Alternative Mobile Number</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <input type="text" class="form-control" name="billing_alternative_number" id="billing_alternative_number" placeholder="Enter alternative mobile" value="{{ $billing_address->alternative_number ?? '' }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_alternative_number" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_address">Address</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <input type="text" class="form-control" name="billing_address" id="billing_address" placeholder="House number, street, area" value="{{ $billing_address->address ?? '' }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_address" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_country">Country</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-earth-americas"></i>
+                                        <select class="form-select" name="billing_country" id="billing_country">
+                                            <option value="India" selected>India</option>
+                                        </select>
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_country" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_state">State/Province</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-map"></i>
+                                        <select class="form-select user_state" name="billing_state" id="billing_state">
+                                            <option value="">Select</option>
+                                            @foreach($states as $state)
+                                            <option value="{{ $state }}" <?php if (isset($billing_address) && $billing_address->state == $state) { echo "selected"; } ?>>{{ $state }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_state" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_city">City</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-city"></i>
+                                        <input type="text" class="form-control user_city" name="billing_city" id="billing_city" placeholder="Enter city" value="{{ $billing_address->city ?? '' }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_city" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 col-12">
+                                <div class="luxury-field">
+                                    <label for="billing_postcode">Zip Code</label>
+                                    <div class="field-with-icon">
+                                        <i class="fa-solid fa-signs-post"></i>
+                                        <input type="text" class="form-control user_pincode" name="billing_postcode" id="billing_postcode" placeholder="Enter postcode" value="{{ $billing_address->postcode ?? '' }}">
+                                    </div>
+                                    <p class="err" id="MyAccount-billing_postcode" style="display: none;"></p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <div class="alert alert-danger print-error-msg text-center" style="display:none">
+                                <ul></ul>
+                            </div>
+                        </div>
+
+                        <div class="profile-actions-bar mt-4 pt-3">
+                            <button type="submit" class="primary-btn luxury-save-btn">
+                                <i class="fa-solid fa-floppy-disk"></i>
+                                <span>Save Profile Changes</span>
+                            </button>
+                        <?php /*    <button type="reset" class="modal-cancel">
+                                Discard Changes
+                            </button> */ ?>
+                            <span id="saveStatusMsg" class="save-status-msg"></span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </section>
 
-<!-- Email update Model start -->
 
-<div class="modal fade popup-options" id="user_email_update" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+<!-- Email update modal -->
+<div class="modal fade" id="user_email_update" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content review-modal-content">
 
-	<div class="modal-dialog modal-lg">
-	
-		<div class="modal-content">
-			<!-- Modal Header -->
-			
-			<div class="modal-header">
-				<h4 class="modal-title">Email Update</h4>
-				
-				<button type="button" class="close" data-dismiss="modal">&times;</button>
-				 
-			</div>
-			<div id="EmailUpdateresult" class="text-center"> </div>
-			<!-- Modal body -->
-			
-			<form id="EmailUpdateForm" action="javascript:;" method="post">@csrf
-			
-				<div class="modal-body">
-					<div class="col-sm-12 col-12">
-						<div class="row">
-							<div class="col-sm-12 col-12 form-group">
-								<input type="text" class="input-style form-control" name="new_email" id="new_email"  placeholder="Enter New Email Address" />
-								<p class="err text-center" id="EmailUpdate-new_email" style="display: none;"></p>
-							</div>
-							
-							<div class="col-sm-12 col-12 form-group" style="display: none;" id="otp_field">
-								<input type="email" class="input-style form-control" name="otp" id="otp"  placeholder="Otp" />
-								<p class="err text-center" id="EmailUpdate-otp" style="display: none;"></p>
-							</div>
-							
-						
-							
-						</div>
-					</div>
-				</div>
-				<!-- Modal footer -->
-				<div class="modal-footer" id="Genreateotpbutton">
-					<button type="submit" id="Genreate_otp_button" class="btn-style save-btn">Generate Otp
-                     </button>
-				</div>
-				<div class="modal-footer" style="display:none" id="Updateemailbutton">
-					<button type="submit" id="Update_email_button" class="btn-style save-btn">Update Email
-                     </button>
-				</div>
-			</form>
-		</div>
-	</div>
+            <div class="modal-header">
+                <h4 class="modal-title">Update Email Address</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div id="EmailUpdateresult" class="text-center"></div>
+
+            <form id="EmailUpdateForm" action="javascript:;" method="post">
+                @csrf
+                <div class="modal-body">
+
+                    <div class="review-field">
+                        <input type="text" class="form-control" name="new_email" id="new_email" placeholder="Enter new email address">
+                        <p class="err" id="EmailUpdate-new_email" style="display: none;"></p>
+                    </div>
+
+                    <div class="review-field" style="display: none;" id="otp_field">
+                        <input type="text" class="form-control" name="otp" id="otp" placeholder="Enter OTP">
+                        <p class="err" id="EmailUpdate-otp" style="display: none;"></p>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer" id="Genreateotpbutton">
+                    <button type="submit" id="Genreate_otp_button" class="primary-btn">Generate OTP</button>
+                </div>
+                <div class="modal-footer" style="display:none" id="Updateemailbutton">
+                    <button type="submit" id="Update_email_button" class="primary-btn">Update Email</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
 </div>
-
-
-<!-- Email update Model end -->
+<!-- Email update modal end -->
 
 @section('javascript')
 @parent
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
 <script>
-	var accounturl = '/account/dashboard';
-	window.history.pushState({path:accounturl},'',accounturl);
-	//Register 
-	$("#MyAccountform").submit(function(e){ 
+    var accounturl = '/account/dashboard';
+    window.history.pushState({path: accounturl}, '', accounturl);
+
+    $("#MyAccountform").submit(function(e) {
         e.preventDefault();
-        //$('.PleaseWaitDiv').show();
-        var formdata = $("#MyAccountform").serialize(); 
-        $.ajax({ 
+        var $btn = $('.luxury-save-btn');
+        var originalText = $btn.html();
+        $btn.html('<i class="fa-solid fa-spinner fa-spin"></i> <span>Saving...</span>').prop('disabled', true);
+
+        var formdata = $("#MyAccountform").serialize();
+        $.ajax({
             url: '/submit-account-details',
-            type:'POST',
+            type: 'POST',
             data: formdata,
-            success: function(data) { 
-                $('.PleaseWaitDiv').hide();
-                if(!data.status){
-        			$.each(data.errors, function (i, error) { 
-        			 	$('#MyAccount-'+i).attr('style', '');
-        			 	$('#MyAccount-'+i).html(error); 
-        			 	setTimeout(function () {
-        			 		$('#MyAccount-'+i).css({
-        			 			'display': 'none'
-        			 		});
-        			 	}, 9000);
-		            });
-            	}else{
-            		window.location.href = '/account/dashboard?r=success';
-            	}
+            success: function(data) {
+                $('.err').css('display', 'none');
+                if (!data.status) {
+                    $btn.html(originalText).prop('disabled', false);
+                    $.each(data.errors, function(i, error) {
+                        $('#MyAccount-' + i).attr('style', '');
+                        $('#MyAccount-' + i).html(error);
+                        setTimeout(function() {
+                            $('#MyAccount-' + i).css({
+                                'display': 'none'
+                            });
+                        }, 9000);
+                    });
+                } else {
+                    $btn.html('<i class="fa-solid fa-check"></i> <span>Profile Updated!</span>');
+                    $btn.css('background', '#287444');
+                    $('#saveStatusMsg').html('<i class="fa-solid fa-circle-check"></i> Your profile details have been saved successfully.').addClass('active');
+                    setTimeout(function() {
+                       
+						$btn.css('background', '#111');
+						 $btn.html(originalText).prop('disabled', false);
+						 $('#saveStatusMsg').html('');
+						//window.location.href = '/account/dashboard?r=success';
+                    }, 4000);
+                }
             }
         });
     });
-	$(".email_update").click(function(){ 
-      $('#user_email_update').modal('show');
+
+    $(".email_update").click(function() {
+        $('#user_email_update').modal('show');
     });
-	
-	$('#Genreate_otp_button').click(function(e){
-         e.preventDefault();
-		 var formdata = $("#EmailUpdateForm").serialize();
-		 $.ajax({
+
+    $('#Genreate_otp_button').click(function(e) {
+        e.preventDefault();
+        var formdata = $("#EmailUpdateForm").serialize();
+        $.ajax({
             url: '/genreate-otp',
-            type:'POST',
+            type: 'POST',
             data: formdata,
             success: function(data) {
                 $('.PleaseWaitDiv').hide();
-                if(!data.status){
-        			$.each(data.errors, function (i, error) {
-        			 	$('#EmailUpdate-'+i).attr('style', 'color:red');
-        			 	$('#EmailUpdate-'+i).html(error);
-        			 	setTimeout(function () {
-        			 		$('#EmailUpdate-'+i).css({
-        			 			'display': 'none'
-        			 		});
-        			 	}, 3000);
-		            });
-            	}else{
-					$('#EmailUpdateresult').attr('style', 'color:green');
-            		$('#EmailUpdateresult').html(data.message);
-					$('#otp_field').attr('style', 'display:block'); 
-					$('#Genreateotpbutton').attr('style', 'display:none'); 
-					$('#Updateemailbutton').attr('style', 'display:block'); 
-					  setTimeout(function () {
-        			 		$('#EmailUpdateotp').css({
-        			 			'display': 'none'
-        			 		});
-        			 	}, 3000);
-            	}
+                if (!data.status) {
+                    $.each(data.errors, function(i, error) {
+                        $('#EmailUpdate-' + i).attr('style', 'color:red');
+                        $('#EmailUpdate-' + i).html(error);
+                        setTimeout(function() {
+                            $('#EmailUpdate-' + i).css({
+                                'display': 'none'
+                            });
+                        }, 3000);
+                    });
+                } else {
+                    $('#EmailUpdateresult').attr('style', 'color:green');
+                    $('#EmailUpdateresult').html(data.message);
+                    $('#otp_field').attr('style', 'display:block');
+                    $('#Genreateotpbutton').attr('style', 'display:none');
+                    $('#Updateemailbutton').attr('style', 'display:block');
+                }
             }
         });
-	});
-	
-	$('#Update_email_button').click(function(e){
-		 e.preventDefault();
-		 var formdata = $("#EmailUpdateForm").serialize();
-		 $.ajax({
+    });
+
+    $('#Update_email_button').click(function(e) {
+        e.preventDefault();
+        var formdata = $("#EmailUpdateForm").serialize();
+        $.ajax({
             url: '/update-email',
-            type:'POST',
+            type: 'POST',
             data: formdata,
             success: function(data) {
                 $('.PleaseWaitDiv').hide();
-                if(!data.status){
-        			$.each(data.errors, function (i, error) {
-        			 	$('#EmailUpdate-'+i).attr('style', 'color:red');
-        			 	$('#EmailUpdate-'+i).html(error);
-        			 	setTimeout(function () {
-        			 		$('#EmailUpdate-'+i).css({
-        			 			'display': 'none'
-        			 		});
-        			 	}, 3000);
-		            });
-            	}else{
-					if(data.type == 'otp'){
-						$('#EmailUpdateresult').attr('style', 'color:red');
-						$('#EmailUpdateresult').html(data.message);
-						setTimeout(function () {
-        			 		$('#EmailUpdateresult').css({
-        			 			'display': 'none'
-        			 		});
-        			 	}, 3000);
-					}else{
-						$("#EmailUpdateForm").trigger("reset");
-						$("#Admin_email_address").html(data.new_email);
-					    $('#EmailUpdateresult').attr('style', 'color:green');
-						$('#EmailUpdateresult').html(data.message);
-						setTimeout(function () {
-        			 		$('#EmailUpdateresult').css({
-        			 			'display': 'none'
-        			 		});
-        			 	}, 3000);
-					}
-            	}
+                if (!data.status) {
+                    $.each(data.errors, function(i, error) {
+                        $('#EmailUpdate-' + i).attr('style', 'color:red');
+                        $('#EmailUpdate-' + i).html(error);
+                        setTimeout(function() {
+                            $('#EmailUpdate-' + i).css({
+                                'display': 'none'
+                            });
+                        }, 3000);
+                    });
+                } else {
+                    if (data.type == 'otp') {
+                        $('#EmailUpdateresult').attr('style', 'color:red');
+                        $('#EmailUpdateresult').html(data.message);
+                    } else {
+                        $("#EmailUpdateForm").trigger("reset");
+                        $("#Admin_email_address").html(data.new_email);
+                        $('#EmailUpdateresult').attr('style', 'color:green');
+                        $('#EmailUpdateresult').html(data.message);
+                        setTimeout(function() {
+                            $('#user_email_update').modal('hide');
+                        }, 1500);
+                    }
+                }
             }
         });
-	});
-	
-	
-	
-	
-	
-		
+    });
 </script>
 @stop

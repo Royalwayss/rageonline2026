@@ -4,7 +4,7 @@
 
         <div class="filter-head d-flex justify-content-between align-items-center">
             <h4>Filters</h4>
-            <button class="filter-clear-btn" type="button">Clear All</button>
+            <button class="filter-clear-btn filter-all-clear" type="button">Clear All</button>
         </div>
 
         <!-- Categories -->

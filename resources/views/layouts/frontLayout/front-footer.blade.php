@@ -15,11 +15,11 @@
                     <div class="footer-links">
                         <h4>Company</h4>
                         <ul>
-                            <li><a href="about.php">About Us</a></li>
-                            <li><a href="brand-ambassadors.php">Brand Ambassadors</a></li>
-                            <li><a href="listing.php">New Arrivals</a></li>
-                            <li><a href="store-locator.php">Store Locator</a></li>
-                            <li><a href="contact-us.php">Contact</a></li>
+                            <li><a href="{{ url('about-us') }}">About Us</a></li>
+                            <li><a href="{{ url('lookbook') }}">Brand Ambassadors</a></li>
+                            <li><a href="{{ url('new-arrivals') }}">New Arrivals</a></li>
+                            <li><a href="{{ url('store-locator') }}">Store Locator</a></li>
+                            <li><a href="{{ url('contact-us') }}">Contact</a></li>
                         </ul>
                     </div>
                 </div>
@@ -28,12 +28,12 @@
                         <h4>Policies</h4>
 
                         <ul>
-                            <li><a href="javascript::void()">Franchise Enquiry</a></li>
-                            <li><a href="javascript::void()">Privacy Policy</a></li>
-                            <li><a href="javascript::void()">Return & Exchange Policy</a></li>
-                            <li><a href="javascript::void()">Cancellation & Refund Policy</a></li>
-                            <li><a href="javascript::void()">Shipping Policy</a></li>
-                            <li><a href="javascript::void()">Terms of Use</a></li>
+                            <li><a href="{{ url('franchise-enquiry') }}">Franchise Enquiry</a></li>
+                            <li><a href="{{ url('privacy-policy') }}">Privacy Policy</a></li>
+                            <li><a href="{{ url('return-policy') }}">Return & Exchange Policy</a></li>
+                            <li><a href="{{ url('cancellation-and-refund-policy') }}">Cancellation & Refund Policy</a></li>
+                            <li><a href="{{ url('shipping-policy') }}">Shipping Policy</a></li>
+                            <li><a href="{{ url('terms-and-conditions') }}">Terms of Use</a></li>
                         </ul>
                     </div>
                 </div>
@@ -76,12 +76,12 @@
 
                             <div class="footer-social">
 
-                                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"
+                                <a rel="nofollow" href="https://www.facebook.com/rageindiaonline" target="_blank" rel="noopener noreferrer"
                                     aria-label="Facebook">
                                     <i class="fa-brands fa-facebook-f"></i>
                                 </a>
 
-                                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer"
+                                <a rel="nofollow" href="https://www.instagram.com/rageindiaonline/" target="_blank" rel="noopener noreferrer"
                                     aria-label="Instagram">
                                     <i class="fa-brands fa-instagram"></i>
                                 </a>

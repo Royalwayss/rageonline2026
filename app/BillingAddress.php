@@ -9,8 +9,13 @@ class BillingAddress extends Model
 {
     //
 	protected $fillable = [
-        'user_id','name','first_name','last_name','mobile','country','state','city','postcode','address','address2','company_name','gstin','is_default'
+        'user_id','name','first_name','last_name','mobile','alternative_number','country','state','city','postcode','address','address2','company_name','gstin','is_default'
     ];
+	
+	public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
     public static function addresses(){
     	$addresses = BillingAddress::where('user_id',Auth::user()->id)->first();

@@ -2,30 +2,45 @@
 @section('content')
 <?php use App\GiftOffer; ?>
 
-<main>
-	<div class="container order-placed">
-	  <div class="row">
-	    <div class="main-content col-md-12 mt-3 mb-3">
-	      <div class="page-main-content">
-	       
-			<div class="container mt-4">
-			<div class="row">
-				<div class="col-12 text-center pt-5 pb-5">
-					<i class="fa fa-check-square-o fa-4x orange"></i>
-					<h3 class="mt-4 mb-4">Order Cancelled</h3>
-					<span class="order-number">Your Order #{{Session::get('orderid')}} has been cancelled.</span>
-				</div>
-			</div>
-		</div>
-			 </div>
-		 
-	    </div>
-	 </div>
-	</div>
+<main class="inner-page">
+    <section class="thankyou-page">
+        <div class="container">
+
+            <div class="thankyou-box">
+
+                <div class="thankyou-icon cancelled">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+
+                <span class="thankyou-label cancelled">Order Cancelled</span>
+
+                <h1>Your Order Has Been Cancelled</h1>
+
+                <p class="thankyou-message">
+                    Your Order <strong>#{{ Session::get('orderid') }}</strong> has been cancelled.
+                    If any payment was made, it will be refunded as per our
+                    <a href="{{ url('cancellation-and-refund-policy') }}">Cancellation &amp; Refund Policy</a>.
+                </p>
+
+                <div class="thankyou-actions">
+                    <a href="{{ url('account/orders') }}" class="primary-btn">
+                        View Order History
+                    </a>
+
+                    <a href="{{ url('/') }}" class="continue-link">
+                        Continue Shopping
+                        <i class="fa-solid fa-arrow-right-long"></i>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
 </main>
 
-<?php 
+<?php
 Session::forget('orderid');
-Session::forget('giftSession'); 
+Session::forget('giftSession');
 ?>
 @stop

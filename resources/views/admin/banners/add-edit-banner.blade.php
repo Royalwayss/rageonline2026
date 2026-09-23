@@ -46,9 +46,9 @@
                                         <div data-provides="fileinput" class="fileinput fileinput-new">
                                             <div style="" class="fileinput-new thumbnail">
                                                 @if(!empty($bannerdata['image']))
-                                                    <?php $path = "images/BannerImages/".$bannerdata['image']; ?>
+                                                    <?php $path = "images/banners/".$bannerdata['image']; ?>
                                                     @if(file_exists($path))
-                                                        <img style="height:100px;" class="img-responsive"  src="{{ asset('images/BannerImages/'.$bannerdata['image'])}}">
+                                                        <img style="height:100px;" class="img-responsive"  src="{{ asset('images/banners/'.$bannerdata['image'])}}">
                                                     @endif
                                                 @else
                                                     <img style="height:100px;" class="img-responsive"  src="{{ asset('images/default.png') }}">
@@ -74,7 +74,7 @@
                                 <div class="form-group">
                                     <label class="col-md-3 control-label"></label>
                                     <div class="col-md-6">
-                                        <span><b>For sizes you can ask designer (sakshi)</b></span>
+                                        <span>Size - 1774 X 887</b></span>
                                     </div>
                                 </div>
                                 <div class="form-group">

@@ -1,25 +1,44 @@
 @extends('layouts.frontLayout.front-layout')
 @section('content')
 <?php use App\CustomFunction; use App\Wishlist; ?>
-<div class="main-container shop-page left-sidebar error-page">
-  <div class="container">
-    <div class="row mt-3 pt-3">
-      <ol class="breadcrumb">
-        <li><a href="{{ url('/') }}">Home &nbsp;/&nbsp;</a></li>
-        <li class="active">Page not found</li>
-      </ol>
-    </div>
-	<div class="row mt-3 pt-3 justify-content-center">
-    <div class="main-content col-xl-9 col-lg-8 col-md-8 col-sm-12 has-sidebar text-center" style="margin-top:-20px">
-        <img src="{{ asset('images/404.png') }}" class="img-responsive" alt=""/><br>
-        <p class="text-center" ><b>The page you are looking for couldn't be found If you need some help</b></p>
-			  <div class="error-btn"><a href="{{ url('/contact-us') }}" class="error-cntct-btn">Contact Us</a></div>
-	  </div>
-  </div>
-  </div>
-</div>
+
+<main class="inner-page">
+    <section class="error-page">
+        <div class="container">
+
+            <div class="detail-breadcrumb" data-aos="fade-up">
+                <a href="{{ url('/') }}">Home</a>
+                <span>/</span>
+                <span>Page Not Found</span>
+            </div>
+
+            <div class="thankyou-box" data-aos="fade-up" data-aos-delay="100">
+
+                <img src="{{ asset('images/404.png') }}" class="img-fluid error-illustration" alt="Page not found" style="margin-top: -24px;">
+
+                <h1>Page Not Found</h1>
+
+                <p class="thankyou-message">
+                    The page you are looking for couldn't be found. If you need some help, our team is happy to assist.
+                </p>
+
+                <div class="thankyou-actions">
+                    <a href="{{ url('/') }}" class="primary-btn">
+                        Back To Home
+                    </a>
+
+                    <a href="{{ url('/contact-us') }}" class="continue-link">
+                        Contact Us
+                        <i class="fa-solid fa-arrow-right-long"></i>
+                    </a>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+</main>
 @stop
 @section('javascript')
 @parent
 @stop
-

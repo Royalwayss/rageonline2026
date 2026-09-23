@@ -37,6 +37,7 @@ use App\Http\Controllers\Admin\OrdersController;
 use App\Http\Controllers\Front\PaymentController;
 use App\Http\Controllers\Front\PayuController;
 use App\Http\Controllers\Front\PhonepeController;
+use App\Http\Controllers\Front\AddressController;
 use App\Http\Controllers\Admin\ProductAttributeController;
 use App\Http\Controllers\Admin\ProductsController;
 use App\Http\Controllers\Front\RazorpayController;
@@ -241,6 +242,7 @@ Route::group([], function(){
 	Route::post('/save-wholesale-enquiry',[CustomerController::class, 'wholesale_enquiry']); 
 	Route::get('search-products',array('as'=>'search-products','uses'=>[IndexController::class, 'autoComplete']));
 	Route::match(['get','post'],'/results',[ListingController::class, 'searchresults']);
+    Route::get('search-suggestions', [ListingController::class, 'searchSuggestions']);
 	Route::match(['get','post'],'/search-autofill',[ListingController::class, 'search_autofill']);
 	Route::post('/get-state',[CustomerController::class, 'getState']);
 	Route::get('/logout',[CustomerController::class, 'logout']);
@@ -248,7 +250,7 @@ Route::group([], function(){
 	Route::post('/update-email',[CustomerController::class, 'update_email']);
 	Route::match(['get','post'],'/login',[CustomerController::class, 'login']);
 	Route::post('/check-register',[CustomerController::class, 'check_register']);
-	Route::match(['get','post'],'/register',[CustomerController::class, 'register']);
+	Route::match(['get','post'],'/signup',[CustomerController::class, 'signup']);
 	Route::match(['get','post'],'/forgot-password',[CustomerController::class, 'forgotPassword']);
 	Route::match(['get','post'],'/guest-checkout',[CustomerController::class, 'guestCheckout']);
 	Route::post('/update-address', [CustomerController::class, 'updateAddress']);
@@ -295,6 +297,19 @@ Route::group([], function(){
 		Route::get('newsletter-subscription-change',[CustomerController::class, 'newsletter_subscription_change']);
 		Route::get('/remove-wishlist/{id}',[ListingController::class, 'removeWishlist']);
        
+		
+		
+		Route::get('address/form/{type}/{id?}', [AddressController::class, 'form']);
+		Route::post('address/save', [AddressController::class, 'save']);
+		Route::post('address/delete', [AddressController::class, 'delete']);
+		Route::post('address/set-default', [AddressController::class, 'setDefault']);
+		 
+		
+		
+		
+		
+		
+		
 		
 		Route::get('/order-checkout',[ListingController::class, 'orderCheckout']);
 		Route::post('/check-order',[ListingController::class, 'checkOrder']);
