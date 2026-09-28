@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\ContactController;
 use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\FranchiseenquiryController;
+use App\Http\Controllers\Admin\ShippingCountryRatesController;
+use App\Http\Controllers\Admin\ExchangeRatesController;
 use App\Http\Controllers\Admin\GiftController;
 
 use App\Http\Controllers\HomeController;
@@ -215,6 +217,29 @@ Route::prefix('/admin')->group(function(){
 		Route::match(['get', 'post'], '/UPDATE_PRODUCT_ATTR_SKU', [AdminController::class, 'UPDATE_PRODUCT_ATTR_SKU']);
 		Route::match(['get', 'post'], '/test_img_name', [TestController::class, 'test_img_name']);
 		
+			
+		Route::match(['get', 'post'], '/shipping-country-rates', [ShippingCountryRatesController::class, 'shippingCountryRates']);
+
+		// Same form/view used for both Add and Edit
+		Route::get('/shipping-country-rates/add', [ShippingCountryRatesController::class, 'form']);
+		Route::get('/shipping-country-rates/edit/{id}', [ShippingCountryRatesController::class, 'form']);
+
+		// Single save handler - creates or updates depending on hidden "id" field
+		Route::post('/shipping-country-rates/save', [ShippingCountryRatesController::class, 'save']);
+
+		Route::post('/shipping-country-rates/toggle-status', [ShippingCountryRatesController::class, 'toggleStatus']);
+
+		
+		
+		
+		
+		
+		Route::match(['get', 'post'], '/exchange-rates', [ExchangeRatesController::class, 'exchangeRates'])->name('exchange_rates');
+		Route::match(['get', 'post'], '/exchange-rates/sync-now', [ExchangeRatesController::class, 'syncNow'])->name('syncNow');
+		
+		
+		
+		
 		
 		//product-reviews
 		Route::match(['get', 'post'], '/product-reviews', [ReviewsController::class, 'productreviews']);
@@ -244,6 +269,9 @@ Route::group([], function(){
 	Route::match(['get','post'],'/results',[ListingController::class, 'searchresults']);
     Route::get('search-suggestions', [ListingController::class, 'searchSuggestions']);
 	Route::match(['get','post'],'/search-autofill',[ListingController::class, 'search_autofill']);
+	// Add inside routes/web.php, alongside your existing /login route:
+	Route::post('send-mobile-otp', [CustomerController::class, 'sendMobileOtp']);
+	Route::post('verify-mobile-otp', [CustomerController::class, 'verifyMobileOtp']);
 	Route::post('/get-state',[CustomerController::class, 'getState']);
 	Route::get('/logout',[CustomerController::class, 'logout']);
 	Route::post('/genreate-otp',[CustomerController::class, 'genreate_otp']);  
@@ -295,7 +323,7 @@ Route::group([], function(){
 
 		Route::post('change-password',[CustomerController::class, 'changePassword']);
 		Route::get('newsletter-subscription-change',[CustomerController::class, 'newsletter_subscription_change']);
-		Route::get('/remove-wishlist/{id}',[ListingController::class, 'removeWishlist']);
+		Route::post('/remove-wishlist/{id}',[ListingController::class, 'removeWishlist']);
        
 		
 		

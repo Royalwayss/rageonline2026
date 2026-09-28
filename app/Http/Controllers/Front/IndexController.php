@@ -650,8 +650,6 @@ class IndexController extends Controller
 
     public function saveReview(Request $request){
 		
-		 
-		
         if($request->ajax()){
 			$validation_data = $request->all();
             $validator = Validator::make($validation_data, [

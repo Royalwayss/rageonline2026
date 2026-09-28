@@ -43,6 +43,103 @@ foreach ($categories as $category) {
 	
 	
 ?>
+<style>
+   /* --- Unique, namespaced toast classes - won't collide with or
+         restyle any existing element elsewhere on the site --- */
+    .rage-toast-error,
+    .rage-toast-success {
+        display: none;
+        position: fixed;
+        top: 86px; /* overridden by JS to sit just below #mainHeader */
+        right: 16px;
+        max-width: 360px;
+        width: calc(100% - 32px);
+        z-index: 9999;
+        align-items: flex-start;
+        gap: 12px;
+        border-radius: 10px;
+        padding: 14px 16px;
+        font-size: 14px;
+        line-height: 1.5;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        transition: top 0.15s ease;
+    }
+    .rage-toast-success {
+        background: #e3f6e9;
+        border: 1px solid #9adcae;
+        color: #1f5c33;
+    }
+    .rage-toast-error {
+        background: #fce4e4;
+        border: 1px solid #f3a9a9;
+        color: #8a1f1f;
+    }
+
+    /* Circular icon badge */
+    .rage-toast-icon {
+        flex-shrink: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #fff;
+        margin-top: 1px;
+    }
+    .rage-toast-success .rage-toast-icon {
+        background: #2e9e57;
+    }
+    .rage-toast-error .rage-toast-icon {
+        background: #d64545;
+    }
+
+    .rage-toast-error ul,
+    .rage-toast-success ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        flex: 1;
+    }
+    .rage-toast-error ul li,
+    .rage-toast-success ul li {
+        padding: 2px 0;
+    }
+
+    /* Close button */
+    .rage-toast-close {
+        flex-shrink: 0;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: inherit;
+        opacity: 0.55;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        transition: opacity 0.15s ease, background 0.15s ease;
+    }
+    .rage-toast-close:hover {
+        opacity: 1;
+        background: rgba(0,0,0,0.08);
+    }
+
+    @media (max-width: 480px) {
+        .rage-toast-error,
+        .rage-toast-success {
+            right: 8px;
+            left: 8px;
+            width: auto;
+            max-width: none;
+        }
+    }
+</style>
+
 <header class="main-header" id="mainHeader">
     <div class="container-fluid">
         <div class="header-wrap">
@@ -401,4 +498,25 @@ foreach ($categories as $category) {
             </a>
         </nav>
     </div>
+</div>
+
+
+<div class="rage-toast-error">
+    <div class="rage-toast-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+    <ul></ul>
+    <button type="button" class="rage-toast-close" onclick="$(this).closest('.rage-toast-error').hide();">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+
+<div class="rage-toast-success">
+    <div class="rage-toast-icon">
+        <i class="fa-solid fa-check"></i>
+    </div>
+    <ul></ul>
+    <button type="button" class="rage-toast-close" onclick="$(this).closest('.rage-toast-success').hide();">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
 </div>

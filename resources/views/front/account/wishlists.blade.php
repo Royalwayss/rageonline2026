@@ -1,45 +1,3 @@
-<style>
-.prod-info .name-wrap h4 {
-    font-family: 'Playfair Display', serif; /* or whatever your site's serif heading font is */
-    font-style: italic;
-    font-weight: 400;
-    font-size: 18px;
-    color: #2b2b2b;
-    margin-bottom: 8px;
-}
-
-.prod-info .price {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
-}
-
-.prod-info .sale-price {
-    font-weight: 700;
-    font-size: 16px;
-    color: #1a1a1a;
-}
-
-.prod-info del {
-    color: #999;
-    font-size: 14px;
-    font-weight: 400;
-    text-decoration: line-through;
-}
-
-.prod-info .discount {
-    background: #d4b896; /* tan/gold, adjust to match your brand color */
-    color: #4a3728;
-    font-size: 11px;
-    font-weight: 600;
-    padding: 3px 8px;
-    border-radius: 3px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-</style>
-
 <div class="listing-heading wish-head mt-4">
     <div class="breadcrumb-wrap">
         <a href="{{ url('/') }}">Home</a>
@@ -48,7 +6,7 @@
         <span>/</span>
         <span>Wishlist</span>
     </div>
-    <h1>My Curated Wishlist ({{ count($wishlists) }} {{ count($wishlists) == 1 ? 'Item' : 'Items' }})</h1>
+    <h1 id="wishlistsItemsCount">My Curated Wishlist ({{ count($wishlists) }} {{ count($wishlists) == 1 ? 'Item' : 'Items' }})</h1>
 </div>
 
 @if(Session::has('flash_message_success'))
@@ -65,7 +23,7 @@
     @if(count($wishlists) > 0)
     <div class="row">
         @foreach($wishlists as $wishlist)
-        <div class="col-lg-4 col-md-4 col-6">
+        <div class="col-lg-4 col-md-4 col-6 wishlist-card" data-wishlist-id="{{ $wishlist->id }}">
             <div class="prod-card">
                 <div class="prod-img">
                     <a href="{{ url('product/'.$wishlist->product->seo_url) }}">
@@ -76,7 +34,7 @@
                         @endif
                     </a>
 
-                    <a href="{{ url('remove-wishlist/'.$wishlist->id) }}" onclick="return confirm('Are you sure?')" title="Remove from Wishlist">
+                    <a href="javascript:;" class="removeWishlistBtn" data-id="{{ $wishlist->id }}" title="Remove from Wishlist">
                         <i class="fa-solid fa-trash"></i>
                     </a>
 
@@ -85,10 +43,7 @@
                         {{-- NOTE: field names (product_id/size/qty) are my best guess -
                              confirm these match your /add-to-cart controller's real
                              validation rules. --}}
-                        <form id="{{ $wishlist->id }}"  action="{{ url('product/'.$wishlist->product->seo_url) }}" style="display: contents;">
-                            
-                            <button type="submit" class="link-btn black">Add to Cart</button>
-                        </form>
+                       <button type="button" class="link-btn black" onclick="window.location.href='{{ url('product/'.$wishlist->product->seo_url) }}'">Add to Cart</button>
                         <a href="{{ url('product/'.$wishlist->product->seo_url) }}" class="link-btn brown">Buy Now</a>
                     </div>
                     @endif
@@ -158,6 +113,45 @@
                     $('.addcart').focus();
 					//location.reload();
                 }
+            }
+        });
+    });
+
+    $(document).on('click', '.removeWishlistBtn', function() {
+        if (!confirm('Are you sure?')) {
+            return;
+        }
+
+        var $btn = $(this);
+        var wishlistId = $btn.data('id');
+
+        $('.PleaseWaitDiv').show();
+
+        $.ajax({
+            url: '/remove-wishlist/' + wishlistId,
+            type: 'POST',
+            data: {
+                _token: "{{ csrf_token() }}"
+            },
+            success: function(data) {
+                $('.PleaseWaitDiv').hide();
+
+                if (data.status) {
+                    $('.wishlist-card[data-wishlist-id="' + wishlistId + '"]').fadeOut(200, function() {
+                        $(this).remove();
+
+                        var remaining = $('.wishlist-card').length;
+                        $('#wishlistsItemsCount').text('My Curated Wishlist (' + remaining + ' ' + (remaining == 1 ? 'Item' : 'Items') + ')');
+                         printSuccessMsg(data.message);
+                       
+                    });
+                } else {
+                    printErrorMsg(data.message || 'Something went wrong. Please try again.');
+                }
+            },
+            error: function() {
+                $('.PleaseWaitDiv').hide();
+                printErrorMsg('Something went wrong. Please try again.');
             }
         });
     });

@@ -82,7 +82,15 @@
                     <!-- MOBILE OTP LOGIN -->
                     <div class="tab-pane fade" id="mobileLogin">
 
-                        <form action="my-profile.php">
+                        <div class="alert-message alert alert-danger print-error-msg otp-err-message">
+                            <ul class="mb-0"></ul>
+                        </div>
+                        <div class="alert-message alert alert-success print-success-msg otp-message">
+                            <ul class="mb-0"></ul>
+                        </div>
+
+                        <form action="javascript:;" id="SendOtpForm">
+                            @csrf
 
                             <div class="form-field">
                                 <label>Mobile Number</label>
@@ -90,41 +98,51 @@
                                 <div class="mobile-input">
                                     <span>+91</span>
 
-                                    <input type="tel" class="form-control" placeholder="Enter mobile number">
+                                    <input type="tel" class="form-control" name="mobile" id="otp_mobile" placeholder="Enter mobile number" maxlength="10">
                                 </div>
+                                <div class="err" id="OtpSend-mobile"></div>
                             </div>
 
-                            <button type="button" class="primary-btn">
+                            <button type="submit" class="primary-btn" id="sendOtpBtn">
                                 Send OTP
                             </button>
 
+                        </form>
 
-                            <!-- SHOW AFTER OTP SENT -->
-                            <div class="otp-area">
 
-                                <div class="form-field">
-                                    <label>Enter OTP</label>
+                        <!-- SHOW AFTER OTP SENT -->
+                        <form action="javascript:;" id="VerifyOtpForm" class="otp-area" style="display:none;">
+                            @csrf
+                            <input type="hidden" name="mobile" id="verify_mobile">
 
-                                    <div class="otp-inputs">
-                                        <input type="text" maxlength="1">
-                                        <input type="text" maxlength="1">
-                                        <input type="text" maxlength="1">
-                                        <input type="text" maxlength="1">
-                                        <input type="text" maxlength="1">
-                                        <input type="text" maxlength="1">
-                                    </div>
-                                </div>
-
-                                <div class="otp-meta">
-                                    <span>Didn't receive the code?</span>
-                                    <button type="button">Resend OTP</button>
-                                </div>
-
-                                <button type="submit" class="primary-btn">
-                                    Verify & Login
-                                </button>
-
+                            <div class="otp-mobile-display">
+                                <span>OTP sent to +91 <strong id="otpMobileDisplay"></strong></span>
+                                <a href="javascript:;" id="editMobileBtn">Edit</a>
                             </div>
+
+                            <div class="form-field">
+                                <label>Enter OTP</label>
+
+                                <div class="otp-inputs">
+                                    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+                                    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric">
+                                </div>
+                                <input type="hidden" name="otp" id="otp_full_value">
+                                <div class="err" id="OtpVerify-otp"></div>
+                            </div>
+
+                            <div class="otp-meta">
+                                <span id="resendTimerText">Didn't receive the code? Resend in <strong id="resendCountdown">30</strong>s</span>
+                                <button type="button" id="resendOtpBtn" style="display:none;">Resend OTP</button>
+                            </div>
+
+                            <button type="submit" class="primary-btn">
+                                Verify & Login
+                            </button>
 
                         </form>
 
@@ -196,6 +214,144 @@
                         setTimeout(function() {
                             window.location.href = data.url;
                         }, 3000);
+                    }
+                }
+            });
+        });
+
+        // ---- Mobile OTP login ----
+        var resendTimer = null;
+
+        function startResendCountdown() {
+            var seconds = 30;
+            $('#resendTimerText').show();
+            $('#resendOtpBtn').hide();
+            $('#resendCountdown').text(seconds);
+
+            clearInterval(resendTimer);
+            resendTimer = setInterval(function() {
+                seconds--;
+                $('#resendCountdown').text(seconds);
+                if (seconds <= 0) {
+                    clearInterval(resendTimer);
+                    $('#resendTimerText').hide();
+                    $('#resendOtpBtn').show();
+                }
+            }, 1000);
+        }
+
+        $("#SendOtpForm").submit(function(e) {
+            e.preventDefault();
+
+            var $btn = $('#sendOtpBtn');
+            $btn.prop('disabled', true).text('Sending...');
+
+            var formdata = $("#SendOtpForm").serialize();
+            $.ajax({
+                url: "/send-mobile-otp",
+                type: 'POST',
+                data: formdata,
+                success: function(data) {
+                    $btn.prop('disabled', false).text('Send OTP');
+
+                    if (!data.status) {
+                        if (data.type == "validation") {
+                            $.each(data.errors, function(i, error) {
+                                $('#OtpSend-' + i).attr('style', 'color:red');
+                                $('#OtpSend-' + i).html(error);
+                                setTimeout(function() {
+                                    $('#OtpSend-' + i).css({ 'display': 'none' });
+                                }, 3000);
+                            });
+                        } else {
+                            var msg = [];
+                            msg[0] = data.errors;
+                            printErrorMsg(msg, 'otp-err-message');
+                            $('.otp-err-message').delay(3000).fadeOut('slow');
+                        }
+                    } else {
+                        $('#verify_mobile').val($('#otp_mobile').val());
+                        $('#otpMobileDisplay').text($('#otp_mobile').val());
+                        $('#SendOtpForm').hide();
+                        $('#VerifyOtpForm').show();
+                        $('.otp-digit').val('');
+                        $('.otp-digit').first().focus();
+
+                        var msg = [];
+                        msg[0] = data.message;
+                        printSuccessMsg(msg, 'otp-message');
+                        $('.otp-message').delay(3000).fadeOut('slow');
+
+                        startResendCountdown();
+                    }
+                }
+            });
+        });
+
+        $('#editMobileBtn').click(function() {
+            clearInterval(resendTimer);
+            $('#VerifyOtpForm').hide();
+            $('#SendOtpForm').show();
+            $('.otp-digit').val('');
+            $('#otp_full_value').val('');
+            $('#otp_mobile').focus();
+        });
+
+        $('#resendOtpBtn').click(function() {
+            $('#SendOtpForm').submit();
+        });
+
+        // OTP box auto-advance / backspace-back / combine into hidden field
+        $(document).on('input', '.otp-digit', function() {
+            var val = $(this).val().replace(/[^0-9]/g, '');
+            $(this).val(val);
+            if (val.length === 1) {
+                $(this).next('.otp-digit').focus();
+            }
+            var combined = '';
+            $('.otp-digit').each(function() {
+                combined += $(this).val();
+            });
+            $('#otp_full_value').val(combined);
+        });
+
+        $(document).on('keydown', '.otp-digit', function(e) {
+            if (e.key === 'Backspace' && $(this).val() === '') {
+                $(this).prev('.otp-digit').focus();
+            }
+        });
+
+        $("#VerifyOtpForm").submit(function(e) {
+            e.preventDefault();
+            var formdata = $("#VerifyOtpForm").serialize();
+            $.ajax({
+                url: "/verify-mobile-otp",
+                type: 'POST',
+                data: formdata,
+                success: function(data) {
+                    if (!data.status) {
+                        if (data.type == "validation") {
+                            $.each(data.errors, function(i, error) {
+                                $('#OtpVerify-' + i).attr('style', 'color:red');
+                                $('#OtpVerify-' + i).html(error);
+                                setTimeout(function() {
+                                    $('#OtpVerify-' + i).css({ 'display': 'none' });
+                                }, 3000);
+                            });
+                        } else {
+                            var msg = [];
+                            msg[0] = data.errors;
+                            printErrorMsg(msg, 'otp-err-message');
+                            $('.otp-err-message').delay(3000).fadeOut('slow');
+                        }
+                    } else {
+                        var msg = [];
+                        msg[0] = data.message;
+                        printSuccessMsg(msg, 'otp-message');
+                        $('.otp-message').delay(3000).fadeOut('slow');
+                        setTimeout(function() {
+                            window.location.href = data.url;
+                        }, 1500);
                     }
                 }
             });

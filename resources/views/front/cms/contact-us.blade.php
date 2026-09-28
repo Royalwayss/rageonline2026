@@ -220,11 +220,12 @@
                     $btn.html('<i class="fa-solid fa-check me-2"></i> SENT!');
                     $btn.css('background', '#287444');
                     if (window.RageToast) {
-                        RageToast.show('Thank you! Your message has been sent.', 'fa-paper-plane');
+                      //  RageToast.show('Thank you! Your message has been sent.', 'fa-paper-plane');
                     }
-                    setTimeout(function() {
+					printSuccessMsg('Thank you! Your message has been sent.');
+                    /* setTimeout(function() {
                         window.location.href = data.url;
-                    }, 1200);
+                    }, 1200); */
                 }
             }
         });

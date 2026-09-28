@@ -183,10 +183,7 @@ class Order extends Model
 	 
 	  public static function creditRewardPoints($orderId){ 
 		  
-		  /*
-		  return true;
-		  die();
-		 
+		
 		$order = Order::with(['order_products'])->where('id', $orderId)->first();
         
 		$orderTotal = $order['grand_total'];
@@ -204,15 +201,13 @@ class Order extends Model
 			'type'        => 'earned',
 			'description' => 'Reward points for Order #' . $orderId,
 		]);
-		*/
+		
 		
 	  }
 	  
 	  
 	  public static function redeemRewardPoints($orderId)
-		{ /*
-			return true;
-		     die();
+		{ 
 			
 			$order = Order::where('id', $orderId)->first();
 
@@ -231,7 +226,7 @@ class Order extends Model
 				'points'      => $pointsUsed,
 				'type'        => 'redeemed',
 				'description' => 'Redeemed on Order #' . $orderId,
-			]); */
+			]); 
 		}
 	 
 	 

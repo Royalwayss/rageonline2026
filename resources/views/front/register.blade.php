@@ -1,6 +1,9 @@
 @extends('layouts.frontLayout.front-layout')
 @section('content')
 
+<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/country-phone.css') }}">
+
 <main class="inner-page">
     <section class="auth-page">
         <div class="container">
@@ -14,13 +17,6 @@
 
                 <form class="rage-form" id="RegisterForm" action="javascript:;">
                     @csrf
-
-                    <div class="alert-message alert alert-danger print-error-msg register-err-message" tabindex="-1">
-                        <ul class="mb-0"></ul>
-                    </div>
-                    <div class="alert-message alert alert-success print-success-msg register-message" tabindex="-1">
-                        <ul class="mb-0"></ul>
-                    </div>
 
                     <div class="row g-3">
                         <div class="col-md-6 col-12">
@@ -47,10 +43,25 @@
                     </div>
 
                     <div class="form-field mt-3">
+                        <label for="country">Country <span>*</span></label>
+                        <?php $countries = \App\GeoCountry::getcountries(); ?>
+                        <select name="country" id="country" class="form-select">
+                            @foreach($countries as $country)
+                                <option value="{{ $country['name'] }}" data-phone-code="{{ $country['phone_code'] }}" @if($country['name'] == 'India') selected @endif>{{ $country['name'] }}</option>
+                            @endforeach
+                        </select>
+                        <div class="err" id="Register-country"></div>
+                    </div>
+
+                    <div class="form-field mt-3">
                         <label for="mobile">Mobile Number <span>*</span></label>
-                        <div class="mobile-input">
-                            <span>+91</span>
-                            <input type="tel" name="mobile" id="mobile" class="form-control" placeholder="mobile number">
+                        <div class="rage-phone-group">
+                            <select name="country_code" id="country_code" class="rage-phone-code">
+                                @foreach($countries as $country)
+                                    <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] == 'India') selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
+                                @endforeach
+                            </select>
+                            <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="10-digit mobile number">
                         </div>
                         <div class="err" id="Register-mobile"></div>
                     </div>
@@ -118,6 +129,62 @@
 @section('javascript')
 @parent
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/select2.min.js') }}"></script>
+<script>
+    // Scoped to the register form so a duplicate id elsewhere in the layout
+    // can never be picked up by mistake.
+    var $countrySelect = $('#RegisterForm select[name="country"]');
+    var $codeSelect = $('#RegisterForm select[name="country_code"]');
+
+    $countrySelect.select2({
+        width: '100%',
+        minimumResultsForSearch: 0
+    });
+
+    $codeSelect.select2({
+        width: '70px',
+        minimumResultsForSearch: 0, // always show the search box
+        templateSelection: function(option) {
+            // Show only "+91" once collapsed
+            var value = option.text.split(' ')[0];
+            return value || option.text;
+        }
+    });
+
+    // Two-way sync between Country and phone code.
+    //
+    // Several countries share one calling code (e.g. +1, +44, +7), so we
+    // never look an option up by its *value* - that would always land on the
+    // first country with that code (Canada -> Anguilla). Instead every phone
+    // code option carries data-country, and we select that exact option.
+    //
+    // Only Select2's own display is refreshed ('change.select2') instead of
+    // firing a full 'change', so the two handlers can't trigger each other
+    // in a loop.
+
+    // Country changed -> select the matching phone code option
+    $countrySelect.on('change', function() {
+        var countryName = $(this).val();
+        var $target = $codeSelect.find('option').filter(function() {
+            return $(this).attr('data-country') === countryName;
+        }).first();
+
+        if ($target.length && !$target.prop('selected')) {
+            $codeSelect.find('option').prop('selected', false);
+            $target.prop('selected', true);
+            $codeSelect.trigger('change.select2');
+        }
+    });
+
+    // Phone code changed -> select the matching country
+    $codeSelect.on('change', function() {
+        var countryName = $(this).find(':selected').attr('data-country');
+
+        if (countryName && $countrySelect.val() !== countryName) {
+            $countrySelect.val(countryName).trigger('change.select2');
+        }
+    });
+</script>
 <script>
     function togglePassVisibility(id, btn) {
         const el = document.getElementById(id);
@@ -162,18 +229,13 @@
                                 }, 5000);
                             });
                         } else {
-                            var msg = [];
-                            msg[0] = data.errors;
-                            printErrorMsg(msg, 'register-err-message');
-							$('.register-err-message').focus();
-                            $('.register-err-message').delay(3000).fadeOut('slow');
+                            printErrorMsg(data.errors);
+							$('.rage-toast-error').focus();
+                            $('.rage-toast-error').delay(3000).fadeOut('slow');
                         }
                     } else {
-                        var msg = [];
-                        msg[0] = data.message;
-                        printSuccessMsg(msg, 'register-message');
-						$('.register-message').focus();
-                        $('.register-message').delay(2000).fadeOut('slow');
+                        printSuccessMsg(data.message);
+						$('.rage-toast-success').focus();
                         setTimeout(function() {
                             window.location.href = data.url;
                         }, 2000);

@@ -206,8 +206,10 @@
                 }
                 $('.PleaseWaitDiv').hide();
                 if (resp.message != "") {
-                    $('#CartMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible"><button type="button" class="close" data-bs-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
-                }
+                    //$('#CartMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible"><button type="button" class="close" data-bs-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
+                   
+					printSuccessMsg( resp.message);
+				}
                 $("#Cartindixdiv").focus();
             },
             error: function() {

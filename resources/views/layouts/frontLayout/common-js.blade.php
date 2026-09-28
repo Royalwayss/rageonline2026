@@ -36,8 +36,10 @@
                             }
                             $('#couponInput').val('');
                             $('.totalItems').html('('+resp.totalItems+')');
-                            $('#CartMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible" data-bs-dismiss="alert"><button type="button" class="close" data-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
-                            $("#Cartindixdiv").focus();
+                            //$('#CartMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible" data-bs-dismiss="alert"><button type="button" class="close" data-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
+                            //$("#Cartindixdiv").focus(); 
+							
+							printSuccessMsg( resp.message);
                         }
                         cartitems_Ajax();
                         $('.PleaseWaitDiv').hide();
@@ -130,13 +132,15 @@
             var size = $("#" + page_type + "-product_size").val(); 
             var qty = $("#" + page_type + "-qty").val();
             var _token = "{{csrf_token()}}";
-            var formdata = {
+             var actionType = $('[name=action]').val();
+			var formdata = {
                 proid: proid,
                 size: size,
                 qty: qty,
-                _token: _token
+                _token: _token,
+                actionType: actionType
             };
-            var actionType = $('[name=action]').val();
+           
             $.ajax({
                 url: '/add-to-cart',
                 type: 'POST',
@@ -145,30 +149,29 @@
                     $('.PleaseWaitDiv').hide();
                     if (!data.status) {
                         if (data.type == "validation") {
-                            if (is_stickyAddBtn == false) {
-                                printErrorMsg(data.errors);
-                                $('.print-error-msg').delay(3000).fadeOut('slow');
-                            } else {
-
-                                var firstKey = Object.keys(data.errors)[0];
-                                alert(data.errors[firstKey][0]);
-                            }
+                            printErrorMsg(data.errors);
+							
+							if (actionType == "buy") {
+							
+							if(data.url != ''){
+                               window.location.href = data.url;
+							}
+							
+                           } 
+							
+							
                         }
                     } else {
                         $('#msgDiv').css('display', 'block').delay(3000).fadeOut('slow');
                         $('.totalItems').html('('+data.totalitems+')');
                         if (actionType == "buy") {
-                            window.location.href = "/cart";
+							
+							if(data.url != ''){
+                               window.location.href = data.url;
+							}
+							
                         } else {
-                             $('.totalItems').html('('+resp.totalItems+')');
-                            if (is_stickyAddBtn == false) {
-                                printSuccessMsg(data.message);
-                                $('.print-success-msg').delay(3000).fadeOut('slow');
-                            } else {
-
-                                var firstKey = Object.keys(data.message)[0];
-                                alert(data.message[firstKey][0]);
-                            }
+                           printSuccessMsg(data.message);
 
 
                         }
@@ -205,18 +208,17 @@
                 type: 'post',
                 url: '/add-to-wishlist',
                 success: function(resp) {
-                    if (resp.status) {
-                        if (resp.message === 'set') {
-                            $('.WishList-'+proid).html('<i class="fa-heart fa-solid" style="color: rgb(147, 47, 47);"></i>');
-                        } else if (resp.message === 'unset') {
-                            $('.WishList-'+proid).html('<i class="far fa-heart"></i>');
-
-                        }
-
-                    } else {
-                        alert(resp.message);
+						if (resp.status) {
+							if (resp.message === 'set') {
+								$('.WishList-'+proid).html('<i class="fa-heart fa-solid" style="color: rgb(147, 47, 47);"></i>');
+							} else if (resp.message === 'unset') {
+								$('.WishList-'+proid).html('<i class="far fa-heart"></i>');
+							}
+							printSuccessMsg(resp.alert_message);
+						} else {
+                         printErrorMsg(resp.message);  
                         if (resp.login == false) {
-                            window.location.href = resp.url;
+                            //window.location.href = resp.url;
                         }
 
                     }
@@ -435,7 +437,7 @@
 
     }
 
-    function printErrorMsg(msg, className = 'print-error-msg') {
+    function printErrorMsg1(msg, className = 'print-error-msg') {
         $("." + className).find("ul").html('');
         $("." + className).css('display', 'block');
         $.each(msg, function(key, value) {
@@ -443,13 +445,51 @@
         });
     }
 
-    function printSuccessMsg(msg, className = 'print-success-msg') {
+    function printSuccessMsg1(msg, className = 'print-success-msg') {
         $("." + className).find("ul").html('');
         $("." + className).css('display', 'block');
         $.each(msg, function(key, value) {
             $("." + className).find("ul").append('<li>' + value + '</li>');
         });
     }
+
+
+
+ function printErrorMsg(msg) {
+    var className = 'rage-toast-error';
+    if (typeof msg === 'string') {
+        msg = [msg];
+    }
+    $('.rage-toast-success').hide();
+    $("." + className).find("ul").html('');
+    $("." + className).css('display', 'flex');
+    $.each(msg, function(key, value) {
+        $("." + className).find("ul").append('<li>' + value + '</li>');
+    });
+	clearTimeout(window.rageToastSuccessTimer);
+    window.rageToastSuccessTimer = setTimeout(function() {
+        $("." + className).fadeOut('slow');
+    }, 5000);
+}
+
+function printSuccessMsg(msg) {
+    var className = 'rage-toast-success';
+    if (typeof msg === 'string') {
+        msg = [msg];
+    }
+    $('.rage-toast-error').hide();
+    $("." + className).find("ul").html('');
+    $("." + className).css('display', 'flex');
+    $.each(msg, function(key, value) {
+        $("." + className).find("ul").append('<li>' + value + '</li>');
+    });
+
+    clearTimeout(window.rageToastSuccessTimer);
+    window.rageToastSuccessTimer = setTimeout(function() {
+        $("." + className).fadeOut('slow');
+    }, 5000);
+}
+
 
     function cartitems_Ajax() { return false;
         $.ajax({

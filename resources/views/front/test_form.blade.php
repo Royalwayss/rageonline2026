@@ -53,7 +53,7 @@
         });
 
         // Form Submit Handling
-        $('#loginForm').submit(function(event) { alert(1);
+        $('#loginForm').submit(function(event) { 
         event.preventDefault(); // Prevent the default form submission
 
         if($('#g-recaptcha-response').val() == ''){

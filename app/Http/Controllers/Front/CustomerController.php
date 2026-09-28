@@ -28,6 +28,7 @@ use App\OrderProduct;
 use App\ExchangeRequest;
 use App\State;
 use App\Pincodelist;
+use App\SMS;
 use App\Pincode;
 use App\CustomFunction;
 use PDF;
@@ -65,6 +66,7 @@ class CustomerController extends Controller
                             return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
                         }
                         $this->updatingCartSessionToUser();
+                        $this->mergeGuestWishlistToUser();
                         if(Session::has('previousurl')){
                             $redirectTo = Session::get('previousurl');
                             Session::forget('previousurl');
@@ -123,7 +125,94 @@ class CustomerController extends Controller
 	}
 	
 	
-	
+	public function sendMobileOtp(Request $request){
+
+        $validator = Validator::make($request->all(), [
+                'mobile' => 'bail|required|digits_between:7,15',
+            ]
+        );
+
+        if($validator->passes()) {
+
+            $mobile = preg_replace('/[^0-9]/', '', $request->mobile);
+
+            $user = User::where('mobile', $mobile)->first();
+
+            if(empty($user)){
+                return response()->json(['status'=>false,'type'=>'normal','errors'=>"We couldn't find an account with this mobile number. Please register first."]);
+            }
+
+            if($user->status == 0){
+                return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
+            }
+
+            $otp = mt_rand(100000, 999999);
+            $otp = 123456;
+
+            User::where('id', $user->id)->update(['otp' => $otp]);
+
+            $smsResult = SMS::send($mobile, 'Your Rage login OTP is '.$otp.'. Do not share this with anyone.');
+
+            if(!$smsResult['status']){
+                return response()->json(['status'=>false,'type'=>'normal','errors'=>"We couldn't send the OTP right now. Please try again in a moment."]);
+            }
+
+            return response()->json(['status'=>true,'message'=>'OTP sent to your registered mobile number.']);
+
+        }else{
+            return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
+        }
+    }
+
+    public function verifyMobileOtp(Request $request){
+
+        $validator = Validator::make($request->all(), [
+                'mobile' => 'bail|required|digits_between:7,15',
+                'otp'    => 'bail|required|digits:6',
+            ]
+        );
+
+        if($validator->passes()) {
+
+            $mobile = preg_replace('/[^0-9]/', '', $request->mobile);
+
+            if(Auth::check()){
+                return response()->json(['status'=>false,'type'=>'normal','errors'=>"We are sorry! Multiple Login not allowed."]);
+            }
+
+            $user = User::where('mobile', $mobile)->where('otp', $request->otp)->first();
+
+            if(empty($user)){
+                return response()->json(['status'=>false,'type'=>'normal','errors'=>"Invalid or expired OTP. Please try again."]);
+            }
+
+            if($user->status == 0){
+                return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
+            }
+
+            Auth::login($user);
+
+            // one-time use - clear it once consumed
+            User::where('id', $user->id)->update(['otp' => null]);
+
+            $this->updatingCartSessionToUser();
+            $this->mergeGuestWishlistToUser();
+
+            if(Session::has('previousurl')){
+                $redirectTo = Session::get('previousurl');
+                Session::forget('previousurl');
+            }else{
+                $redirectTo = url('/');
+            }
+
+            User::where('id', Auth::user()->id)->update(['user_accound_status'=>'1']);
+
+            return response()->json(['status'=>true,'message'=>'Login successfully. It will automatically redirected','url'=>$redirectTo]);
+
+        }else{
+            return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
+        }
+    }
 	
 
     public function signup(Request $request){
@@ -183,10 +272,11 @@ class CustomerController extends Controller
             if($validator->passes()) {
                 $data = $request->all();
 				$password = $data['password'];
-                $data['country'] ='India';
+                $data['country'] = $data['country'];
                 $data['status'] =1;
                 $data['password'] = bcrypt($data['password']);
                 $data['name'] = $data['first_name'];
+                $data['country_code'] = $data['country_code'];
 				
 				if($data['last_name'] != ''){
 					$data['name'] .= ' '.$data['last_name'];
@@ -204,6 +294,7 @@ class CustomerController extends Controller
                 User::create($data);
                 if(Auth::guard('web')->attempt($request->only('email','password'))) {
                     $this->updatingCartSessionToUser();
+                    $this->mergeGuestWishlistToUser();
                     $smsdetails['mobile']  = $data['mobile'];
                     $smsdetails['message'] = "Dear ".$data['name']. ", you have been successfully registered with ".config('constants.project_name').". Login to your account to access order, address & available offers information";
                    // sendSms($smsdetails);
@@ -371,6 +462,30 @@ class CustomerController extends Controller
         $mesage = "success";
         return $mesage;
     }
+	
+	 public function mergeGuestWishlistToUser(){
+        $guestWishlist = Session::get('guest_wishlist', []);
+
+        if(!empty($guestWishlist) && Auth::check()){
+            foreach($guestWishlist as $productId){
+                $exists = Wishlist::where([
+                    'user_id' => Auth::user()->id,
+                    'product_id' => $productId,
+                ])->count();
+
+                if($exists == 0){
+                    $wishlist = new Wishlist;
+                    $wishlist->user_id = Auth::user()->id;
+                    $wishlist->product_id = $productId;
+                    $wishlist->qty = 1;
+                    $wishlist->save();
+                }
+            }
+            Session::forget('guest_wishlist');
+        }
+    }
+	
+	
 
     public function account($slug=null){
 		Session::put('previousurl',"/account/wishlists"); 
@@ -951,6 +1066,7 @@ class CustomerController extends Controller
 				
                 Auth::loginUsingId($guestUserId);
                 $this->updatingCartSessionToUser();
+                $this->mergeGuestWishlistToUser();
                 $redirectTo = url('/order-checkout');
                 return response()->json(['status'=>true,'message'=>'ok','url'=>$redirectTo]);
             }else{

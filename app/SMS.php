@@ -16,7 +16,17 @@ class SMS
      */
     public static function send($mobile, $message)
     {
-        $authKey = env('STEVIA_SMS_AUTH_KEY');
+        
+		return [
+                'status'   => true,
+                'response' => true,
+            ];
+		
+		
+		
+		exit;
+		
+		$authKey = env('STEVIA_SMS_AUTH_KEY');
         $senderId = env('STEVIA_SMS_SENDER_ID');
 
         if (empty($authKey) || empty($senderId)) {

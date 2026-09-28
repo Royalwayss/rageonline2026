@@ -247,7 +247,7 @@
         }
     });
 
-    $(document).on('submit', '#addressForm', function(e) {
+    $(document).on('submit', '#addressForm', function(e) { 
         e.preventDefault();
         $('.PleaseWaitDiv').show();
         var formdata = $('#addressForm').serialize();
@@ -259,21 +259,23 @@
                 $('.PleaseWaitDiv').hide();
                 $('.err').html('');
                 if (!data.status) {
-                    if (data.type == 'validation') {
+                    if (data.type == 'validation') { 
                         $.each(data.errors, function(i, error) {
-                            $('#' + i).html(error);
+                            $('#Address-' + i).html(error);
                         });
                     } else {
-                        alert(data.message);
+                        printSuccessMsg(data.message);
                     }
-                } else {
+					
+                } else { 
                     $('#addressListWrap').replaceWith(data.view);
                     var modalEl = document.getElementById('addressModal');
                     var modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
                     if (typeof RageToast !== 'undefined') {
-                        RageToast.show(data.message, 'fa-location-dot');
+                       // RageToast.show(data.message, 'fa-location-dot');
                     }
+					printSuccessMsg(data.message);
                 }
             }
         });
@@ -292,8 +294,9 @@
                 $('.PleaseWaitDiv').hide();
                 if (data.status) {
                     $('#addressListWrap').replaceWith(data.view);
+					printSuccessMsg(data.message);
                 } else {
-                    alert(data.message);
+                    printSuccessMsg(data.message);
                 }
             }
         });
@@ -403,7 +406,7 @@
                     if (data.type == "validation") {
                         var err_no = 0;
                         $.each(data.errors, function(i, error) {
-							alert(error);
+							printErrorMsg(error);
 							return false; // stops $.each after the first item
 						});
 						

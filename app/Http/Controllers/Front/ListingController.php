@@ -33,8 +33,6 @@ class ListingController extends Controller
 {
     //
     public function cart(){    
-		$orderid =8597;
-		//Order::creditRewardPoints($orderid); 
 		CouponCode::checkCouponStatus();
     	$title ="Cart";
     	$metakeywords ="";
@@ -408,68 +406,93 @@ class ListingController extends Controller
         return view('front.cart.wishlist')->with(compact('title','wishlists'));
     }
 
-    public function removeWishlist($wishid){
+    public function removeWishlist(Request $request, $wishid){
         $check = Wishlist::where(['user_id'=>Auth::user()->id,'id'=>$wishid])->first();
         if($check){
             Wishlist::where('id',$wishid)->delete();
-            return redirect()->back()->with('flash_message_success','Wishlist item has been deleted successfully');
+
+            if($request->ajax()){
+                return response()->json(['status'=>true,'message'=>'Wishlist item has been deleted successfully']);
+            }
+            //return redirect()->back()->with('flash_message_success','Wishlist item has been deleted successfully');
         }else{
+            if($request->ajax()){
+                return response()->json(['status'=>false,'message'=>'Something Went Wrong']);
+            }
             return redirect()->back()->with('flash_message_error','Something Went Wrong');
         }
     }
 
-        public function addtoWishlist(Request $request){
-            $cartmessage ='';
+     public function addtoWishlist(Request $request){
+        $cartmessage ='';
         if($request->ajax()){
-			 $data = $request->all();  
-			 
-			 if(isset($data['proid']) && !empty($data['proid'])){ 
-				 $get_product =Product::where('id',$data['proid'])->first();
-				 Session::put('previousurl',"/product/".@$get_product->seo_url);
-			 }
-			
-			 
+            $data = $request->all();
+
+            if(isset($data['proid']) && !empty($data['proid'])){
+                $get_product =Product::where('id',$data['proid'])->first();
+                Session::put('previousurl',"/product/".@$get_product->seo_url);
+            }
+
+            if(!isset($data['qty']) || $data['qty'] == ''){
+                $err_message = '';
+                if(!isset($data['size']) || $data['size'] == '' )  { $err_message = 'Select the product size'; }
+                if($data['qty'] == '') { $err_message .= 'Slect the product qty'; }
+                return response()->json(['status'=>false,'login'=>true,'message'=>$err_message]);
+            }
+
             if(Auth::check()){
-				$data = $request->all();  
-				if(isset($data['qty'] ) && $data['qty'] != ''){
-						
-						$checkifExits = Wishlist::where([
-							'user_id'=>Auth::user()->id,
-							'product_id' => $data['proid'],
-						])->count();
-						
-						if($checkifExits ==0){
-						    $cartmessage = 'Product added successfully in wishlist';
-							$wishlist = new Wishlist;
-							$wishlist->user_id = Auth::user()->id;
-							$wishlist->product_id = $data['proid'];
-							//$wishlist->size = $data['size'];
-							$wishlist->qty = $data['qty'];
-							$wishlist->save();
-							return response()->json(['status'=>true,'login'=>true,'message'=>'set','alert_message'=>$cartmessage]);
-						}else{
-						    $cartmessage = 'Product remove successfully in wishlist';
-							Wishlist::where([
-								'user_id'=>Auth::user()->id,
-								'product_id' => $data['proid'],
-							])->delete();
-							return response()->json(['status'=>true,'login'=>true,'message'=>'unset','alert_message'=>$cartmessage]);
-						}
-				
-				    }else{
-						$err_message = '';
-						
-						if(!isset($data['size']) || $data['size'] == '' )  { $err_message = 'Select the product size'; }
-						if($data['qty'] == '') { $err_message .= 'Slect the product qty'; }
-						return response()->json(['status'=>false,'login'=>true,'message'=>$err_message]);
-					}
-				
+
+                $checkifExits = Wishlist::where([
+                    'user_id'=>Auth::user()->id,
+                    'product_id' => $data['proid'],
+                ])->count();
+
+                if($checkifExits ==0){
+                    $cartmessage = 'Product added successfully in wishlist';
+                    $wishlist = new Wishlist;
+                    $wishlist->user_id = Auth::user()->id;
+                    $wishlist->product_id = $data['proid'];
+                    //$wishlist->size = $data['size'];
+                    $wishlist->qty = $data['qty'];
+                    $wishlist->save();
+                    return response()->json(['status'=>true,'login'=>true,'message'=>'set','alert_message'=>$cartmessage]);
+                }else{
+                    $cartmessage = 'Product remove successfully in wishlist';
+                    Wishlist::where([
+                        'user_id'=>Auth::user()->id,
+                        'product_id' => $data['proid'],
+                    ])->delete();
+                    return response()->json(['status'=>true,'login'=>true,'message'=>'unset','alert_message'=>$cartmessage]);
+                }
+
             }else{
-                return response()->json(['status'=>false,'login'=>false,'message'=>'Please login','url'=>url('login')]);
+                // Guest wishlist - stored in session, merged into the real
+                // Wishlist table on login (see mergeGuestWishlistToUser()).
+                $guestWishlist = Session::get('guest_wishlist', []);
+
+                if(in_array($data['proid'], $guestWishlist)){
+                    $cartmessage = 'Product remove successfully in wishlist';
+                    $guestWishlist = array_values(array_diff($guestWishlist, [$data['proid']]));
+                    Session::put('guest_wishlist', $guestWishlist);
+                    return response()->json(['status'=>true,'login'=>false,'message'=>'unset','alert_message'=>$cartmessage]);
+                }else{
+                    $cartmessage = 'Product added successfully in wishlist';
+                    $guestWishlist[] = $data['proid'];
+                    Session::put('guest_wishlist', $guestWishlist);
+                    return response()->json(['status'=>true,'login'=>false,'message'=>'set','alert_message'=>$cartmessage]);
+                }
             }
         }
     }
-    public function productdetail(Request $request,$proseo){
+
+    /**
+     * Merges the guest session wishlist into the logged-in user's real
+     * Wishlist rows. Call this right after Auth::login()/Auth::attempt()
+     * succeeds - same point where updatingCartSessionToUser() is already
+     * called for the cart.
+     */
+   
+	public function productdetail(Request $request,$proseo){
         $response = Product::CheckProduct($proseo);
 	
         if($response['status']){
@@ -728,7 +751,12 @@ class ListingController extends Controller
                     $cart = new Cart;
                 }else{ 
                     $cart = Cart::find($checkcart['id']); 
-                    return response()->json(['status'=>false,'type'=>'validation','errors'=>array('This product size has already added in cart')]); die();
+                    if($data['actionType'] == 'buy'){
+					    $url = url('cart');
+					}else{
+						$url = '';
+					}
+					return response()->json(['status'=>false,'type'=>'validation','url'=>$url,'errors'=>array('This product size has already added in cart')]); die();
                 }
                 $cart->session_id = (Auth::check()) ? '' : Session::get('cartsessionId');
                 $cart->product_id = $data['proid'];
@@ -743,8 +771,12 @@ class ListingController extends Controller
                 $cart->save();
                 $totalItems = Cart::totalitems();
 				$cartdata = (String)View::make('front.cart.cart-popup');
-				
-                return response()->json(['status'=>true,'message'=>$message,'totalitems'=>$totalItems,'cartdata'=>$cartdata]);
+			   if($data['actionType'] == 'buy'){
+					$url = url('cart');
+				}else{
+					$url = '';
+				}
+                return response()->json(['status'=>true,'message'=>$message,'url'=>$url,'totalitems'=>$totalItems,'cartdata'=>$cartdata]);
             }else{
                 return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
             }
@@ -1380,9 +1412,8 @@ class ListingController extends Controller
             }
 			
             Session::forget('couponinfo');
-            if(Session::has('pointsinfo')){
-				     
-					 Order::redeemRewardPoints($orderid,Session::get('pointsinfo')['points']);
+            if(Session::has('pointsinfo')){ 
+			  Order::redeemRewardPoints($orderid,Session::get('pointsinfo')['points']);
 			}
 			Session::forget('pointsinfo');
             Session::put('orderid',$orderid);
@@ -1459,13 +1490,7 @@ class ListingController extends Controller
                 }
 				Order::update_stock($orderid);
 				
-				
-				
-				
 				Order::creditRewardPoints($orderid);
-				
-				
-				
 				
                 return redirect()->action([\App\Http\Controllers\Front\ListingController::class, 'thanks']);
             }

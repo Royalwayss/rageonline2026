@@ -93,8 +93,9 @@
                     var modal = bootstrap.Modal.getInstance(modalEl);
                     if (modal) modal.hide();
                     if (typeof RageToast !== 'undefined') {
-                        RageToast.show(data.message, 'fa-location-dot');
+                        //RageToast.show(data.message, 'fa-location-dot');
                     }
+					printSuccessMsg(data.message);
                 }
             }
         });

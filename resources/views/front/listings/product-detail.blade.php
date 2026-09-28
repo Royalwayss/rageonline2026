@@ -103,9 +103,9 @@
                                 <i class="fa-solid fa-shield-halved"></i> Inclusive of all taxes
                             </p>
 
-                            @if(!empty($productdetails['product_description']))
+                            @if(!empty($productdetails['short_description']))
                             <div class="detail-description">
-                               <?php echo  $productdetails['product_description']; ?>
+                               <?php echo  $productdetails['short_description']; ?>
                             </div>
                             @endif
 
@@ -544,7 +544,8 @@
             return false;
         });
 
-        $(document).on("submit", "#save-review", function(e) {
+        $(document).on("submit", "#save-review", function(e) { 
+		
             e.preventDefault();
             $('.PleaseWaitDiv').show();
             var formdata = $("#save-review").serialize();
@@ -578,7 +579,9 @@
                     } else {
                         $("#previewContainer").html('');
                         $('#save-review').trigger('reset');
-                        alert(data.message);
+                        printSuccessMsg(data.message);
+						$('.btn-close').trigger('click');
+						//alert(data.message);
                     }
                 }
             });
