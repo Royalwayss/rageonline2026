@@ -127,94 +127,121 @@ class CustomerController extends Controller
 	
 	public function sendMobileOtp(Request $request){
 
-        $validator = Validator::make($request->all(), [
-                'mobile' => 'bail|required|digits_between:7,15',
-            ]
-        );
+    $validator = Validator::make($request->all(), [
+            'country_code' => 'bail|required',
+            'mobile' => 'bail|required|digits_between:7,15',
+        ]
+    );
 
-        if($validator->passes()) {
+    if($validator->passes()) {
 
-            $mobile = preg_replace('/[^0-9]/', '', $request->mobile);
+        $mobile = preg_replace('/[^0-9]/', '', $request->mobile);
+        $country_code = preg_replace('/[^0-9]/', '', $request->country_code);
 
-            $user = User::where('mobile', $mobile)->first();
+        $user = User::where('mobile', $mobile)->where('country_code', $country_code)->first();
 
-            if(empty($user)){
-                return response()->json(['status'=>false,'type'=>'normal','errors'=>"We couldn't find an account with this mobile number. Please register first."]);
-            }
-
-            if($user->status == 0){
-                return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
-            }
-
-            $otp = mt_rand(100000, 999999);
-            $otp = 123456;
-
-            User::where('id', $user->id)->update(['otp' => $otp]);
-
-            $smsResult = SMS::send($mobile, 'Your Rage login OTP is '.$otp.'. Do not share this with anyone.');
-
-            if(!$smsResult['status']){
-                return response()->json(['status'=>false,'type'=>'normal','errors'=>"We couldn't send the OTP right now. Please try again in a moment."]);
-            }
-
-            return response()->json(['status'=>true,'message'=>'OTP sent to your registered mobile number.']);
-
-        }else{
-            return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
+        if(empty($user)){
+            return response()->json(['status'=>false,'type'=>'normal','errors'=>"We couldn't find an account with this mobile number. Please register first."]);
         }
-    }
 
-    public function verifyMobileOtp(Request $request){
-
-        $validator = Validator::make($request->all(), [
-                'mobile' => 'bail|required|digits_between:7,15',
-                'otp'    => 'bail|required|digits:6',
-            ]
-        );
-
-        if($validator->passes()) {
-
-            $mobile = preg_replace('/[^0-9]/', '', $request->mobile);
-
-            if(Auth::check()){
-                return response()->json(['status'=>false,'type'=>'normal','errors'=>"We are sorry! Multiple Login not allowed."]);
-            }
-
-            $user = User::where('mobile', $mobile)->where('otp', $request->otp)->first();
-
-            if(empty($user)){
-                return response()->json(['status'=>false,'type'=>'normal','errors'=>"Invalid or expired OTP. Please try again."]);
-            }
-
-            if($user->status == 0){
-                return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
-            }
-
-            Auth::login($user);
-
-            // one-time use - clear it once consumed
-            User::where('id', $user->id)->update(['otp' => null]);
-
-            $this->updatingCartSessionToUser();
-            $this->mergeGuestWishlistToUser();
-
-            if(Session::has('previousurl')){
-                $redirectTo = Session::get('previousurl');
-                Session::forget('previousurl');
-            }else{
-                $redirectTo = url('/');
-            }
-
-            User::where('id', Auth::user()->id)->update(['user_accound_status'=>'1']);
-
-            return response()->json(['status'=>true,'message'=>'Login successfully. It will automatically redirected','url'=>$redirectTo]);
-
-        }else{
-            return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
+        if($user->status == 0){
+            return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
         }
-    }
-	
 
+        $otp = mt_rand(100000, 999999); 
+
+        Session::put('mobile_otp_verification', [
+            'otp'          => $otp,
+            'mobile'       => $mobile,
+            'country_code' => $country_code,
+            'user_id'      => $user->id,
+            'expires_at'   => now()->addMinutes(5),
+        ]);
+
+        $sms_text = 'Your OTP for login is '.$otp.' This code is valid for 5 minutes. Please do not share this OTP with anyone. Thank You RAGE KNIT';
+
+        $sms_mobile = $country_code.''.$mobile;
+
+        $smsResult = SMS::send($sms_mobile, $sms_text);
+
+        if(!$smsResult['status']){
+            return response()->json(['status'=>false,'type'=>'normal','errors'=>"We couldn't send the OTP right now. Please try again in a moment."]);
+        }
+
+        return response()->json(['status'=>true,'message'=>'OTP sent to your registered mobile number.']);
+
+    }else{
+        return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
+    }
+  }
+
+		public function verifyMobileOtp(Request $request){
+
+			$validator = Validator::make($request->all(), [
+					'mobile' => 'bail|required|digits_between:7,15',
+					'otp'    => 'bail|required|digits:6',
+				]
+			);
+
+			if($validator->passes()) {
+
+				$mobile = preg_replace('/[^0-9]/', '', $request->mobile);
+
+				if(Auth::check()){
+					return response()->json(['status'=>false,'type'=>'normal','errors'=>"We are sorry! Multiple Login not allowed."]);
+				}
+
+				$otpSession = Session::get('mobile_otp_verification');
+
+				if(empty($otpSession) || $otpSession['mobile'] !== $mobile){
+					return response()->json(['status'=>false,'type'=>'normal','errors'=>"Invalid or expired OTP. Please try again."]);
+				}
+
+				if(now()->greaterThan($otpSession['expires_at'])){
+					Session::forget('mobile_otp_verification');
+					return response()->json(['status'=>false,'type'=>'normal','errors'=>"This OTP has expired. Please request a new one."]);
+				}
+
+				if((string) $otpSession['otp'] !== (string) $request->otp){
+					return response()->json(['status'=>false,'type'=>'normal','errors'=>"Invalid or expired OTP. Please try again."]);
+				}
+
+				$user = User::find($otpSession['user_id']);
+
+				if(empty($user)){
+					return response()->json(['status'=>false,'type'=>'normal','errors'=>"Invalid or expired OTP. Please try again."]);
+				}
+
+				if($user->status == 0){
+					return response()->json(['status'=>false,'type'=>'normal','errors'=>"Your account is deactivated by system administrator"]);
+				}
+
+				Auth::login($user);
+
+				// one-time use - clear it once consumed
+				Session::forget('mobile_otp_verification');
+
+				$this->updatingCartSessionToUser();
+				$this->mergeGuestWishlistToUser();
+
+				if(Session::has('previousurl')){
+					$redirectTo = Session::get('previousurl');
+					Session::forget('previousurl');
+				}else{
+					$redirectTo = url('/');
+				}
+
+				User::where('id', Auth::user()->id)->update(['user_accound_status'=>'1']);
+
+				return response()->json(['status'=>true,'message'=>'Login successfully. It will automatically redirected','url'=>$redirectTo]);
+
+			}else{
+				return response()->json(['status'=>false,'type'=>'validation','errors'=>$validator->messages()]);
+			}
+		}
+		
+		
+		
     public function signup(Request $request){
         if($request->ajax()){
 			
@@ -653,7 +680,19 @@ class CustomerController extends Controller
             if($validator->passes()) {
                 //Update user info
                 $user = User::find(Auth::user()->id);
-				$user->update($data);
+				
+				
+				$update_data['name']  = $data['name'];
+				$update_data['country']  = $data['country'];
+				$update_data['country_code']  = $data['country_code'];
+				$update_data['country_code2']  = $data['country_code2'];
+				$update_data['mobile']  = $data['mobile'];
+				$update_data['alternative_number']  = $data['alternative_number'];
+				$update_data['state']  = $data['state'];
+				$update_data['city']  = $data['city'];
+				$update_data['postcode']  = $data['postcode'];
+				$update_data['address']  = $data['address']; 
+				$user->update($update_data); 
 				
 				    $billingAddress =BillingAddress::where('user_id',Auth::user()->id)->where('is_default','yes')->first();
 					if(empty($billingAddress)){
@@ -668,7 +707,9 @@ class CustomerController extends Controller
 						$billingAddress->alternative_number =$data['billing_alternative_number'];
 						$billingAddress->postcode =$data['billing_postcode'];
 						$billingAddress->address =$data['billing_address'];
-						$billingAddress->country ='India';
+						$billingAddress->country =$data['billing_country'];
+						$billingAddress->country_code1 =$data['billing_country_code'];
+						$billingAddress->country_code2 =$data['billing_country_code2'];
 						$billingAddress->state =$data['billing_state'];
 						$billingAddress->city =$data['billing_city']; 
 						$billingAddress->save();

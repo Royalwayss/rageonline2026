@@ -1376,6 +1376,8 @@ class ListingController extends Controller
 					'billing_address'=>$billingAddress->address,
 					'billing_address2'=>$billingAddress->address2,
 					'billing_country'=>$billingAddress->country,
+					'billing_country_code1'=>$billingAddress->country_code1,
+					'billing_country_code2'=>$billingAddress->country_code2,
 					'billing_state'=>$billingAddress->state,
 					'billing_city'=>$billingAddress->city,
 					
@@ -1388,6 +1390,8 @@ class ListingController extends Controller
 					'shipping_address'=>$shippingAddress->address,
 					'shipping_address2'=>'',
 					'shipping_country'=>$shippingAddress->country,
+					'shipping_country_code1'=>$shippingAddress->country_code1,
+					'shipping_country_code2'=>$shippingAddress->country_code2,
 					'shipping_state'=>$shippingAddress->state,
 					'shipping_city'=>$shippingAddress->city,
 					'company_name'=>$shippingAddress->company_name,

@@ -1,6 +1,12 @@
 @extends('layouts.frontLayout.front-layout')
 @section('content')
+@if($slug=="dashboard" || $slug=="address")
+<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/country-phone.css') }}">
 
+<!-- after jQuery, at the bottom -->
+
+@endif
 <main class="inner-page">
     <section class="account-page">
         <div class="container-fluid">

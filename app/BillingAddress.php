@@ -9,7 +9,7 @@ class BillingAddress extends Model
 {
     //
 	protected $fillable = [
-        'user_id','name','first_name','last_name','mobile','alternative_number','country','state','city','postcode','address','address2','company_name','gstin','is_default'
+        'user_id','name','first_name','last_name','mobile','alternative_number','country','country_code1','country_code2','state','city','postcode','address','address2','company_name','gstin','is_default'
     ];
 	
 	public function user()

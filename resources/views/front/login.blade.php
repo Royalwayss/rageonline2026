@@ -1,6 +1,9 @@
 @extends('layouts.frontLayout.front-layout')
 @section('content')
 
+<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/country-phone.css') }}">
+
 <main class="inner-page">
     <section class="auth-page">
         <div class="container">
@@ -92,13 +95,21 @@
                         <form action="javascript:;" id="SendOtpForm">
                             @csrf
 
+                            <?php $countries = \App\GeoCountry::getcountries(); ?>
+
                             <div class="form-field">
                                 <label>Mobile Number</label>
 
-                                <div class="mobile-input">
-                                    <span>+91</span>
+                                <div class="rage-phone-group">
+                                    <select name="country_code" id="otp_country_code" class="rage-phone-code">
+                                        @foreach($countries as $country)
+                                        @if(!empty($country['phone_code']))
+                                        <option value="{{ $country['phone_code'] }}" @if($country['name'] === 'India') selected @endif>+{{ $country['phone_code'] }}</option>
+                                        @endif
+                                        @endforeach
+                                    </select>
 
-                                    <input type="tel" class="form-control" name="mobile" id="otp_mobile" placeholder="Enter mobile number" maxlength="10">
+                                    <input type="tel" class="form-control rage-phone-number" name="mobile" id="otp_mobile" placeholder="Enter mobile number" maxlength="10">
                                 </div>
                                 <div class="err" id="OtpSend-mobile"></div>
                             </div>
@@ -114,9 +125,10 @@
                         <form action="javascript:;" id="VerifyOtpForm" class="otp-area" style="display:none;">
                             @csrf
                             <input type="hidden" name="mobile" id="verify_mobile">
+                            <input type="hidden" name="country_code" id="verify_country_code">
 
                             <div class="otp-mobile-display">
-                                <span>OTP sent to +91 <strong id="otpMobileDisplay"></strong></span>
+                                <span>OTP sent to +<strong id="otpCodeDisplay"></strong> <strong id="otpMobileDisplay"></strong></span>
                                 <a href="javascript:;" id="editMobileBtn">Edit</a>
                             </div>
 
@@ -161,6 +173,7 @@
 </main>
 
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js') }}"></script>
+<script src="{{ asset('assets/js/select2.min.js') }}"></script>
 
 <script>
     function togglePassVisibility(id, btn) {
@@ -174,6 +187,11 @@
             icon.className = 'fa-regular fa-eye';
         }
     }
+
+    $('#otp_country_code').select2({
+        width: '70px',
+        minimumResultsForSearch: 0
+    });
 
     $(document).ready(function() {
         $("#SignInForm").submit(function(e) {
@@ -271,7 +289,9 @@
                         }
                     } else {
                         $('#verify_mobile').val($('#otp_mobile').val());
+                        $('#verify_country_code').val($('#otp_country_code').val());
                         $('#otpMobileDisplay').text($('#otp_mobile').val());
+                        $('#otpCodeDisplay').text($('#otp_country_code').val());
                         $('#SendOtpForm').hide();
                         $('#VerifyOtpForm').show();
                         $('.otp-digit').val('');

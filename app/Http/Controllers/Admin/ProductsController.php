@@ -244,6 +244,7 @@ class ProductsController extends Controller
             $product->product_price = $data['product_price'];
             $product->special_price = $data['special_price'];
             $product->fabric_description = $data['fabric_description'];
+            $product->short_description = $data['short_description'];
          
 			$getcatdetails = Category::where('id',$data['category_id'])->first();
 			

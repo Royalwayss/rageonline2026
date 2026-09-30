@@ -1,5 +1,6 @@
 @extends('layouts.frontLayout.front-layout')
 @section('content')
+<link rel="stylesheet" href="{{ asset('assets/css/country-phone.css') }}">
 <?php
     use App\CustomFunction;
     use App\Cart;
@@ -42,6 +43,7 @@
     font-size: 13px;
     margin-top: 6px;
 }
+
 </style>
 
 <main class="inner-page">
@@ -216,6 +218,7 @@
 @section('javascript')
 @parent
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
+<script src="{{ asset('assets/js/address-country-phone-2.js') }}?v=2.6"></script>
 <script>
 
     // Address book - real AJAX wiring
@@ -225,19 +228,26 @@
         $(this).find('input[type=radio]').prop('checked', true);
     });
 
-    function loadAddressForm(type, id) {
-        $('.PleaseWaitDiv').show();
-        $.ajax({
-            url: '/address/form/' + type + '/' + id,
-            type: 'GET',
-            success: function(html) {
-                $('.PleaseWaitDiv').hide();
-                $('#addressModalContent').html(html);
-                var modal = new bootstrap.Modal(document.getElementById('addressModal'));
-                modal.show();
-            }
-        });
-    }
+     function loadAddressForm(type, id) {
+    $('.PleaseWaitDiv').show();
+    $.ajax({
+        url: '/address/form/' + type + '/' + id,
+        type: 'GET',
+        success: function(html) {
+            $('.PleaseWaitDiv').hide();
+            $('#addressModalContent').html(html);
+
+            // Country + phone-code dropdowns: set up once, here, by address-country-phone.js.
+            // It also handles Billing when it is revealed later by the "same as
+            // shipping" checkbox, so nothing else needs to call it again.
+            AddressCountryPhone.init($('#addressModalContent'));
+
+            var modal = new bootstrap.Modal(document.getElementById('addressModal'));
+            modal.show();
+        }
+    });
+}
+
 
     $(document).on('change', '#billingSame', function() {
         if ($(this).is(':checked')) {

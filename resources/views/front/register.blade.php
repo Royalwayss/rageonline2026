@@ -61,7 +61,7 @@
                                     <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] == 'India') selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
                                 @endforeach
                             </select>
-                            <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="10-digit mobile number">
+                            <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="Enter the mobile number">
                         </div>
                         <div class="err" id="Register-mobile"></div>
                     </div>

@@ -24,6 +24,7 @@ use App\Notifies;
 use App\FranchiseEnquiry;
 use App\ProductReview;
 use App\Wishlist;
+use App\SMS;
 use App\CustomFunction;
 use Redirect;
 use DB;
@@ -38,6 +39,8 @@ class IndexController extends Controller
     }
     //
    public function index(){ 
+		
+		
 		$catseo = 'home';
     	$title="Winter Dresses  Online - Buy Women Kurtis, Cardigans, Knitted Tops, Kaftans, Sweaters, Jackets, Coats, Stoles, Capes & Ponchos | Rage";
     	$metakeywords ="women jackets, women cardigans, women sweaters, women capes, women ponchos, ladies kurtis, woolen kurtis, women winter clothing, women clothing online, knitted tops";

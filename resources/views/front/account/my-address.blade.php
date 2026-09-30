@@ -39,6 +39,7 @@
 @section('javascript')
 @parent
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
+<script src="{{ asset('assets/js/address-country-phone-2.js') }}?v=2.1"></script>
 <script>
     $(document).on('click', '.saved-address-card', function() {
         $('.saved-address-card').removeClass('active');
@@ -46,19 +47,25 @@
         $(this).find('input[type=radio]').prop('checked', true);
     });
 
-    function loadAddressForm(type, id) {
-        $('.PleaseWaitDiv').show();
-        $.ajax({
-            url: '/address/form/' + type + '/' + id,
-            type: 'GET',
-            success: function(html) {
-                $('.PleaseWaitDiv').hide();
-                $('#addressModalContent').html(html);
-                var modal = new bootstrap.Modal(document.getElementById('addressModal'));
-                modal.show();
-            }
-        });
-    }
+    function loadAddressForm(type, id) { 
+    $('.PleaseWaitDiv').show();
+    $.ajax({
+        url: '/address/form/' + type + '/' + id,
+        type: 'GET',
+        success: function(html) {
+            $('.PleaseWaitDiv').hide();
+            $('#addressModalContent').html(html);
+
+            // Country + phone-code dropdowns: set up once, here, by address-country-phone.js.
+            // It also handles Billing when it is revealed later by the "same as
+            // shipping" checkbox, so nothing else needs to call it again.
+            AddressCountryPhone.init($('#addressModalContent'));
+
+            var modal = new bootstrap.Modal(document.getElementById('addressModal'));
+            modal.show();
+        }
+    });
+}
 
     $(document).on('change', '#billingSame', function() {
         if ($(this).is(':checked')) {

@@ -16,20 +16,15 @@ class SMS
      */
     public static function send($mobile, $message)
     {
-        
-		return [
-                'status'   => true,
-                'response' => true,
-            ];
-		
-		
-		
-		exit;
+       
 		
 		$authKey = env('STEVIA_SMS_AUTH_KEY');
-        $senderId = env('STEVIA_SMS_SENDER_ID');
+        $senderId = env('STEVIA_SMS_SENDER_ID'); 
 
-        if (empty($authKey) || empty($senderId)) {
+         $message = urlencode($message); 
+		
+		
+		if (empty($authKey) || empty($senderId)) {
             Log::error('Stevia SMS: STEVIA_SMS_AUTH_KEY or STEVIA_SMS_SENDER_ID not set in .env');
             return ['status' => false, 'response' => 'SMS gateway not configured.'];
         }
@@ -37,7 +32,7 @@ class SMS
         // Normalise to 91XXXXXXXXXX if a bare 10-digit number was passed in
         $msisdn = preg_replace('/[^0-9]/', '', $mobile);
         if (strlen($msisdn) == 10) {
-            $msisdn = '91'.$msisdn;
+            //$msisdn = '91'.$msisdn;
         }
 
         try {

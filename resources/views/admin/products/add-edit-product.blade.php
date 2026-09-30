@@ -270,6 +270,16 @@ use App\Productcolor;
 								    
 									<div class="clearfix"></div>
 									
+									  <div class="form-group ">
+                                    <label class="col-md-3 control-label">Short Description :</label>
+                                    <div class="col-md-9">
+                                        <textarea name="short_description" style="width:100%">@if(!empty($productdata['short_description'])) {{$productdata['short_description']}} @endif</textarea>
+                                    </div>
+                                </div> 
+									
+									
+									<div class="clearfix"></div>
+									
                                  <div class="form-group col-md-6">
                                     <label class="col-md-6 control-label">Fabric :</label>
                                     <div class="col-md-6">

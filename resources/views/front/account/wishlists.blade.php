@@ -6,7 +6,8 @@
         <span>/</span>
         <span>Wishlist</span>
     </div>
-    <h1 id="wishlistsItemsCount">My Curated Wishlist ({{ count($wishlists) }} {{ count($wishlists) == 1 ? 'Item' : 'Items' }})</h1>
+   <?php /* <h1 id="wishlistsItemsCount">My Curated Wishlist ({{ count($wishlists) }} {{ count($wishlists) == 1 ? 'Item' : 'Items' }})</h1> */ ?>
+    <h1 id="wishlistsItemsCount">My Curated Wishlist</h1>
 </div>
 
 @if(Session::has('flash_message_success'))
@@ -141,7 +142,7 @@
                         $(this).remove();
 
                         var remaining = $('.wishlist-card').length;
-                        $('#wishlistsItemsCount').text('My Curated Wishlist (' + remaining + ' ' + (remaining == 1 ? 'Item' : 'Items') + ')');
+                        //$('#wishlistsItemsCount').text('My Curated Wishlist (' + remaining + ' ' + (remaining == 1 ? 'Item' : 'Items') + ')');
                          printSuccessMsg(data.message);
                        
                     });
