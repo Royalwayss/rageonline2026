@@ -127,27 +127,7 @@
                                 @include('front.checkout.order_summary')
                             </div>
 
-                            <div id="points-redemption-box" @if(empty($availablePoints)) style="display:none;" @endif>
-                                <?php
-                                    if (Session::has('pointsinfo')) {
-                                        $currently_availablePoints = $availablePoints - Session::get('pointsinfo')['points'];
-                                    } else {
-                                        $currently_availablePoints = $availablePoints;
-                                    }
-                                ?>
-                                <p id="available-points-text">
-                                    💰 You have <span id="currently_availablePoints"><strong>{{ $currently_availablePoints ?? 0 }}</strong></span> Reward Points available
-                                </p>
-
-                                @if(($availablePoints ?? 0) > 0)
-                                <div class="points-redeem-row">
-                                    <input type="number" id="points_to_redeem" name="points_to_redeem" min="0" max="{{ $availablePoints }}" placeholder="Enter points to redeem" class="form-control" @if(Session::has('pointsinfo')) value="{{ Session::get('pointsinfo')['points'] }}" @endif>
-                                    <button type="button" id="ApplyPoints" @if(Session::has('pointsinfo')) style="display:none;" @endif class="btn btn-outline-dark btn-sm">Apply</button>
-                                    <button type="button" id="RemovePoints" class="btn btn-link btn-sm" @if(!Session::has('pointsinfo')) style="display:none;" @endif>Remove</button>
-                                </div>
-                                <div id="Address-points_to_redeem" class="points-err"></div>
-                                @endif
-                            </div>
+                           
 
                             <!-- PAYMENT -->
                             <div class="checkout-payment">
@@ -350,59 +330,8 @@
         });
     });
 
-    // Points redemption - Apply
-    $('#ApplyPoints').click(function() {
-        var pointsToRedeem = parseInt($('#points_to_redeem').val()) || 0;
-        var payment_mode = $('input[name=paymentMode]:checked').val();
-
-        if (!payment_mode) { payment_mode = ''; }
-
-        var availablePoints = {{ $availablePoints ?? 0 }};
-
-        $('.points-err').html('');
-
-        $('.PleaseWaitDiv').show();
-        $.ajax({
-            url: '/apply-points',
-            type: 'POST',
-            data: { _token: "{{ csrf_token() }}", points: pointsToRedeem, payment_mode: payment_mode },
-            success: function(res) {
-                $('.PleaseWaitDiv').hide();
-                if (res.status) {
-                    $("#order_summary").html(res.order_summary);
-                    $('#Address-points_to_redeem').html('<span style="color:green">' + res.message + '</span>');
-                    $('#ApplyPoints').hide();
-                    $('#RemovePoints').show();
-                } else {
-                    $('#Address-points_to_redeem').html('<span style="color:red">' + res.message + '</span>');
-                }
-            }
-        });
-    });
-
-    // Points redemption - Remove
-    $('#RemovePoints').click(function() {
-        $('.PleaseWaitDiv').show();
-
-        var payment_mode = $('input[name=paymentMode]:checked').val();
-        if (!payment_mode) { payment_mode = ''; }
-
-        $.ajax({
-            url: '/remove-points',
-            type: 'POST',
-            data: { _token: "{{ csrf_token() }}", payment_mode: payment_mode },
-            success: function(res) {
-                $('.PleaseWaitDiv').hide();
-                $("#order_summary").html(res.order_summary);
-                $('#Address-points_to_redeem').html('<span style="color:green">' + res.message + '</span>');
-                $('#points_to_redeem').val('').prop('disabled', false);
-                $('#ApplyPoints').show();
-                $('#RemovePoints').hide();
-            }
-        });
-    });
-
-    $('#PlaceOrder').click(function() {
+  
+	$('#PlaceOrder').click(function() {
         $('.PleaseWaitDiv').show();
         var formdata = $("#OrderPlace").serialize();
         $.ajax({

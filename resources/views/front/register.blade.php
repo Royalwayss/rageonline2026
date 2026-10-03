@@ -199,7 +199,10 @@
     }
 
     $(document).ready(function() {
-        $("#RegisterForm").submit(function(e) {
+        $('#mobile').on('input', function() {
+			this.value = this.value.replace(/[^0-9]/g, '');
+		});
+		$("#RegisterForm").submit(function(e) {
             e.preventDefault();
             $('.PleaseWaitDiv').show();
             var formdata = $("#RegisterForm").serialize();

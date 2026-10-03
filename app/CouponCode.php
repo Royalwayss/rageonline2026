@@ -171,11 +171,11 @@ class CouponCode extends Model
         }
         $catids = array_unique($catids);
         $producttotal = array_sum($priceArr);
-        $coupons = CouponCode::where('expiry_date','>=',date('Y-m-d'))
-                            ->where('min_qty','<=',$totalitems)
+		/*->where('min_qty','<=',$totalitems)
                             ->where('max_qty','>=',$totalitems)
                             ->where('min_amount','<=',$producttotal)
-                            ->where('max_amount','>=',$producttotal)
+                            ->where('max_amount','>=',$producttotal) */
+        $coupons = CouponCode::where('expiry_date','>=',date('Y-m-d'))
                             ->where('status',1)
                             ->where('visible',1)
                             ->where(function ($q) {

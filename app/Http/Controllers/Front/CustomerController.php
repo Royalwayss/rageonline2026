@@ -279,10 +279,10 @@ class CustomerController extends Controller
 		
             $validator = Validator::make($validation_data, [
                     'first_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-                    'mobile'=>'required|numeric|digits_between:7,15',
+                    'mobile'=>'required|numeric|digits_between:7,15|unique:users,mobile',
                     'email' => 'required|string|regex:/^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i|max:255|unique:users',
                     'password' => 'required|string|min:6',
-                    /*'password_confirmation' => 'required|string|min:6',*/
+                    'password_confirmation' => 'required|string|min:6|same:password',
                 ],
                 [
                     'first_name.required' => 'Enter your first name.',
@@ -290,11 +290,15 @@ class CustomerController extends Controller
                     'mobile.required' => 'Enter a valid mobile number.',
                     'mobile.numeric' => 'Enter a valid mobile number.',
                     'mobile.digits_between' => 'Mobile number must be between 7 and 15 digits.',
+                    'mobile.unique' => 'An account with this mobile number already exists.',
                     'email.required' => 'Enter your email address.',
                     'email.regex' => 'This email is not a valid email address',
                     'email.unique' => 'An account with this email already exists.',
                     'password.required' => 'Enter a password.',
                     'password.min' => 'Password must be at least 6 characters.',
+                    'password_confirmation.required' => 'Please confirm your password.',
+                    'password_confirmation.min' => 'Password confirmation must be at least 6 characters.',
+                    'password_confirmation.same' => 'Passwords do not match.',
                 ]);
             if($validator->passes()) {
                 $data = $request->all();

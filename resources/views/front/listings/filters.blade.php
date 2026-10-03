@@ -17,8 +17,7 @@
                     @if(!empty($category['subcategories']))
                         @foreach($category['subcategories'] as $subcategory)
                             <label class="filter-check">
-                                <input type="checkbox" name="category[]" onclick="window.location.href='{{ $subcategory['seo_unique'] }}'" value="{{ $subcategory['seo_unique'] }}">
-                                <span>{{ $subcategory['name'] }}</span>
+                                <a href="{{ url($subcategory['seo_unique']) }}">{{ $subcategory['name'] }}</a>
                             </label>
                         @endforeach
                     @endif

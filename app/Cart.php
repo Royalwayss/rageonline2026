@@ -173,6 +173,16 @@ class Cart extends Model
 		
 		*/
 		
+		
+		if(Session::has('pointsinfo')){
+			
+			$amount_redeemed =  Session::get('pointsinfo')['amount']; 
+            $points_redeemed =  Session::get('pointsinfo')['points'];   
+		}else{
+			$amount_redeemed  = $points_redeemed = 0;
+		}
+		
+		
 		$subtotal_after_coupon_discount = $subtotal;
 		$order_discount_percentage =0;
 		
@@ -181,14 +191,14 @@ class Cart extends Model
 		if($mode == 'phonepe' || $mode == 'ccavenue' || $mode == 'razorpay' ){
 		    $prepaid_discount_percentage =5;
 			
-			$subtotal_after_order_discount = $subtotal - $total_order_discount; 
+			$subtotal_after_order_discount = $subtotal - $total_order_discount -$points_redeemed; 
 			$prepaid_discount = ($subtotal_after_order_discount/100) * $prepaid_discount_percentage; 
 		    
 			$total_order_discount += $prepaid_discount;
 			$grandtotal = $subtotal - $total_order_discount;
 		}else{
 			$prepaid_discount_percentage = 0;
-			$subtotal_after_order_discount = $subtotal- $total_order_discount;
+			$subtotal_after_order_discount = $subtotal- $total_order_discount - $points_redeemed;
 			
 			
 			$grandtotal = $subtotal - $total_order_discount;
@@ -201,19 +211,13 @@ class Cart extends Model
 		
 		
 		
-		if(Session::has('pointsinfo')){
-			
-			$amount_redeemed =  Session::get('pointsinfo')['amount']; 
-            $points_redeemed =  Session::get('pointsinfo')['points'];   
-		}else{
-			$amount_redeemed  = $points_redeemed = 0;
-		}
 		
 		
 		
 		
 		
 		
+		$grandtotal = $grandtotal - $amount_redeemed; 
         $grandtotal = $grandtotal + $shipping;
 		$final_grandtotal = round($grandtotal);
 		$adjustment = $final_grandtotal - $grandtotal;

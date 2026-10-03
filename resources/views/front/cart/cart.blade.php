@@ -159,6 +159,75 @@
         });
 
     });
+	
+	
+	
+
+			// Points redemption - Apply
+		$(document).on('click', '#ApplyPoints', function() {
+			var pointsToRedeem = parseInt($('#points_to_redeem').val()) || 0;
+			var payment_mode = $('input[name=paymentMode]:checked').val();
+
+			if (!payment_mode) { payment_mode = ''; }
+
+			var availablePoints = {{ $availablePoints ?? 0 }};
+
+			$('.points-err').html('');
+
+			$('.PleaseWaitDiv').show();
+			$.ajax({
+				url: '/apply-points',
+				type: 'POST',
+				data: { _token: "{{ csrf_token() }}", points: pointsToRedeem, payment_mode: payment_mode },
+				success: function(res) {
+					$('.PleaseWaitDiv').hide();
+					if (res.status) {
+						//$("#order_summary").html(res.order_summary);
+						$('#AppendCartDetails').html(res.view);
+						$('#Address-points_to_redeem').html('<span style="color:green">' + res.message + '</span>');
+						
+						$('#ApplyPoints').hide();
+						$('#RemovePoints').show();
+					} else {
+						
+						$('#Address-points_to_redeem').html('<span style="color:red">' + res.message + '</span>');
+					}
+				}
+			});
+		});
+
+	// Points redemption - Remove
+	$(document).on('click', '#RemovePoints', function() {
+		$('.PleaseWaitDiv').show();
+
+		var payment_mode = $('input[name=paymentMode]:checked').val();
+		if (!payment_mode) { payment_mode = ''; }
+
+		$.ajax({
+			url: '/remove-points',
+			type: 'POST',
+			data: { _token: "{{ csrf_token() }}", payment_mode: payment_mode },
+			success: function(res) {
+				$('.PleaseWaitDiv').hide();
+				//$("#order_summary").html(res.order_summary);
+				$('#AppendCartDetails').html(res.view);
+				$('#Address-points_to_redeem').html('<span style="color:green">' + res.message + '</span>');
+				$('#points_to_redeem').val('').prop('disabled', false);
+				
+				$('#ApplyPoints').show();
+				$('#RemovePoints').hide();
+			}
+		});
+	});
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
     $(document).on('click', '#GuestLogin', function() {
         $('#GuestLoginModel').modal('show');

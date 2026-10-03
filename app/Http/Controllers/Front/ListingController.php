@@ -37,12 +37,19 @@ class ListingController extends Controller
     	$title ="Cart";
     	$metakeywords ="";
     	$metadescription="";
-        $cartitems = Cart::cartitems(); 
+        $cartitems = Cart::cartitems(); //pd(Cart::cartdetails($cartitems));
         Session::forget('previousurl');
         Session::put('previousurl',"/cart");
 		$catseo = 'addtocart';
 		$page = 'cart'; 
-    	return view('front.cart.cart')->with(compact('title','metakeywords','metadescription','cartitems','catseo','page'));
+		if(Auth::check()){
+		$user  = User::where('id',Auth()->user()->id)->first();
+		   $availablePoints = $user->loyalty_points;
+    	}else{
+			$availablePoints = 0;
+		}
+		
+		return view('front.cart.cart')->with(compact('title','metakeywords','metadescription','availablePoints','cartitems','catseo','page'));
     }
 
     public function productlisting(Request $request){
@@ -692,7 +699,7 @@ class ListingController extends Controller
 	 }
 	 public function get_order_summery(Request $request){
 		 $data =  $request->all(); 
-		$cartitems = Cart::cartitems();
+		$cartitems = Cart::cartitems(); 
         $cartPricing = Cart::cartdetails($cartitems,@$data['paymode']);
 		$order_summary =  (String)View::make('front.checkout.order_summary')->with(compact('cartPricing','cartitems'));
 		return response()->json(['status'=>true,'order_summary'=>$order_summary]);
@@ -746,7 +753,7 @@ class ListingController extends Controller
                     $session_id = Session::getId();
                     Session::put('cartsessionId',$session_id);
                 }
-                $message = array('Product added successfully in cart');
+                $message = array('Product added successfully in cart. <a href="'.url('cart').'">View Cart</a>');
                 if(empty($checkcart)){
                     $cart = new Cart;
                 }else{ 
@@ -836,38 +843,61 @@ class ListingController extends Controller
             $cartDetails = Cart::find($data['cartid']);
             if(!$cartDetails){
                 $cartitems = Cart::cartitems();
-                return response()->json([
+                
+				$availablePoints = 0;
+				if(Auth::check()){
+					$user  = User::where('id',Auth()->user()->id)->first();
+					$availablePoints = $user->loyalty_points;
+				}
+				
+				
+				return response()->json([
                     'status'=>false,
                     'message' =>"Cart item already deleted",
-                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems'))
+                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                 ]);
             }
             if($data['qty'] ==0){
                 $cartitems = Cart::cartitems();
-                return response()->json([
+                $availablePoints = 0;
+				if(Auth::check()){
+					$user  = User::where('id',Auth()->user()->id)->first();
+					$availablePoints = $user->loyalty_points;
+				}
+				return response()->json([
                     'status'=>false,
                     'message' =>"Product Qty must be greater than or equal to 1",
-                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems'))
+                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                 ]);
             }
             //check stock
             $checkStockDetails = ProductAttribute::attributeDetail($cartDetails->product_id,$cartDetails->size);
             if($data['qty'] > $checkStockDetails->stock){
                 $cartitems = Cart::cartitems();
-                return response()->json([
+                 $availablePoints = 0;
+				if(Auth::check()){
+					$user  = User::where('id',Auth()->user()->id)->first();
+					$availablePoints = $user->loyalty_points;
+				}
+				return response()->json([
                     'status'=>false,
                     'message' =>"We're sorry! The requested quantity not avialable at this moment.",
-                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems'))
+                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                 ]);
             }
             Session::forget('couponinfo');
             Session::forget('giftSession');
             Cart::where('id',$data['cartid'])->update(['qty'=>$data['qty']]);
             $cartitems = Cart::cartitems();
-            return response()->json([
+             $availablePoints = 0;
+				if(Auth::check()){
+					$user  = User::where('id',Auth()->user()->id)->first();
+					$availablePoints = $user->loyalty_points;
+				}
+			return response()->json([
                 'status'=>true,
                 'message' =>"Quantity has been updated successfully",
-                'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems'))
+                'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
             ]);
         }
     }
@@ -938,30 +968,45 @@ class ListingController extends Controller
                     ]
                 );
                 if($validator->passes()){ 
-                    $response = CouponCode::applycouponcode($data['code']);
+                    $availablePoints = 0;
+					$response = CouponCode::applycouponcode($data['code']);
                     $cartitems = Cart::cartitems();
-                    return response()->json([
+                    if(Auth::check()){
+					$user  = User::where('id',Auth()->user()->id)->first();
+				    $availablePoints = $user->loyalty_points;
+					}
+					return response()->json([
                         'status'=>$response['status'],
                         'message' =>$response['message'],
-                        'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems'))
+                        'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                     ]);
                 }else{
-                    Session::forget('couponinfo');
+                    $availablePoints = 0;
+					Session::forget('couponinfo');
                     $cartitems = Cart::cartitems();
                     $totalItems = count($cartitems);
-                    return response()->json([
+                     if(Auth::check()){
+						$user  = User::where('id',Auth()->user()->id)->first();
+						$availablePoints = $user->loyalty_points;
+					 }
+					return response()->json([
                         'status'=>false,
-                        'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems')),
+                        'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
                         'message' =>'Coupon Code is required'
                     ]);
                 }
             }else{
                 $cartitems = Cart::cartitems();
                 $totalItems = count($cartitems);
-                return response()->json([
+                 $availablePoints = 0;
+				 if(Auth::check()){
+				$user  = User::where('id',Auth()->user()->id)->first();
+				$availablePoints = $user->loyalty_points;
+				 }
+				return response()->json([
                     'status'=>false,
                     'type' =>'login',
-                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems')),
+                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
                     'message' =>'You need to login to apply this coupon'
                 ]);
             }
@@ -969,7 +1014,8 @@ class ListingController extends Controller
     }
 	 public function applyPoints(Request $request){
         if($request->ajax()){
-            if(Auth::check()){
+           
+			if(Auth::check()){
                 $data = $request->all();
                 $validator = Validator::make($request->all(), [
                         'points' => 'bail|required',
@@ -980,7 +1026,12 @@ class ListingController extends Controller
                     $cartitems = Cart::cartitems();
 					$cartPricing = Cart::cartdetails($cartitems,@$data['payment_mode']);
 					$order_summary =  (String)View::make('front.checkout.order_summary')->with(compact('cartPricing','cartitems'));
-					return response()->json(['status'=>$response['status'],'message' =>$response['message'],'order_summary'=>$order_summary]);
+					
+						$user  = User::where('id',Auth()->user()->id)->first();
+						$availablePoints = $user->loyalty_points;
+					 
+					$view = (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'));
+					return response()->json(['status'=>$response['status'],'message' =>$response['message'],'order_summary'=>$order_summary,'view'=>$view]);
                     
                 }else{
                     
@@ -989,7 +1040,10 @@ class ListingController extends Controller
                     $cartitems = Cart::cartitems();
 					$cartPricing = Cart::cartdetails($cartitems,@$data['payment_mode']);
 					$order_summary =  (String)View::make('front.checkout.order_summary')->with(compact('cartPricing','cartitems'));
-					return response()->json(['status'=>false,'message' =>'Enter the points','order_summary'=>$order_summary]);
+					$user  = User::where('id',Auth()->user()->id)->first();
+					$availablePoints = $user->loyalty_points;
+					$view = (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'));
+					return response()->json(['status'=>false,'message' =>'Enter the points','order_summary'=>$order_summary,'view'=>$view]);
 					
                 }
             }else{
@@ -998,7 +1052,13 @@ class ListingController extends Controller
 				    $cartitems = Cart::cartitems();
 					$cartPricing = Cart::cartdetails($cartitems,@$data['payment_mode']);
 					$order_summary =  (String)View::make('front.checkout.order_summary')->with(compact('cartPricing','cartitems'));
-					return response()->json(['status'=>false,'message' =>'You need to login to apply this coupon','order_summary'=>$order_summary]);
+					$availablePoints = 0;
+					if(Auth::check()){
+					$user  = User::where('id',Auth()->user()->id)->first();
+					$availablePoints = $user->loyalty_points;
+					}
+					$view = (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'));
+					return response()->json(['status'=>false,'message' =>'You need to login to apply this coupon','order_summary'=>$order_summary,'view'=>$view]);
 				
 				
 				
@@ -1011,7 +1071,10 @@ class ListingController extends Controller
 			 $cartitems = Cart::cartitems();
 			 $cartPricing = Cart::cartdetails($cartitems,@$data['payment_mode']);
 			 $order_summary =  (String)View::make('front.checkout.order_summary')->with(compact('cartPricing','cartitems'));
-			 return array('status' => false, 'message' => 'Points removed successfully.','order_summary'=>$order_summary);
+			 $user  = User::where('id',Auth()->user()->id)->first();
+			 $availablePoints = $user->loyalty_points;
+			 $view = (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'));
+			 return array('status' => false, 'message' => 'Points removed successfully.','order_summary'=>$order_summary,'view'=>$view);
 		}
 	}
 
@@ -1025,19 +1088,23 @@ class ListingController extends Controller
                 $cart->delete();
                 $cartitems = Cart::cartitems();
                 $totalItems = count($cartitems);
-                return response()->json([
+                $user  = User::where('id',Auth()->user()->id)->first();
+				$availablePoints = $user->loyalty_points;
+				return response()->json([
                     'status'=>true,
                     'message' =>'Cart item has been deleted successfully',
-                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems')),
+                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
                     'totalItems' => $totalItems
                 ]);
             }else{
                 $cartitems = Cart::cartitems();
                 $totalItems = count($cartitems);
-                return response()->json([
+                $user  = User::where('id',Auth()->user()->id)->first();
+				$availablePoints = $user->loyalty_points;
+				return response()->json([
                     'status'=>false,
                     'message' =>'Cart item already deleted',
-                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems')),
+                    'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
                     'totalItems' => $totalItems
                 ]);
             }
@@ -1351,7 +1418,7 @@ class ListingController extends Controller
 				'round_of'=>$cartDetails['round_of'],
 				'amount_redeemed'=>$cartDetails['amount_redeemed'],
 				'points_redeemed'=>$cartDetails['points_redeemed'],
-				'grand_total'=>$cartDetails['final_grandtotal']-$cartDetails['amount_redeemed'],
+				'grand_total'=>$cartDetails['final_grandtotal'],
 				'payment_status'=>$paymentStatus,
 				'order_status'=>$orderstatus,
 				'comments'=>$data['comments'],
@@ -1523,15 +1590,16 @@ class ListingController extends Controller
     }  
 
     public function cancel(Request $request){
-         $data =$request->all();
+         $data =$request->all(); 
 		if(isset($data['id'])){
 			$id = decrypt($data['id']); 
 			Session::put('orderid',$id);
 		}
 		$orderdetails = array();
         if(Session::has('orderid')){
-            $data =$request->all();
-            Order::where('id',Session::get('orderid'))->update(['order_status'=>'Cancelled']);
+            $orderID =  Session::get('orderid'); 
+			Order::creditRewardPointsWhileCancelOrder($orderID);
+            Order::where('id',$orderID)->update(['order_status'=>'Cancelled']);
             $title = "Order Cancelled";
             return view('front.checkout.cancel')->with(compact('title','orderdetails'));
         }else{ 

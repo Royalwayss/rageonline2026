@@ -146,10 +146,36 @@
                 @endif
             </div>
 
-            <div class="summary-row">
+         <?php /*  <div class="summary-row">
                 <span>Qty</span>
                 <strong>{{ $total_cart_qty }}</strong>
-            </div>
+            </div> */ ?>
+			 <?php
+                                    if (Session::has('pointsinfo')) {
+                                        $currently_availablePoints = $availablePoints - Session::get('pointsinfo')['points'];
+                                    } else {
+                                        $currently_availablePoints = $availablePoints;
+                                    }
+              ?>
+			  @if(!empty($currently_availablePoints))
+			  <div class="coupon-box redeem-box">
+                                <label>Redeem Points</label>
+
+                                <div class="redeem-info">
+                                    Available Points: <strong>{{ $currently_availablePoints }}</strong>
+                                </div>
+
+                                <div class="coupon-input">
+                                    <input type="text" id="points_to_redeem" name="points_to_redeem"  placeholder="Enter points to redeem"  >
+                                    <button type="button" id="ApplyPoints" @if(Session::has('pointsinfo')) style="display:none;" @endif >Redeem</button>
+									<button type="button" id="RemovePoints"  @if(!Session::has('pointsinfo')) style="display:none;" @endif>Remove</button>
+                                </div>
+								<div id="Address-points_to_redeem" class="points-err"></div>
+               </div>
+			   @endif
+			
+			
+			
 
             <div class="summary-row">
                 <span>Subtotal</span>
@@ -167,6 +193,18 @@
                 <strong>INR {{ CustomFunction::formatAmt($order_discount) }}</strong>
             </div>
             @endif
+			
+			
+			 
+			
+			<div class="summary-row" @if(Session::has('pointsinfo')) @else style="display:none" @endif>
+                <span>Reward Points</span>
+				@if(Session::has('pointsinfo'))
+                <strong>{{ AmountFormat(Session::get('pointsinfo')['amount']) }}</strong>
+				@endif
+            </div>
+			
+			
 
             <div class="summary-row">
                 <span>Shipping</span>
@@ -179,6 +217,11 @@
                 } else {
                     $tot = CustomFunction::formatAmt(($subtotal + $shipping) - $order_discount);
                 }
+				
+				if(Session::has('pointsinfo')){
+					$tot = $tot - Session::get('pointsinfo')['amount'];
+				}
+				
             ?>
             <div class="summary-total">
                 <span>Total</span>

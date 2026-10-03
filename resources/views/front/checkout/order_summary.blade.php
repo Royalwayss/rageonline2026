@@ -63,10 +63,8 @@ $subtotal = 0;
         <small>Inclusive of all taxes</small>
     </span>
     <strong class="grandtotal_amount">
-        @if(Session::has('pointsinfo'))
-            {{ AmountFormat($cartPricing['final_grandtotal'] - Session::get('pointsinfo')['amount']) }}
-        @else
+        
             {{ AmountFormat($cartPricing['final_grandtotal']) }}
-        @endif
+       
     </strong>
 </div>

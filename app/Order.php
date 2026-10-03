@@ -228,6 +228,45 @@ class Order extends Model
 				'description' => 'Redeemed on Order #' . $orderId,
 			]); 
 		}
+		
+		
+		
+		
+		
+		 public static function creditRewardPointsWhileCancelOrder($orderId){ 
+		  
+		
+			$order = Order::with(['order_products'])->where('id', $orderId)->first();
+			
+			if($order['payment_method'] == 'razorpay' && !empty($order['points_redeemed'])){
+			
+			
+				$orderTotal = $order['grand_total'];
+				
+				$userId = $order['user_id'];
+				
+				$points = $order['points_redeemed'];
+				
+				User::where('id', $userId)->increment('loyalty_points', $points);
+
+				
+				$insert_logs = [
+					'user_id'     => $userId,
+					'order_id'    => $orderId,
+					'points'      => $points,
+					'type'        => 'return',
+					'description' => 'Return Reward points for Order #' . $orderId,
+				]; 
+				
+				LoyaltyPointLog::insert($insert_logs);
+			
+			}
+		
+		
+		}
+		
+		
+		
 	 
 	 
 	 

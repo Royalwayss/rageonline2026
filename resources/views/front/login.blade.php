@@ -1,8 +1,21 @@
 @extends('layouts.frontLayout.front-layout')
 @section('content')
 
-<link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/country-phone.css') }}">
+<style>
+    /* Fixed, non-editable +91 prefix - this page only (OTP login is India-only) */
+    .rage-phone-code-fixed {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        padding: 0 12px;
+        border-right: 1px solid #d8d0c5;
+        font-size: 14px;
+        color: #2b2b2b;
+        background: transparent;
+        user-select: none;
+    }
+</style>
 
 <main class="inner-page">
     <section class="auth-page">
@@ -101,13 +114,8 @@
                                 <label>Mobile Number</label>
 
                                 <div class="rage-phone-group">
-                                    <select name="country_code" id="otp_country_code" class="rage-phone-code">
-                                        @foreach($countries as $country)
-                                        @if(!empty($country['phone_code']))
-                                        <option value="{{ $country['phone_code'] }}" @if($country['name'] === 'India') selected @endif>+{{ $country['phone_code'] }}</option>
-                                        @endif
-                                        @endforeach
-                                    </select>
+                                    <span class="rage-phone-code-fixed">+91</span>
+                                    <input type="hidden" name="country_code" id="otp_country_code" value="91">
 
                                     <input type="tel" class="form-control rage-phone-number" name="mobile" id="otp_mobile" placeholder="Enter mobile number" maxlength="10">
                                 </div>
@@ -173,7 +181,6 @@
 </main>
 
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js') }}"></script>
-<script src="{{ asset('assets/js/select2.min.js') }}"></script>
 
 <script>
     function togglePassVisibility(id, btn) {
@@ -188,13 +195,14 @@
         }
     }
 
-    $('#otp_country_code').select2({
-        width: '70px',
-        minimumResultsForSearch: 0
-    });
+    // The mobile country code is fixed to +91 (see the markup) - no select,
+    // no Select2, so nothing to initialise here.
 
     $(document).ready(function() {
-        $("#SignInForm").submit(function(e) {
+        $('#otp_mobile').on('input', function() {
+			this.value = this.value.replace(/[^0-9]/g, '');
+		});
+		$("#SignInForm").submit(function(e) {
             e.preventDefault();
             var formdata = $("#SignInForm").serialize();
             $.ajax({
