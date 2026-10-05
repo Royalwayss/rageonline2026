@@ -17,14 +17,14 @@ $subtotal = 0;
     </div>
 
     <div>
-        <span>Shipping</span>
+        <span>Shipping (-)</span>
         <strong>{{ AmountFormat($cartPricing['shipping']) }}</strong>
     </div>
 
     <input type="hidden" id="discountamount" value="{{ $cartPricing['discount'] }}">
 
     <div>
-        <span>Coupon Discount</span>
+        <span>Coupon Discount (-)</span>
         <strong class="discount_amount">{{ AmountFormat($cartPricing['discount']) }}</strong>
     </div>
 

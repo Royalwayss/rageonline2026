@@ -63,7 +63,7 @@ label.size_disabled:not(.active) span {
                                 @endforeach
                             </div>
 
-                            <div class="gallery-main">
+                            <!-- <div class="gallery-main">
                                 @php $firstImage = $productdetails['productimages'][0]['image'] ?? ''; @endphp
                                 <a href="{{ asset('images/ProductImages/xlarge/'.$firstImage) }}" data-fancybox="product-main" class="main-image-link">
                                     <img src="{{ asset('images/ProductImages/xlarge/'.$firstImage) }}" alt="{{ $productdetails['product_name'] }}" id="mainProductImage">
@@ -81,8 +81,70 @@ label.size_disabled:not(.active) span {
                                 <button type="button" class="detail-share-btn" id="detailShareBtn" aria-label="Share Piece" title="Share Piece" data-bs-toggle="modal" data-bs-target="#shareModal">
                                     <i class="fa-solid fa-share-nodes"></i>
                                 </button>
-                            </div>
+                            </div> -->
+<div class="gallery-main">
 
+    @php
+        $firstImage = $productdetails['productimages'][0]['image'] ?? '';
+    @endphp
+
+    <a href="{{ asset('images/ProductImages/xlarge/'.$firstImage) }}"
+       data-fancybox="product-gallery"
+       class="main-image-link">
+
+        <img src="{{ asset('images/ProductImages/xlarge/'.$firstImage) }}"
+             alt="{{ $productdetails['product_name'] }}"
+             id="mainProductImage">
+
+        <span class="gallery-zoom-hint">
+            <i class="fa-solid fa-magnifying-glass-plus"></i> Zoom
+        </span>
+    </a>
+
+    {{-- Other images for Fancybox --}}
+    @foreach($productdetails['productimages'] as $imgkey => $proimage)
+
+        @if($imgkey !== 0)
+            <a href="{{ asset('images/ProductImages/xlarge/'.$proimage['image']) }}"
+               data-fancybox="product-gallery"
+               style="display: none;">
+
+                <img src="{{ asset('images/ProductImages/xlarge/'.$proimage['image']) }}"
+                     alt="{{ $productdetails['product_name'] }}">
+            </a>
+        @endif
+
+    @endforeach
+
+
+    <button type="button"
+            class="detail-wishlist addWishList WishList-{{ $productdetails['id'] }}"
+            aria-label="Add to Wishlist"
+            data-productid="{{ $productdetails['id'] }}"
+            page-type="listing">
+
+        @if($productdetails['is_wishlisted'] == '1')
+            <i class="fa-heart fa-solid" style="color: rgb(147, 47, 47);"></i>
+        @else
+            <i class="fa-regular fa-heart"></i>
+        @endif
+
+    </button>
+
+
+    <button type="button"
+            class="detail-share-btn"
+            id="detailShareBtn"
+            aria-label="Share Piece"
+            title="Share Piece"
+            data-bs-toggle="modal"
+            data-bs-target="#shareModal">
+
+        <i class="fa-solid fa-share-nodes"></i>
+
+    </button>
+
+</div>
                         </div>
                     </div>
 
@@ -262,7 +324,7 @@ label.size_disabled:not(.active) span {
                             <div class="delivery-check">
                                 <h5>Check Delivery & Services</h5>
                                 <div class="pincode-box">
-                                    <input type="text" id="pincode" placeholder="Enter 6-digit postal code" maxlength="6" onkeypress="return isNumberKey(event)">
+                                    <input type="text" id="pincode" placeholder="Enter postal code" maxlength="6" onkeypress="return isNumberKey(event)">
                                     <button type="button" id="pincode-check" onclick="get_pincode_details()">Check</button>
                                 </div>
                                 <div id="pincode_msg"></div>

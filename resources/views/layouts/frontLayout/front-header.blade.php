@@ -256,7 +256,7 @@ foreach ($categories as $category) {
                             <div class="search-prod-info">
                                 <span class="search-prod-cat">{{ $product->category->name ?? '' }}</span>
                                 <h6 class="search-prod-title">{{ $product->product_name }}</h6>
-                                <div class="search-prod-price-wrap">
+                                <div class="detail-price card-box">
                                     {!! productPriceHtml($product) !!}
                                 </div>
                             </div>

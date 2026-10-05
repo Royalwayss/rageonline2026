@@ -98,7 +98,7 @@
 
         <div class="footer-bottom">
             <div class="footer-copy">
-                © Copyright {{ date('Y') }} RAGE. All Rights Reserved | Site Credit: <a href="https://www.royalways.com/" target="_blank">Royalways</a>
+                © Copyright {{ date('Y') }} RAGE. All Rights Reserved | <span>Site Credit: <a href="https://www.royalways.com/" target="_blank">Royalways</span></a>
             </div>
         </div>
 

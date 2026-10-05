@@ -55,12 +55,12 @@
                         <a href="{{ url('product/'.$wishlist->product->seo_url) }}">
                             <h4>{{ $wishlist->product->product_name }}</h4>
                         </a>
-                        <span class="price">
+                        <span class="detail-price card-box">
                             {!! productPriceHtml($wishlist->product) !!}
                         </span>
-                        <p class="wishlist-meta">
+                        <!-- <p class="wishlist-meta">
                             Size: {{ $wishlist->size }} &nbsp;|&nbsp; Item No: {{ $wishlist->product->product_code }} &nbsp;|&nbsp; Color: {{ $wishlist->product->color }}
-                        </p>
+                        </p> -->
 
                         @if($wishlist->product->status != 1)
                         <p class="text-danger"><strong>Product is not available</strong></p>

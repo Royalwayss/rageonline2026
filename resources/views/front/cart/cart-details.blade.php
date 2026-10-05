@@ -96,7 +96,7 @@
             <i class="fa-solid fa-bag-shopping fa-3x text-muted mb-3"></i>
             <h3>Your Shopping Bag is Empty</h3>
             <p class="text-muted">Discover our winter collection and handcrafted ensembles.</p>
-            <a href="{{ url('/') }}" class="primary-btn mt-3 d-inline-block">Continue Shopping</a>
+            <a href="{{ url('/') }}" class="primary-btn mt-3 cart-checkout-btn">Continue Shopping</a>
         </div>
         @endif
 
@@ -183,7 +183,7 @@
             </div>
 
             <div class="summary-row">
-                <span>Coupon Discount</span>
+                <span>Coupon Discount (-)</span>
                 <strong>INR {{ CustomFunction::formatAmt($couponamount) }}</strong>
             </div>
 
@@ -207,7 +207,7 @@
 			
 
             <div class="summary-row">
-                <span>Shipping</span>
+                <span>Shipping (-)</span>
                 <strong>{{ !empty($shipping) ? 'INR '.CustomFunction::formatAmt($shipping) : 'Free' }}</strong>
             </div>
 

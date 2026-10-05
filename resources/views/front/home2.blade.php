@@ -112,12 +112,12 @@ $categories = Category::getcategories();
 		<section class="alicia">
             <div class="container">
                 <div class="row align-items-center">
-                    <div class="col-lg-6 col-md-12 col-12">
+                    <div class="col-lg-6 col-md-12 col-12 order-2 order-lg-1">
                         <div class="ambasador-img">
                             <img src="assets/images/alicia.png" alt="">
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-12 col-12">
+                    <div class="col-lg-6 col-md-12 col-12 order-1 order-lg-2">
                         <div class="ambasador-content">
                             <div class="heading-wrap">
                                 <span>The Face of Winter</span>

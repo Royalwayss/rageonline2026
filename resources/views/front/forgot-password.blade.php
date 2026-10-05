@@ -26,7 +26,7 @@
                     </div>
 
                     <button type="submit" class="primary-btn w-100 mt-3">
-                        Send Reset Instructions
+                        Submit
                     </button>
 
                 </form>
