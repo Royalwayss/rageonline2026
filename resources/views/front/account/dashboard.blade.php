@@ -188,12 +188,12 @@
               <div class="col-md-6 col-12">
                 <label for="mobile">Mobile <span>*</span></label>
                 <div class="rage-phone-group">
-                  <select name="country_code" id="country_code" class="rage-phone-code"> 
-                    @foreach($countries as $country)
-                    <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if(Auth::user()->country_code == $country['phone_code']) selected @endif >+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                    @endforeach
-                  </select>
-                  <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="Enter the mobile number" value="{{ Auth::user()->mobile }}">
+                 <select name="country_code" id="country_code" class="rage-phone-code" tabindex="-1" style="pointer-events:none;">
+					  @foreach($countries as $country)
+					  <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if(Auth::user()->country_code == $country['phone_code']) selected @endif >+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
+					  @endforeach
+				</select>
+                  <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="Enter the mobile number" value="{{ Auth::user()->mobile }}" readonly>
                 </div>
                 <div class="err" id="MyAccount-mobile"></div>
               </div>
@@ -600,6 +600,7 @@
   window.history.pushState({
     path: accounturl
   }, '', accounturl);
+  $('#country_code').next('.select2-container').css('pointer-events', 'none');
   //$("#country").select2();
   //$("#country_code").select2();
   $("#MyAccountform").submit(function(e) {

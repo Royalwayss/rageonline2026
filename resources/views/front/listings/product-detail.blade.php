@@ -33,7 +33,16 @@
 ?>
 @extends('layouts.frontLayout.front-layout')
 @section('content')
-
+<style>
+/* Out-of-stock sizes: soft off-gray (still clickable, so your "out of stock" message keeps working) */
+label.size_disabled:not(.active) {
+    background-color: #f1f0ee;
+    border-color: #dedcd8;
+}
+label.size_disabled:not(.active) span {
+    color: #a3a09b;
+}
+</style>
 <main class="inner-page">
 
     <section class="product-detail-page">
@@ -161,14 +170,14 @@
                                         <?php 
                                             $stock = ProductAttribute::stock($productdetails['id'], $attribute);
                                         ?>
-                                        <label class="{{ $attrkey === $checked_size_key ? 'active' : '' }} {{ !$stock ? 'disabled' : '' }}">
+                                        <label class="{{ $attrkey === $checked_size_key ? 'active' : '' }} {{ !$stock ? 'size_disabled' : '' }}">
                                             <input style="width:200px;" type="radio" id="{{ $attribute }}" name="size" value="{{ $attribute }}"
                                                 data-proid="{{ $productdetails['id'] }}"
                                                 data-catid="{{ $productdetails['category']['id'] }}"
                                                 data-stock="{{ $stock }}"
                                                 page-type="listing"
                                                 {{ $attrkey === $checked_size_key ? 'checked' : '' }}
-                                                {{ !$stock ? 'disabled' : '' }}>
+                                                {{ !$stock ? 'disabled1' : '' }}>
                                             <span>{{ $attribute }}</span>
                                         </label>
                                     @endforeach
@@ -180,7 +189,7 @@
                                     <span id="sizeStockText">Dispatches within 24 hours</span>
                                 </div>
 
-                                <button type="button" class="notify" data-bs-toggle="modal" data-bs-target="#notifyme">
+                                <button type="button" class="notify" data-bs-toggle="modal" data-bs-target="#notifyme" id="SizeUnavailable" style="display:none">
                                     <i class="fa-regular fa-bell"></i> Size unavailable? Notify Me
                                 </button>
                             </div>
@@ -507,7 +516,7 @@
         });
 
         // Size selection stock status text
-        $(document).on('click', 'input[name="size"]', function() {
+        $(document).on('click', 'input[name="size"]', function() { 
             $('.size-options label').removeClass('active');
             $(this).closest('label').addClass('active');
             $('#stickySelectedSize').text($(this).val());
@@ -518,6 +527,13 @@
             } else {
                 $('#sizeStockStatus').removeClass('low-stock');
             }
+			
+			if(stock == 0){
+			    $("#SizeUnavailable").show();
+			}else{
+				$("#SizeUnavailable").hide();
+			}
+			
 			
 			
         });

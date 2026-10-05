@@ -42,7 +42,7 @@
                     <div class="cart-product-img">
                         <a target="_blank" href="{{ url('/product/'.$cartitem['product']['seo_url']) }}">
                             @if(!empty($cartitem['product']['product_image']))
-                                <img src="{{ asset('images/ProductImages/small/'.$cartitem['product']['product_image']['image']) }}" alt="{{ $cartitem['product']['product_name'] }}">
+                                <img src="{{ asset('images/ProductImages/large/'.$cartitem['product']['product_image']['image']) }}" alt="{{ $cartitem['product']['product_name'] }}">
                             @else
                                 <img src="{{ asset('images/no-image-found.jpg') }}" alt="{{ $cartitem['product']['product_name'] }}">
                             @endif
@@ -237,13 +237,13 @@
                     Proceed To Checkout
                 </a>
 
-                <div class="text-center" style="margin-top:10px">OR</div>
+              <?php /*  <div class="text-center" style="margin-top:10px">OR</div>
 
                 <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#GuestCheckoutModal" class="primary-btn cart-checkout-btn" style="margin-top:10px;">
                     Guest Checkout
-                </a>
+                </a> */ ?>
             @endif
-
+            <div class="text-center" style="margin-top:10px">OR</div>
             <a href="{{ url('/') }}" class="continue-shopping">
                 <i class="fa-solid fa-arrow-left-long"></i>
                 Continue Shopping

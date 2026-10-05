@@ -58,6 +58,9 @@ class ProductsController extends Controller
    }
     public function products(Request $Request){
         
+		if(isset($_GET['testtt'])){
+			$this->downloadAllActiveProductImages(); exit;
+		}
        
         $sku_with_size_text = '';
         Session::put('active','products'); 
@@ -627,20 +630,122 @@ class ProductsController extends Controller
             }
         }       
     }
+	
+	
+	
+	
+	
+	
+	
 }		
 			
 			
-				
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+	public function downloadAllActiveProductImages()
+    {
+        set_time_limit(0); // this can take a while for a large catalog
+
+        $level = 4; // level 1 = products 1-10, level 2 = products 11-20, etc.
+        $perLevel = 10;
+
+        // Stream output as each file finishes, instead of waiting until the
+        // very end to send one JSON response - lets you see progress live,
+        // and shows exactly where it stops if something kills the request.
+        ob_implicit_flush(true);
+        if (ob_get_level() > 0) {
+            ob_end_flush();
         }
+
+        $products = Product::with('productimages')
+            ->join('categories', 'categories.id', '=', 'products.category_id')
+            ->where('categories.id', '11')
+            ->where('categories.status', '1')
+            ->where('products.status', '1')
+            ->select('products.*') // avoid column clashes from the join (e.g. both tables having "status")
+            ->orderBy('products.id')
+            ->skip(($level - 1) * $perLevel)
+            ->take($perLevel)
+            ->get();
+
+        echo "Level {$level}: processing " . count($products) . " product(s) (rows " . (($level - 1) * $perLevel + 1) . " to " . (($level - 1) * $perLevel + $perLevel) . ").<br><br>\n";
+        flush();
+
+        $baseUrl = 'https://www.rageonline.co.in/images/ProductImages/';
+        $folders = ['xlarge', 'large', 'medium', 'small'];
+
+        $destinationRoot = public_path('images/ProductImages');
+
+        foreach ($products as $product) {
+            if (empty($product->productimages) || $product->productimages->isEmpty()) {
+                echo "Product {$product->id}: SKIPPED - no images.<br>\n";
+                flush();
+                continue;
+            }
+
+            foreach ($product->productimages as $productImage) {
+                if (empty($productImage->image)) {
+                    continue;
+                }
+
+                $filename = $productImage->image;
+
+                foreach ($folders as $folder) {
+                    $url = $baseUrl . $folder . '/' . $filename;
+                    $destinationPath = $destinationRoot . '/' . $folder;
+
+                    if (!\File::exists($destinationPath)) {
+                        \File::makeDirectory($destinationPath, 0755, true);
+                    }
+
+                    $savePath = $destinationPath . '/' . $filename;
+
+                    $context = stream_context_create([
+                        'http' => [
+                            'timeout' => 60,
+                            'ignore_errors' => true,
+                        ],
+                    ]);
+
+                    $contents = @file_get_contents($url, false, $context);
+                    $statusLine = $http_response_header[0] ?? null;
+                    $statusCode = null;
+
+                    if ($statusLine && preg_match('/\s(\d{3})\s/', $statusLine, $m)) {
+                        $statusCode = (int) $m[1];
+                    }
+
+                    if ($contents === false) {
+                        echo "Product {$product->id} [{$folder}] {$filename}: FAILED - connection failed or timed out.<br>\n";
+                        flush();
+                        continue;
+                    }
+
+                    if ($statusCode !== null && $statusCode >= 400) {
+                        echo "Product {$product->id} [{$folder}] {$filename}: FAILED - server returned HTTP {$statusCode}.<br>\n";
+                        flush();
+                        continue;
+                    }
+
+                    $written = @file_put_contents($savePath, $contents);
+
+                    if ($written === false) {
+                        echo "Product {$product->id} [{$folder}] {$filename}: FAILED - could not write to {$savePath} (check folder permissions).<br>\n";
+                        flush();
+                        continue;
+                    }
+
+                    echo "Product {$product->id} [{$folder}] {$filename}: SUCCESS - saved ({$written} bytes).<br>\n";
+                    flush();
+                }
+            }
+        }
+
+        echo "<br>Done with level {$level}.<br>\n";
+        flush();
+    }
+		
+		
+		
+		
+		
+		
+		}

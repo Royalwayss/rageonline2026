@@ -51,8 +51,8 @@ class AddressController extends Controller
 	    $post_data = $request->all();
         $rules = [
             'full_name' => 'required|regex:/^[a-zA-Z ]+$/u|max:255',
-            'mobile'    => 'required|numeric|digits:10',
-            'alternative_number' => 'required|numeric|digits:10',
+            'mobile'    => 'required|numeric|digits_between:7,15',
+            'alternative_number' => 'required|numeric|digits_between:7,15',
             'address'   => 'bail|required',
             'postcode'  => 'required|numeric|digits:6',
             'city'      => 'required|regex:/^[a-zA-Z ]+$/u|max:255',
@@ -63,12 +63,12 @@ class AddressController extends Controller
         $messages = [
             'full_name.required' => 'Enter the name.',
             'full_name.regex' => 'Enter the valid name.',
-            'mobile.required' => 'Enter the 10 digit valid mobile number.',
-            'mobile.numeric' => 'Enter the 10 digit valid mobile number.',
-            'mobile.digits' => 'Enter the 10 digit valid mobile number.',
-            'alternative_number' => 'Enter the 10 digit valid alternative mobile number.',
-            'alternative_number.numeric' => 'Enter the 10 digit valid alternative mobile number.',
-            'alternative_number.digits' => 'Enter the 10 digit valid alternative mobile number.',
+            'mobile.required' => 'Enter a valid mobile number (7 to 15 digits).',
+            'mobile.numeric' => 'Enter a valid mobile number (7 to 15 digits).',
+            'mobile.digits_between' => 'Enter a valid mobile number (7 to 15 digits).',
+            'alternative_number.required' => 'Enter a valid alternative mobile number (7 to 15 digits).',
+            'alternative_number.numeric' => 'Enter a valid alternative mobile number (7 to 15 digits).',
+            'alternative_number.digits_between' => 'Enter a valid alternative mobile number (7 to 15 digits).',
             'address.required' => 'Enter the address.',
             'postcode.required' => 'Enter the postcode.',
             'postcode.numeric' => 'Enter the 6 digit valid postcode.',
@@ -81,8 +81,8 @@ class AddressController extends Controller
 
         if ($request->input('billing_same') != '1' && isset($post_data['billing_same'])) {
             $rules['billing_full_name'] = 'required|regex:/^[a-zA-Z ]+$/u|max:255';
-            $rules['billing_mobile']    = 'required|numeric|digits:10';
-           // $rules['billing_alternative_number'] = 'numeric|digits:10';
+            $rules['billing_mobile']    = 'required|numeric|digits_between:7,15';
+           // $rules['billing_alternative_number'] = 'numeric|digits_between:7,15';
             $rules['billing_address']   = 'bail|required';
             $rules['billing_postcode']  = 'required|numeric|digits:6';
             $rules['billing_city']      = 'required|regex:/^[a-zA-Z ]+$/u|max:255';
@@ -91,12 +91,12 @@ class AddressController extends Controller
 
             $messages['billing_full_name.required'] = 'Enter the name.';
             $messages['billing_full_name.regex'] = 'Enter the valid name.';
-            $messages['billing_mobile.required'] = 'Enter the 10 digit valid mobile number.';
-            $messages['billing_mobile.numeric'] = 'Enter the 10 digit valid mobile number.';
-            $messages['billing_mobile.digits'] = 'Enter the 10 digit valid mobile number.';
+            $messages['billing_mobile.required'] = 'Enter a valid mobile number (7 to 15 digits).';
+            $messages['billing_mobile.numeric'] = 'Enter a valid mobile number (7 to 15 digits).';
+            $messages['billing_mobile.digits_between'] = 'Enter a valid mobile number (7 to 15 digits).';
            
-           // $messages['billing_alternative_number.numeric'] = 'Enter the 10 digit valid alternative mobile number.';
-           // $messages['billing_alternative_number.digits'] = 'Enter the 10 digit valid alternative mobile number.';
+           // $messages['billing_alternative_number.numeric'] = 'Enter a valid alternative mobile number (7 to 15 digits).';
+           // $messages['billing_alternative_number.digits_between'] = 'Enter a valid alternative mobile number (7 to 15 digits).';
             $messages['billing_address.required'] = 'Enter the address.';
             $messages['billing_postcode.required'] = 'Enter the postcode.';
             $messages['billing_postcode.numeric'] = 'Enter the 6 digit valid postcode.';

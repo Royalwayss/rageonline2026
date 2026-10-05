@@ -232,7 +232,7 @@
         /*  Add to Wishlist End */
 
 
-        $(document).on('change', '[name=size]', function() {
+        $(document).on('change', '[name=size]', function() { 
             $('.PleaseWaitDiv').show();
             var page_type = $(this).attr('page-type');
 
@@ -261,14 +261,11 @@
                         msg[0] = data.message;
                         printErrorMsg(msg, page_type + '-error-msg');
                         $('.' + page_type + '-error-msg').delay(3000).fadeOut('slow');
-                        $("#product-add-to-cart").html(data.button);
+                        $("#product-add-to-cart").html(data.button); 
                         $("#sizeStockText").html(data.sizeStockText);
                     } else {
-                        if (page_type == 'popup') {
-                            $('.single-product-price').html(data.data['quick_view_single_product_price']);
-                        } else {
-                            $('.single-product-price').html(data.data['single_product_price']);
-                        }
+                       
+						$("#sizeStockText").html(data.sizeStockText);
                     }
                 }
             })

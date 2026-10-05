@@ -677,10 +677,11 @@ class ListingController extends Controller
                       return response()->json(['status'=>true,'data'=>$pricings,'sizeStockText'=>$sizeStockText, 'message'=>'ok','wishlist_count'=>$check_wishlist_count,'button'=>$button]);
 				 }
 		   }else{
-				
+				$stock_class = 'out-of-stock';
+			    $sizeStockText  = 'Out of Stock';
 				$finalprice = 0;
                 $pricings = array('price'=>$finalprice,'product_price'=>$produt_details['product_price']);
-                return response()->json(['status'=>false,'data'=>$pricings,'message'=>'Selected size is not available at the moment','wishlist_count'=>$check_wishlist_count,'button'=>$button]);
+                return response()->json(['status'=>false,'sizeStockText'=>$sizeStockText,'data'=>$pricings,'message'=>'Selected size is not available at the moment','wishlist_count'=>$check_wishlist_count,'button'=>$button]);
             }
         }
     }

@@ -47,7 +47,7 @@
                                             </div>
                                             <div class="prod-info">
                                                 <div class="name-wrap">
-                                                    <h4><a href="{{ $product_link }}">Abeer Velvet Kurta</a></h4>
+                                                    <h4><a href="{{ $product_link }}">{{ $product['product_name'] }}</a></h4>
                                                 </div>
                                                 <div class="detail-price card-box">
                                                     {!! productPriceHtml($product) !!}

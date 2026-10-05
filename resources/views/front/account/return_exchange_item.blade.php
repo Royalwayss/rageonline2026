@@ -2,8 +2,8 @@
 @section('content')
 <?php 
    $sizeArr=[]; ?>
-<main>
-   <div class="container">
+<main class="inner-page">
+   <div class="container-fluid">
       <div class="row">
          <div class="col-12">
             <?php 

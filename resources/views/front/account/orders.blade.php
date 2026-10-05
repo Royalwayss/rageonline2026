@@ -53,6 +53,7 @@
 @endif
 
 <style>
+
 .return-exchange-btn {
     display: inline-flex;
     align-items: center;
@@ -75,6 +76,28 @@
     border-color: #8e313c;
     color: #fff;
 }
+ #action-buttons .order-actions-cell {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+    }
+    #action-buttons .order-view-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0;
+        white-space: nowrap;
+        flex: 0 0 auto;
+    }
+
+    @media (max-width: 767px) {
+        #action-buttons .order-actions-cell {
+            justify-content: flex-start;
+        }
+    }
 </style>
 
 @if($viewOrder)
@@ -273,9 +296,13 @@
                                 @endif
                             </div>
                             @else
-                                <button type="button" class="return-exchange-btn returnItem mt-2" data-orderproid="{{ $order_product_summery['id'] }}" data-sku="{{ $order_product_summery['product_sku'] }}">
+                                
+							    @if(Auth::user()->country == 'India')
+							    <button type="button" class="return-exchange-btn returnItem mt-2" data-orderproid="{{ $order_product_summery['id'] }}" data-sku="{{ $order_product_summery['product_sku'] }}">
                                     <i class="fa-solid fa-rotate-left"></i> Request Exchange / Return
                                 </button>
+								@endif
+								
                             @endif
                         </div>
 
@@ -602,7 +629,7 @@
                                         <i class="{{ $row_status_icon }}"></i> {{ ucwords($order->order_status) }}
                                     </span>
                                 </td>
-                                <td data-label="Actions" class="text-end">
+                                <td data-label="Actions" class="text-end" id="action-buttons">
                                     <div class="order-actions-cell">
                                         <a href="{{ url('account/orders').'?order_id='.$order->id }}" class="order-view-btn primary">
                                             <span>View Order</span>
@@ -610,7 +637,7 @@
                                         </a>
 
                                         @if(!empty($order['waybill']))
-                                        <br><a target="_blank" href="{{ url('track-order/'.$order->id) }}" class=" order-view-btn" style="margin-top:10px">
+                                        <br><a target="_blank" href="{{ url('track-order/'.$order->id) }}" class=" order-view-btn" >
                                             <span>Track</span>
                                         </a>
                                         @endif
@@ -622,9 +649,9 @@
                                         @endif
 
                                         @if($check_order_return_exchange['return'] == 1 || $check_order_return_exchange['exchange'] == 1)
-                                        <a href="{{ url('exchange-item/'.$order->id) }}" class="order-view-btn">
+                                      <?php /*  <a href="{{ url('exchange-item/'.$order->id) }}" class="order-view-btn">
                                             <span>Exchange</span>
-                                        </a>
+                                        </a> */?>
                                         @endif
                                     </div>
                                 </td>

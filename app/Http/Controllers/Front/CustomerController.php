@@ -671,16 +671,66 @@ class CustomerController extends Controller
             $data = $request->all();
             $validation_data = $request->all();
 	 	    $validation_data['name'] = CustomFunction::charactersOnly( $validation_data['name']);
-            $validator = Validator::make($validation_data, [
-                    'name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-                    'mobile' => 'bail|required|numeric|digits:10',
-                    'state' => 'bail|required',
-                    'city' =>  'required|regex:/^[a-zA-Z]+$/u|max:255',
-                    'postcode' => 'required|numeric|digits:6',
-                    'address' => 'bail|required',
-                    
-                ]
-            );
+           $validator = Validator::make($validation_data, [
+    'name'                        => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+    'mobile'                      => 'bail|required|numeric|digits_between:7,15',
+    'state'                       => 'bail|required',
+    'city'                        => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+    'postcode'                    => 'required|numeric|digits:6',
+    'address'                     => 'bail|required',
+
+    'billing_name'                => 'required|regex:/^[a-zA-Z\s]+$/u|max:255',
+    'billing_mobile'              => 'bail|required|numeric|digits_between:7,15',
+    'billing_alternative_number'  => 'nullable|numeric|digits_between:7,15',
+    'billing_country_code'        => 'required|numeric|digits_between:1,4',
+    'billing_country_code2'       => 'required_with:billing_alternative_number|nullable|numeric|digits_between:1,4',
+    'billing_country'             => 'required|string|max:255',
+    'billing_state'               => 'bail|required|string|max:255',
+    'billing_city'                => 'required|regex:/^[a-zA-Z\s\.\-]+$/u|max:255',
+    'billing_postcode'            => 'required|numeric|digits:6',
+    'billing_address'             => 'bail|required',
+], [
+    'name.required'                        => 'Enter your full name.',
+    'name.regex'                           => 'Name can contain letters only.',
+    'name.max'                             => 'Name may not be longer than 255 characters.',
+    'mobile.required'                      => 'Enter your mobile number.',
+    'mobile.numeric'                       => 'Mobile number must contain digits only.',
+    'mobile.digits_between'                => 'Mobile number must be between 7 and 15 digits.',
+    'state.required'                       => 'Enter your state.',
+    'city.required'                        => 'Enter your city.',
+    'city.regex'                           => 'City can contain letters only.',
+    'city.max'                             => 'City may not be longer than 255 characters.',
+    'postcode.required'                    => 'Enter the 6 digit pincode.',
+    'postcode.numeric'                     => 'Pincode must contain digits only.',
+    'postcode.digits'                      => 'Pincode must be exactly 6 digits.',
+    'address.required'                     => 'Enter your address.',
+
+    'billing_name.required'                => 'Enter the billing full name.',
+    'billing_name.regex'                   => 'Billing name can contain letters and spaces only.',
+    'billing_name.max'                     => 'Billing name may not be longer than 255 characters.',
+    'billing_mobile.required'              => 'Enter the billing mobile number.',
+    'billing_mobile.numeric'               => 'Billing mobile number must contain digits only.',
+    'billing_mobile.digits_between'        => 'Billing mobile number must be between 7 and 15 digits.',
+    'billing_alternative_number.numeric'   => 'Billing alternative number must contain digits only.',
+    'billing_alternative_number.digits_between' => 'Billing alternative number must be between 7 and 15 digits.',
+    'billing_country_code.required'        => 'Select the billing country code.',
+    'billing_country_code.numeric'         => 'Billing country code is not valid.',
+    'billing_country_code.digits_between'  => 'Billing country code is not valid.',
+    'billing_country_code2.required_with'  => 'Select the country code for the billing alternative number.',
+    'billing_country_code2.numeric'        => 'Billing alternative country code is not valid.',
+    'billing_country_code2.digits_between' => 'Billing alternative country code is not valid.',
+    'billing_country.required'             => 'Select the billing country.',
+    'billing_country.max'                  => 'Billing country is not valid.',
+    'billing_state.required'               => 'Enter the billing state.',
+    'billing_state.max'                    => 'Billing state may not be longer than 255 characters.',
+    'billing_city.required'                => 'Enter the billing city.',
+    'billing_city.regex'                   => 'Billing city can contain letters, spaces, dots and hyphens only.',
+    'billing_city.max'                     => 'Billing city may not be longer than 255 characters.',
+    'billing_postcode.required'            => 'Enter the billing 6 digit pincode.',
+    'billing_postcode.numeric'             => 'Billing pincode must contain digits only.',
+    'billing_postcode.digits'              => 'Billing pincode must be exactly 6 digits.',
+    'billing_address.required'             => 'Enter the billing address.',
+]);
             if($validator->passes()) {
                 //Update user info
                 $user = User::find(Auth::user()->id);

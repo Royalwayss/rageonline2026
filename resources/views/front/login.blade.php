@@ -111,7 +111,7 @@
                             <?php $countries = \App\GeoCountry::getcountries(); ?>
 
                             <div class="form-field">
-                                <label>Mobile Number</label>
+                                <label>Mobile Number(India Only)</label>
 
                                 <div class="rage-phone-group">
                                     <span class="rage-phone-code-fixed">+91</span>
