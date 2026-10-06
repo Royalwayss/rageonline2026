@@ -337,7 +337,7 @@ class Order extends Model
 				if($diff < 86400){
 					$cancel  = 1;
 				}	
-
+                 $cancel  = 1;
                 if($diff < 172800){
 					
 					foreach($order->order_products as $order_product){
