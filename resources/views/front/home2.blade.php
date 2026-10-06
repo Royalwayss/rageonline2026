@@ -20,7 +20,8 @@ $categories = Category::getcategories();
             @forelse($banners as $banner)
             <div class="swiper-slide">
                 <a href="{{ !empty($banner->link) ? $banner->link : url('winter-collection') }}">
-                    <img src="{{ asset('images/banners/'.$banner->image) }}" alt="{{ !empty($banner->description) ? $banner->description : 'Rage Collection' }}">
+                    <img class="d-none d-md-block" src="{{ asset('images/banners/'.$banner->image) }}" alt="{{ !empty($banner->description) ? $banner->description : 'Rage Collection' }}">
+                    <img class="d-block d-md-none" src="{{ asset('images/banners/hero-mobile.jpg') }}" alt="{{ !empty($banner->description) ? $banner->description : 'Rage Collection' }}">
                 </a>
             </div>
             @empty
