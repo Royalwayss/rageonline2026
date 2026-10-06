@@ -49,11 +49,11 @@
                         <i class="fa-regular fa-envelope"></i>
                         <span>Confirmation details have been sent to your email.</span>
                     </div>
-
+                    <?php /*
                     <div>
                         <i class="fa-solid fa-mobile-screen-button"></i>
                         <span>You'll receive shipping updates on your mobile.</span>
-                    </div>
+                    </div> */ ?>
 
                 </div>
                 <?php /*

@@ -294,28 +294,28 @@ label.size_disabled:not(.active) span {
                                     <i class="fa-solid fa-gem"></i>
                                     <div>
                                         <h6>Authentic Craft</h6>
-                                        <span>Pure handwoven fabrics</span>
+                                        <span>Made with traditional craftsmanship</span>
                                     </div>
                                 </div>
                                 <div class="trust-item">
                                     <i class="fa-solid fa-truck-fast"></i>
                                     <div>
                                         <h6>Express Delivery</h6>
-                                        <span>Complimentary pan-India</span>
+                                        <span>Reliable delivery across India</span>
                                     </div>
                                 </div>
                                 <div class="trust-item">
                                     <i class="fa-solid fa-arrows-rotate"></i>
                                     <div>
                                         <h6>7-Day Exchanges</h6>
-                                        <span>Doorstep size exchange</span>
+                                        <span>Thoughtfully crafted & quality assured</span>
                                     </div>
                                 </div>
                                 <div class="trust-item">
                                     <i class="fa-solid fa-box-open"></i>
                                     <div>
                                         <h6>Keepsake Box</h6>
-                                        <span>Signature luxury packaging</span>
+                                        <span>Safe and secure payments</span>
                                     </div>
                                 </div>
                             </div>

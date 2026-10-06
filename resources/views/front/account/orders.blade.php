@@ -167,18 +167,18 @@
                         <i class="{{ $status_icon }}"></i> {{ ucwords($order->order_status) }}
                     </span>
                 </div>
-
+                <?php /*
                 <div class="order-detail-actions">
-                   <?php /* <button type="button" class="luxury-action-btn" onclick="window.print();">
+                    <button type="button" class="luxury-action-btn" onclick="window.print();">
                         <i class="fa-solid fa-print"></i>
                         <span>Print Receipt</span>
-                    </button> */ ?>
+                    </button> 
                     
                     <a href="{{url('/account/order-invoice-print/'.$order->id)}}" target="_blank" class="luxury-action-btn primary">
                         <i class="fa-solid fa-download"></i>
                         <span>Download Invoice</span>
                     </a>
-                </div>
+                </div> */ ?>
             </div>
              <?php /*
             <!-- SHIPMENT STEPPER (driven by real order_status only) -->
@@ -297,7 +297,7 @@
                             </div>
                             @else
                                 
-							    @if(Auth::user()->country == 'India')
+							    @if(Auth::user()->country == 'India' && $order->order_status == 'Delivered')
 							    <button type="button" class="return-exchange-btn returnItem mt-2" data-orderproid="{{ $order_product_summery['id'] }}" data-sku="{{ $order_product_summery['product_sku'] }}">
                                     <i class="fa-solid fa-rotate-left"></i> Request Exchange / Return
                                 </button>

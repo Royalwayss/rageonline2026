@@ -78,8 +78,8 @@ class AddressController extends Controller
             'state.required' => 'Please select state.',
             'country.required' => 'Please select country.',
         ];
-
-        if ($request->input('billing_same') != '1' && isset($post_data['billing_same'])) {
+         $billing_count = BillingAddress::where('user_id', Auth::id())->count();
+        if (empty($billing_count) && $request->input('billing_same') != '1' && !isset($post_data['billing_same'])) {
             $rules['billing_full_name'] = 'required|regex:/^[a-zA-Z ]+$/u|max:255';
             $rules['billing_mobile']    = 'required|numeric|digits_between:7,15';
            // $rules['billing_alternative_number'] = 'numeric|digits_between:7,15';

@@ -481,7 +481,7 @@ foreach ($categories as $category) {
                 <span>About Us</span>
             </a>
 
-            <a href="{{ url('lookbook') }}">
+            <a href="{{ url('brand-ambassadors') }}">
                 <span>Brand Ambassadors</span>
             </a>
 

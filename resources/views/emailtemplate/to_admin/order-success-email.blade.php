@@ -189,10 +189,16 @@
                               <td align='right' valign='top' class='style3' bgcolor='#F7F7F7'>{{ AmountFormat($order_products_summery['total_product_gst_amount'] + $shipping_gst_amt) }}</td>
                            </tr>
 						   
+						   @if(!empty($orderDetails['amount_redeemed'])) 
+						   <tr>
+                              <td align='right' valign='top' class='style3' bgcolor='#F7F7F7' colspan='7'><strong>
+                                 Amount Redeemed:
+                                 </strong>
+                              </td>
+                              <td align='right' valign='top' class='style3' bgcolor='#F7F7F7'>{{ AmountFormat($orderDetails['amount_redeemed']) }}</td>
+                           </tr>
 						   
-						   
-						    
-						   
+						   @endif
 						   
 						   
 						   

@@ -1,5 +1,5 @@
 <?php
- $js_file_version = "?v=3.4";
+ $js_file_version = "?v=3.5";
 if(isset($page)){ $page = $page; } else { $page = '';} 
 
  ?>
@@ -16,4 +16,4 @@ if(isset($page)){ $page = $page; } else { $page = '';}
 
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="{{ asset('assets/js/scripts.js') }}?v=2.2"></script>
+<script src="{{ asset('assets/js/scripts.js') }}?{{$js_file_version }}"></script>

@@ -1,14 +1,32 @@
-<?php
-    // Country list for the Country + phone-code dropdowns.
-    // Each section starts on its saved country if it is in the list, otherwise India.
-    $countries = \App\GeoCountry::getcountries();
-    $shipCountrySel = 'India';
-    $billCountrySel = 'India';
-    foreach ($countries as $rageRow) {
-        if (strcasecmp($rageRow['name'], $address->country ?? '') === 0) { $shipCountrySel = $rageRow['name']; }
-        if (strcasecmp($rageRow['name'], $billing->country ?? '') === 0) { $billCountrySel = $rageRow['name']; }
+<style>
+    /* Country and country codes are fixed to India / +91: the control can't be opened.
+       The second selector also covers the Select2 box if the page wraps these selects in Select2. */
+    .rage-fixed-select,
+    .rage-fixed-select + .select2-container { pointer-events: none; }
+
+    /* Fixed country code: plain "+91" text inside the phone box - no arrow, no separate border */
+    .rage-phone-group select.rage-phone-code.rage-fixed-select {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        background: transparent !important;
+        background-image: none !important;
+        border: 0 !important;
+        border-right: 1px solid #d8d0c5 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        outline: none !important;
+        padding: 0 12px !important;
+        margin: 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        flex-shrink: 0;
+        font-size: 14px;
+        color: #2b2b2b;
+        text-align: center;
+        text-align-last: center;
     }
-?>
+</style>
 <div class="modal-header">
     <h5 class="modal-title">{{ $address ? 'Edit Address' : 'Add New Address' }}</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -37,10 +55,8 @@
 				 <div class="col-md-6 col-12">
                     <div class="form-field">
                         <label>Country</label>
-                        <select class="form-select" name="country" data-rage-country data-rage-group="ship">
-                            @foreach($countries as $country)
-                            <option value="{{ $country['name'] }}" @if($country['name'] === $shipCountrySel) selected @endif>{{ $country['name'] }}</option>
-                            @endforeach
+                        <select class="form-select rage-fixed-select" name="country" data-rage-country data-rage-group="ship" tabindex="-1">
+                            <option value="India" selected>India</option>
                         </select>
                         <span class="err" id="Address-country"></span>
                     </div>
@@ -52,13 +68,9 @@
                     <div class="form-field">
                         <label>Mobile</label>
                         <div class="rage-phone-group">
-                            <select name="country_code" class="rage-country-code rage-phone-code" data-rage-code="main" data-rage-group="ship">
-                                @foreach($countries as $country)
-                                @if(!empty($country['phone_code']))
-                                <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] === $shipCountrySel) selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                                @endif
-                                @endforeach
-                            </select>
+                            <select class="rage-country-code rage-phone-code rage-fixed-select" name="country_code" data-rage-code="main" data-rage-group="ship" tabindex="-1">
+                            <option value="91" selected>+91</option>
+                        </select>
                             <input type="tel" class="form-control rage-phone-number" name="mobile" value="{{ $address->mobile ?? '' }}" placeholder="Enter mobile number">
                         </div>
                         <span class="err" id="Address-mobile"></span>
@@ -73,13 +85,9 @@
                     <div class="form-field">
                         <label>Alternative Mobile Number</label>
                         <div class="rage-phone-group">
-                            <select name="country_code2" class="rage-country-code rage-phone-code" data-rage-code="alt" data-rage-group="ship">
-                                @foreach($countries as $country)
-                                @if(!empty($country['phone_code']))
-                                <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] === $shipCountrySel) selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                                @endif
-                                @endforeach
-                            </select>
+                            <select class="rage-country-code rage-phone-code rage-fixed-select" name="country_code2" data-rage-code="alt" data-rage-group="ship" tabindex="-1">
+                            <option value="91" selected>+91</option>
+                        </select>
                             <input type="tel" class="form-control rage-phone-number" name="alternative_number" value="{{ $address->alternative_number ?? '' }}" placeholder="Alternative mobile">
                         </div>
                         <span class="err" id="Address-alternative_number"></span>
@@ -149,10 +157,8 @@
                  <div class="col-md-6 col-12">
                     <div class="form-field">
                         <label>Country</label>
-                        <select class="form-select" name="billing_country" data-rage-country data-rage-group="bill">
-                            @foreach($countries as $country)
-                            <option value="{{ $country['name'] }}" @if($country['name'] === $billCountrySel) selected @endif>{{ $country['name'] }}</option>
-                            @endforeach
+                        <select class="form-select rage-fixed-select" name="billing_country" data-rage-country data-rage-group="bill" tabindex="-1">
+                            <option value="India" selected>India</option>
                         </select>
                         <span class="err" id="Address-billing_country"></span>
                     </div>
@@ -161,13 +167,9 @@
                     <div class="form-field">
                         <label>Mobile</label>
                         <div class="rage-phone-group">
-                            <select name="billing_country_code" class="rage-country-code rage-phone-code" data-rage-code="main" data-rage-group="bill">
-                                @foreach($countries as $country)
-                                @if(!empty($country['phone_code']))
-                                <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] === $billCountrySel) selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                                @endif
-                                @endforeach
-                            </select>
+                            <select class="rage-country-code rage-phone-code rage-fixed-select" name="billing_country_code" data-rage-code="main" data-rage-group="bill" tabindex="-1">
+                            <option value="91" selected>+91</option>
+                        </select>
                             <input type="tel" class="form-control rage-phone-number" name="billing_mobile" value="{{ $billing->mobile ?? '' }}" placeholder="Enter mobile number">
                         </div>
                         <span class="err" id="Address-billing_mobile"></span>
@@ -178,13 +180,9 @@
                     <div class="form-field">
                         <label>Alternative Mobile Number</label>
                         <div class="rage-phone-group">
-                            <select name="billing_country_code2" class="rage-country-code rage-phone-code" data-rage-code="alt" data-rage-group="bill">
-                                @foreach($countries as $country)
-                                @if(!empty($country['phone_code']))
-                                <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] === $billCountrySel) selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                                @endif
-                                @endforeach
-                            </select>
+                            <select class="rage-country-code rage-phone-code rage-fixed-select" name="billing_country_code2" data-rage-code="alt" data-rage-group="bill" tabindex="-1">
+                            <option value="91" selected>+91</option>
+                        </select>
                             <input type="tel" class="form-control rage-phone-number" name="billing_alternative_number" value="{{ $billing->alternative_number ?? '' }}" placeholder="Alternative mobile">
                         </div>
                         <span class="err" id="Address-billing_alternative_number"></span>

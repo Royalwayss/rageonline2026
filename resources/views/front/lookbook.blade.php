@@ -96,7 +96,7 @@
         <div class="ambassador-cta-wrap" data-aos="fade-up">
             <h3>Step Into The Limelight</h3>
             <p>Explore the winter edit and signature knitwear pieces favored by our ambassadors.</p>
-            <a href="{{ url('') }}" class="ambassador-cta-btn">
+            <a href="{{ url('winter-collection') }}" class="ambassador-cta-btn">
                 <span>Explore Collection</span>
                 <i class="fa-solid fa-arrow-right-long"></i>
             </a>

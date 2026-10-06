@@ -43,7 +43,7 @@
                     <div class="strength-meter mt-2">
                         <div class="strength-bar" id="strengthBar"></div>
                     </div>
-                    <div class="strength-label mt-1" id="strengthText">Password Strength: Minimum 8 characters</div>
+                    <div class="strength-label mt-1" id="strengthText">Password Strength: Minimum 6 characters</div>
                     <p class="err text-center" id="ChangePwd-password" style="display: none;"></p>
                 </div>
 
@@ -62,7 +62,7 @@
                 <div class="password-guidelines-box mt-3">
                     <h6><i class="fa-solid fa-circle-info"></i> Password Guidelines:</h6>
                     <ul>
-                        <li id="rule-len"><i class="fa-regular fa-circle-dot"></i> Minimum 8 characters in length</li>
+                        <li id="rule-len"><i class="fa-regular fa-circle-dot"></i> Minimum 6 characters in length</li>
                         <li id="rule-num"><i class="fa-regular fa-circle-dot"></i> Contains at least one number or special character</li>
                         <li id="rule-case"><i class="fa-regular fa-circle-dot"></i> Combines upper and lowercase letters</li>
                     </ul>

@@ -3,6 +3,20 @@
 
 <link rel="stylesheet" href="{{ asset('assets/css/select2.min.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/country-phone.css') }}">
+<style>
+    /* Fixed, non-editable +91 prefix - this page only (registration is India-only) */
+    .rage-phone-code-fixed {
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+        padding: 0 12px;
+        border-right: 1px solid #d8d0c5;
+        font-size: 14px;
+        color: #2b2b2b;
+        background: transparent;
+        user-select: none;
+    }
+</style>
 
 <main class="inner-page">
     <section class="auth-page">
@@ -44,11 +58,8 @@
 
                     <div class="form-field mt-3">
                         <label for="country">Country <span>*</span></label>
-                        <?php $countries = \App\GeoCountry::getcountries(); ?>
-                        <select name="country" id="country" class="form-select">
-                            @foreach($countries as $country)
-                                <option value="{{ $country['name'] }}" data-phone-code="{{ $country['phone_code'] }}" @if($country['name'] == 'India') selected @endif>{{ $country['name'] }}</option>
-                            @endforeach
+                        <select name="country" id="country" class="form-select" tabindex="-1">
+                            <option value="India" selected>India</option>
                         </select>
                         <div class="err" id="Register-country"></div>
                     </div>
@@ -56,11 +67,8 @@
                     <div class="form-field mt-3">
                         <label for="mobile">Mobile Number <span>*</span></label>
                         <div class="rage-phone-group">
-                            <select name="country_code" id="country_code" class="rage-phone-code">
-                                @foreach($countries as $country)
-                                    <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] == 'India') selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                                @endforeach
-                            </select>
+                            <span class="rage-phone-code-fixed">+91</span>
+                            <input type="hidden" name="country_code" id="country_code" value="91">
                             <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="Enter the mobile number">
                         </div>
                         <div class="err" id="Register-mobile"></div>
@@ -134,56 +142,19 @@
     // Scoped to the register form so a duplicate id elsewhere in the layout
     // can never be picked up by mistake.
     var $countrySelect = $('#RegisterForm select[name="country"]');
-    var $codeSelect = $('#RegisterForm select[name="country_code"]');
 
     $countrySelect.select2({
         width: '100%',
-        minimumResultsForSearch: 0
+        minimumResultsForSearch: Infinity // India is the only option, no search box
     });
 
-    $codeSelect.select2({
-        width: '70px',
-        minimumResultsForSearch: 0, // always show the search box
-        templateSelection: function(option) {
-            // Show only "+91" once collapsed
-            var value = option.text.split(' ')[0];
-            return value || option.text;
-        }
-    });
+    // Country is fixed to India: the box keeps its look but can't be opened or focused.
+    $countrySelect.next('.select2-container')
+        .css('pointer-events', 'none')
+        .find('.select2-selection').attr('tabindex', '-1');
 
-    // Two-way sync between Country and phone code.
-    //
-    // Several countries share one calling code (e.g. +1, +44, +7), so we
-    // never look an option up by its *value* - that would always land on the
-    // first country with that code (Canada -> Anguilla). Instead every phone
-    // code option carries data-country, and we select that exact option.
-    //
-    // Only Select2's own display is refreshed ('change.select2') instead of
-    // firing a full 'change', so the two handlers can't trigger each other
-    // in a loop.
-
-    // Country changed -> select the matching phone code option
-    $countrySelect.on('change', function() {
-        var countryName = $(this).val();
-        var $target = $codeSelect.find('option').filter(function() {
-            return $(this).attr('data-country') === countryName;
-        }).first();
-
-        if ($target.length && !$target.prop('selected')) {
-            $codeSelect.find('option').prop('selected', false);
-            $target.prop('selected', true);
-            $codeSelect.trigger('change.select2');
-        }
-    });
-
-    // Phone code changed -> select the matching country
-    $codeSelect.on('change', function() {
-        var countryName = $(this).find(':selected').attr('data-country');
-
-        if (countryName && $countrySelect.val() !== countryName) {
-            $countrySelect.val(countryName).trigger('change.select2');
-        }
-    });
+    // The mobile country code is fixed to +91 (see the markup), so there is no
+    // phone-code select left and no Country <-> code sync to do.
 </script>
 <script>
     function togglePassVisibility(id, btn) {

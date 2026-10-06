@@ -255,13 +255,16 @@ Route::post('login', [ 'as' => 'login', 'uses' => [BaseCustomerController::class
 	/*Frontend Routes*/
 Route::group([], function(){
 	
+	
+	
 	Route::get('/',[IndexController::class, 'index'])->name('home');
 	Route::get('/index-demo',[IndexController::class, 'indexDemo']);
 	Route::get('/indexx',[IndexController::class, 'indexx']);
 	Route::get('/index_demo',[IndexController::class, 'indexx']);
 	Route::get('/about-us',[IndexController::class, 'aboutus']);
 	Route::get('/faq',[IndexController::class, 'faq']);
-	Route::get('/lookbook',[IndexController::class, 'lookbook']);
+	Route::get('/brand-ambassadors',[IndexController::class, 'lookbook']);
+	//Route::get('/lookbook',[IndexController::class, 'lookbook']);
 	Route::get('/sitemap',[IndexController::class, 'sitemap']);
 	Route::any('/t-form',[IndexController::class, 'testform'])->name('testform');
 	Route::post('/save-wholesale-enquiry',[CustomerController::class, 'wholesale_enquiry']); 
@@ -431,4 +434,12 @@ Route::match(['get','post'],'/ccavenue/payment',[CcavenueController::class, 'cca
 	Route::match(['get','post'],'/ccavenue/response',[CcavenueController::class, 'ccavenueresponse']);
 	Route::match(['get','post'],'/ccavenue/cancel',[CcavenueController::class, 'ccavenueCancel']);
 	/*Facebook Routes Ends*/
+	
+	
+	
+	
+	
+Route::redirect('lookbook', '/brand-ambassadors', 301);	
+	
+	
 });

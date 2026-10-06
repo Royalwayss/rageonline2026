@@ -172,15 +172,15 @@
 
     $('#SaveContact').submit(function(event) {
         event.preventDefault();
-
-        if ($('#g-recaptcha-response').val() == '') {
+      ContactFormonSubmit(); return true;
+      /*  if ($('#g-recaptcha-response').val() == '') {
             grecaptcha.execute("{{ env('RECAPTCHA_SITE_KEY') }}", { action: "save-contact" }).then(function(token) {
                 $('#g-recaptcha-response').val(token);
                 ContactFormonSubmit();
             });
         } else {
             ContactFormonSubmit();
-        }
+        } */
     });
 
     function ContactFormonSubmit() {
@@ -222,6 +222,8 @@
                     if (window.RageToast) {
                       //  RageToast.show('Thank you! Your message has been sent.', 'fa-paper-plane');
                     }
+					$("#SaveContact")[0].reset();
+
 					printSuccessMsg('Thank you! Your message has been sent.');
                     /* setTimeout(function() {
                         window.location.href = data.url;

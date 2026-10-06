@@ -118,7 +118,7 @@
                 <h2>Step Into Our World of Warmth & Elegance</h2>
                 <p>Discover signature cardigans, sculpted capes, fine tunics, and our exclusive plus-size curations.</p>
                 <div class="about-cta-btns">
-                    <a href="{{ url('listing') }}" class="link-btn black">
+                    <a href="{{ url('winter-collection') }}" class="link-btn black">
                         Explore Winter Edit <i class="fa-solid fa-arrow-right-long"></i>
                     </a>
                     <a href="{{ url('store-locator') }}" class="link-btn white">

@@ -240,7 +240,9 @@
                             <div class="ebo-info-list">
                                 <div class="ebo-info-item">
                                     <i class="fa-solid fa-location-dot"></i>
-                                    <span>{{ $store_location['address'] }}</span>
+                                    <span>{{ $store_location['addess'] }}</span>
+                                    <span>{{ $store_location['city1'] }}</span>
+                                    <span>{{ $store_location['state'] }}</span>
                                 </div>
                                 @if(!empty($store_location['phone']))
                                 <a href="tel:{{ $store_location['phone'] }}" class="ebo-info-item">

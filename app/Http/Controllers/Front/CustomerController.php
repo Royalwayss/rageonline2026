@@ -245,9 +245,9 @@ class CustomerController extends Controller
     public function signup(Request $request){
         if($request->ajax()){
 			
-			   $recaptchaResponse = $request->input('g-recaptcha-response');
+			/*   $recaptchaResponse = $request->input('g-recaptcha-response');
                 
-				/*
+				
 				
 				// Google's reCAPTCHA secret key
 				$secretKey = env('RECAPTCHA_SECRET_KEY');  // Replace with your actual secret key
@@ -266,13 +266,13 @@ class CustomerController extends Controller
 					return response()->json(['status'=>false,'message'=>'Something went wrong, please try again later.']);
 					
 				}
-			 */
+			 
 			
 			if(empty($recaptchaResponse)) {
 					
 					//return response()->json(['status'=>false,'message'=>'Something went wrong, please try again later.']);
 					
-				}
+				} */
 			
 			$validation_data = $request->all(); 
 	 	    $validation_data['first_name'] = CustomFunction::charactersOnly( $validation_data['first_name']);
@@ -331,7 +331,7 @@ class CustomerController extends Controller
                    // sendSms($smsdetails);
                     $redirectTo = url('/');
                     if(env('MAIL_MODE') =="live"){
-                        $email = Auth::user()->email;
+                        $email = $data['email'];
 						
                         $userdetails['email'] =  $email;
                         $userdetails['password'] =  $password;
@@ -340,14 +340,22 @@ class CustomerController extends Controller
                             'userdetails' => $userdetails
                         ];
 						
-                        Mail::send('emailtemplate.to_user.user-register', $messageData, function($message) use ($email){
-                            $message->to($email)->subject('Registration with '.config('constants.project_name'))->getSwiftMessage()->getHeaders();
-                        });
+                        try {
+                            Mail::send('emailtemplate.to_user.user-register', $messageData, function($message) use ($email){
+                                $message->to($email)->subject('Registration with '.config('constants.project_name'));
+                            });
+                        } catch (\Throwable $e) {
+                            \Illuminate\Support\Facades\Log::error('Registration mail to user failed: '.$e->getMessage());
+                        }
 						$admin_mail =   config('constants.admin_mail');
 						foreach($admin_mail as $email){
-							Mail::send('emailtemplate.to_admin.user-register', $messageData, function($message) use ($email){
-								$message->to($email)->subject('Registration with '.config('constants.project_name'))->getSwiftMessage()->getHeaders();
-							});	
+							try {
+								Mail::send('emailtemplate.to_admin.user-register', $messageData, function($message) use ($email){
+									$message->to($email)->subject('Registration with '.config('constants.project_name'));
+								});
+							} catch (\Throwable $e) {
+								\Illuminate\Support\Facades\Log::error('Registration mail to admin failed: '.$e->getMessage());
+							}	
 						}						
                     }
                     if(Session::has('previousurl')){
@@ -395,9 +403,13 @@ class CustomerController extends Controller
                             'name' => $userdetails->name,
                         ];
 						
-                       Mail::send('emails.email-update', $messageData, function($message) use ($email){
-                            $message->to($email)->subject('Otp from '.config('constants.project_name'))->getSwiftMessage()->getHeaders();
-                        }); 
+                       try {
+                            Mail::send('emails.email-update', $messageData, function($message) use ($email){
+                                $message->to($email)->subject('Otp from '.config('constants.project_name'));
+                            });
+                       } catch (\Throwable $e) {
+                            \Illuminate\Support\Facades\Log::error('OTP mail failed: '.$e->getMessage());
+                       }
 					
 					}
 					

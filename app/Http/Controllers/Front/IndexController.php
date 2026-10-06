@@ -46,7 +46,7 @@ class IndexController extends Controller
     	$metakeywords ="women jackets, women cardigans, women sweaters, women capes, women ponchos, ladies kurtis, woolen kurtis, women winter clothing, women clothing online, knitted tops";
     	$metadescription="Discover wide range of women cardigans, coats, jackets, knitted tops, kurtis, sweaters & ponchos. Rage is one of the leading brand for women's in India offer online shopping for ladies cardigans, long coats, woolen kurtis, western dresses, designer tops, capes, tunics, stoles & stylish ponchos. Show online now!";
         $showPoup = $this->checkVistor();
-		$banners = BannerImage::where('type','home')->orderby('sort','asc')->get();
+		$banners = BannerImage::where('type','home')->where('status','1')->orderby('sort','asc')->get();
 		//$new_arrival_products = Product::with(['attributes','productimages','category'])->where(['status'=>1,'new_arrival'=>'yes'])->orderby('id','DESC')->skip(0)->take(10)->get();
 		$best_seller_products = Product::with(['attributes','productimages','category'])
 			->withExists(['wishlist as is_wishlisted' => function ($q) {
@@ -277,7 +277,7 @@ class IndexController extends Controller
             if($validator->passes()) {
                 
 				
-				
+				/*
 				$recaptchaResponse = $request->input('g-recaptcha-response');
 
 				// Google's reCAPTCHA secret key
@@ -288,7 +288,7 @@ class IndexController extends Controller
 
 				// Decode the JSON response
 				$responseData = json_decode($response, true);
-
+              */
 				$responseData['success'] = true;
 
 				// Check if reCAPTCHA validation was successful
@@ -410,36 +410,43 @@ class IndexController extends Controller
                     'name_of_party' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
                     'address_of_party' => 'required|string|max:255',
                     'city_of_party' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-                    'phone_of_party' => 'required|numeric|digits:10',
-					'prop' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-					'father_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
-					'res_address' => 'required|string|max:255',
-					'phone' => 'required|numeric|digits:10',
-					'mobile' => 'required|numeric|digits:10',
-					'email' => 'required|string|regex:/^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i|max:255',
-					'showroom_name' => 'required|string|max:255',
-					'showroom_address' => 'required|string|max:255',
-					'showroom_phone' => 'required|numeric|digits:10',
-					'floor1' => 'required|numeric',
-					'frontage' => 'required|numeric',
-					'depth' => 'required|numeric',
-					'area' => 'required|numeric',
-					'competitor' => 'required|string|max:255',
-					'mode_of_operation' => 'required|string|max:255',
+                    'phone_of_party' => 'required|numeric|digits_between:7,15',
+                    'prop' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+                    'father_name' => 'required|regex:/^[a-zA-Z]+$/u|max:255',
+                    'res_address' => 'required|string|max:255',
+                    'phone' => 'required|numeric|digits_between:7,15',
+                    'mobile' => 'required|numeric|digits_between:7,15',
+                    'email' => 'required|string|regex:/^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i|max:255',
+                    'showroom_name' => 'required|string|max:255',
+                    'showroom_address' => 'required|string|max:255',
+                    'showroom_phone' => 'required|numeric|digits_between:7,15',
+                    'floor1' => 'required|numeric',
+                    'frontage' => 'required|numeric',
+                    'depth' => 'required|numeric',
+                    'area' => 'required|numeric',
+                    'competitor' => 'required|string|max:255',
+                    'mode_of_operation' => 'required|string|max:255',
                 ],
                 [
                     'email.regex'=>'This email is not a valid email address',
                     'floor1.required'=>'The floor field is required',
                     'floor1.numeric'=>'The floor must be a number.',
-                    'phone.required'=>'Phone number must be 10 digits',
-                    'phone.numeric'=>'Phone number must be 10 digits',
-                    'phone.digits'=>'Phone number must be 10 digits',
-					'showroom_phone.required'=>'Phone number must be 10 digits',
-                    'showroom_phone.numeric'=>'Phone number must be 10 digits',
-                    'showroom_phone.digits'=>'Phone number must be 10 digits',
-					'phone_of_party.required'=>'Phone number must be 10 digits',
-                    'phone_of_party.numeric'=>'Phone number must be 10 digits',
-                    'phone_of_party.digits'=>'Phone number must be 10 digits',
+
+                    'phone.required'=>'Enter the phone number.',
+                    'phone.numeric'=>'Phone number must contain digits only.',
+                    'phone.digits_between'=>'Phone number must be between 7 and 15 digits.',
+
+                    'mobile.required'=>'Enter your mobile number.',
+                    'mobile.numeric'=>'Mobile number must contain digits only.',
+                    'mobile.digits_between'=>'Mobile number must be between 7 and 15 digits.',
+
+                    'showroom_phone.required'=>'Enter the showroom phone number.',
+                    'showroom_phone.numeric'=>'Showroom phone number must contain digits only.',
+                    'showroom_phone.digits_between'=>'Showroom phone number must be between 7 and 15 digits.',
+
+                    'phone_of_party.required'=>'Enter the party phone number.',
+                    'phone_of_party.numeric'=>'Party phone number must contain digits only.',
+                    'phone_of_party.digits_between'=>'Party phone number must be between 7 and 15 digits.',
                 ]);
             if($validator->passes()) {
                 $data = $request->all();

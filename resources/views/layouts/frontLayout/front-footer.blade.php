@@ -16,7 +16,7 @@
                         <h4>Company</h4>
                         <ul>
                             <li><a href="{{ url('about-us') }}">About Us</a></li>
-                            <li><a href="{{ url('lookbook') }}">Brand Ambassadors</a></li>
+                            <li><a href="{{ url('brand-ambassadors') }}">Brand Ambassadors</a></li>
                             <li><a href="{{ url('new-arrivals') }}">New Arrivals</a></li>
                             <li><a href="{{ url('store-locator') }}">Store Locator</a></li>
                             <li><a href="{{ url('contact-us') }}">Contact Us</a></li>

@@ -1,4 +1,3 @@
-<?php $countries = \App\GeoCountry::getcountries(); ?>
 <section class="account-content-grid">
   <div class="container-fluid">
 
@@ -177,10 +176,8 @@
              <div class="col-md-6 col-12">
                 <label for="country">Country <span>*</span></label>
                 
-                <select name="country" id="country" class="form-select">
-                  @foreach($countries as $country)
-                  <option value="{{ $country['name'] }}" data-phone-code="{{ $country['phone_code'] }}" @if($country['name']== Auth::user()->country  ) selected @endif>{{ $country['name'] }}</option>
-                  @endforeach
+                <select name="country" id="country" class="form-select" tabindex="-1">
+                  <option value="India" selected>India</option>
                 </select>
                 <div class="err" id="MyAccount-country"></div>
               </div>
@@ -188,11 +185,9 @@
               <div class="col-md-6 col-12">
                 <label for="mobile">Mobile <span>*</span></label>
                 <div class="rage-phone-group">
-                 <select name="country_code" id="country_code" class="rage-phone-code" tabindex="-1" style="pointer-events:none;">
-					  @foreach($countries as $country)
-					  <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if(Auth::user()->country_code == $country['phone_code']) selected @endif >+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-					  @endforeach
-				</select>
+                 <select name="country_code" id="country_code" class="rage-phone-code" tabindex="-1">
+                  <option value="91" selected>+91</option>
+                </select>
                   <input type="tel" name="mobile" id="mobile" class="form-control rage-phone-number" placeholder="Enter the mobile number" value="{{ Auth::user()->mobile }}" readonly>
                 </div>
                 <div class="err" id="MyAccount-mobile"></div>
@@ -202,11 +197,9 @@
 			  <div class="col-md-6 col-12">
                 <label for="alternative_number">Alternative Mobile</label>
                 <div class="rage-phone-group">
-                  <select name="country_code2" id="country_code2" class="rage-phone-code"> 
-                    @foreach($countries as $country)
-                    <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if(Auth::user()->country_code2 == $country['phone_code']) selected @endif >+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                    @endforeach
-                  </select>
+                  <select name="country_code2" id="country_code2" class="rage-phone-code" tabindex="-1">
+                  <option value="91" selected>+91</option>
+                </select>
                   <input type="tel" name="alternative_number" id="alternative_number" class="form-control rage-phone-number" placeholder="Enter the mobile number" value="{{ Auth::user()->alternative_number }}">
                 </div>
                 <div class="err" id="MyAccount-alternative_number"></div>
@@ -264,13 +257,6 @@
               <span>02</span> Primary Delivery Location
             </div>
 
-            <?php
-              // Billing country: the saved one if it is in the list, otherwise India
-              $billCountrySel = 'India';
-              foreach ($countries as $billRow) {
-                if (strcasecmp($billRow['name'], $billing_address->country ?? '') === 0) { $billCountrySel = $billRow['name']; break; }
-              }
-            ?>
 
             <div class="row g-3">
 
@@ -289,11 +275,9 @@
                   <label for="billing_country">Country</label>
                   <div class="field-with-icon rage-country-field">
                     <i class="fa-solid fa-earth-americas"></i>
-                    <select class="form-select" name="billing_country" id="billing_country">
-                      @foreach($countries as $country)
-                      <option value="{{ $country['name'] }}" @if($country['name'] === $billCountrySel) selected @endif>{{ $country['name'] }}</option>
-                      @endforeach
-                    </select>
+                    <select class="form-select" name="billing_country" id="billing_country" tabindex="-1">
+                     <option value="India" selected>India</option>
+                </select>
                   </div>
                   <p class="err" id="MyAccount-billing_country" style="display: none;"></p>
                 </div>
@@ -302,13 +286,9 @@
                 <div class="luxury-field">
                   <label for="billing_mobile">Mobile</label>
                   <div class="rage-phone-group">
-                    <select name="billing_country_code" id="billing_country_code" class="rage-phone-code">
-                      @foreach($countries as $country)
-                      @if(!empty($country['phone_code']))
-                      <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] === $billCountrySel) selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                      @endif
-                      @endforeach
-                    </select>
+                    <select name="billing_country_code" id="billing_country_code" class="rage-phone-code" tabindex="-1">
+                  <option value="91" selected>+91</option>
+                </select>
                     <input type="text" class="form-control rage-phone-number" name="billing_mobile" id="billing_mobile" placeholder="Enter mobile" value="{{ $billing_address->mobile ?? '' }}">
                   </div>
                   <p class="err" id="MyAccount-billing_mobile" style="display: none;"></p>
@@ -319,13 +299,9 @@
                 <div class="luxury-field">
                   <label for="billing_alternative_number">Alternative Mobile Number</label>
                   <div class="rage-phone-group">
-                    <select name="billing_country_code2" id="billing_country_code2" class="rage-phone-code">
-                      @foreach($countries as $country)
-                      @if(!empty($country['phone_code']))
-                      <option value="{{ $country['phone_code'] }}" data-country="{{ $country['name'] }}" @if($country['name'] === $billCountrySel) selected @endif>+{{ $country['phone_code'] }} ({{ $country['name'] }})</option>
-                      @endif
-                      @endforeach
-                    </select>
+                    <select name="billing_country_code2" id="billing_country_code2" class="rage-phone-code" tabindex="-1">
+                  <option value="91" selected>+91</option>
+                </select>
                     <input type="text" class="form-control rage-phone-number" name="billing_alternative_number" id="billing_alternative_number" placeholder="Enter alternative mobile" value="{{ $billing_address->alternative_number ?? '' }}">
                   </div>
                   <p class="err" id="MyAccount-billing_alternative_number" style="display: none;"></p>
@@ -453,146 +429,31 @@
 <script type="text/javascript" src="{{ asset('js/ajax_jquery.min.js')}}"></script>
 <script src="{{ asset('assets/js/select2.min.js') }}"></script>
 <script>
-  // Scoped to the register form so a duplicate id elsewhere in the layout
+  // Country and country codes are fixed to India / +91 and cannot be changed.
+  // Each <select> holds a single option; Select2 is only kept so the boxes look
+  // exactly as before. They are made non-clickable and non-focusable here.
+  function lockSelect2($select, width) {
+    $select.select2({
+      width: width,
+      minimumResultsForSearch: Infinity
+    });
+    $select.next('.select2-container')
+      .css('pointer-events', 'none')
+      .find('.select2-selection').attr('tabindex', '-1');
+  }
+
+  // Scoped to the account form so a duplicate id elsewhere in the layout
   // can never be picked up by mistake.
-  var $countrySelect = $('#MyAccountform select[name="country"]');
-  var $codeSelect = $('#MyAccountform select[name="country_code"]');
-  var $codeSelect2 = $('#MyAccountform select[name="country_code2"]');
-  $countrySelect.select2({
-    width: '100%',
-    minimumResultsForSearch: 0
-  });
-  $codeSelect2.select2({
-    width: '100%',
-    minimumResultsForSearch: 0
-  });
-  
-  $codeSelect.select2({
-    width: '70px',
-    minimumResultsForSearch: 0, // always show the search box
-    templateSelection: function(option) {
-      // Show only "+91" once collapsed
-      var value = option.text.split(' ')[0];
-      return value || option.text;
-    }
-  });
-  // Two-way sync between Country and phone code.
-  //
-  // Several countries share one calling code (e.g. +1, +44, +7), so we
-  // never look an option up by its *value* - that would always land on the
-  // first country with that code (Canada -> Anguilla). Instead every phone
-  // code option carries data-country, and we select that exact option.
-  //
-  // Only Select2's own display is refreshed ('change.select2') instead of
-  // firing a full 'change', so the two handlers can't trigger each other
-  // in a loop.
-  // Country changed -> select the matching phone code option
-  
-  
-  /*
-  $countrySelect.on('change', function() {
-		var country_code = $("#country option:selected").attr("data-phone-code");
-		var option = new Option(country_code, country_code, true, true);
-		$("#country_code").append(option).trigger("change");
- });
-  */
-  
-  
-  
-  
-  
-  
-  $countrySelect.on('change', function() {
-    var countryName = $(this).val();
-    
-	
-				var $target = $codeSelect.find('option').filter(function() {
-				  return $(this).attr('data-country') === countryName;
-				}).first();
-				if ($target.length && !$target.prop('selected')) {
-				  $codeSelect.find('option').prop('selected', false);
-				  $target.prop('selected', true);
-				  $codeSelect.trigger('change.select2');
-				}
-				
-				
-				var $target2 = $codeSelect2.find('option').filter(function() {
-				  return $(this).attr('data-country') === countryName;
-				}).first();
-				if ($target2.length && !$target2.prop('selected')) {
-				  $codeSelect2.find('option').prop('selected', false);
-				  $target2.prop('selected', true);
-				  $codeSelect2.trigger('change.select2');
-				}
-	
-	
-  });
-  
-  
-  // Phone code changed -> select the matching country
-  $codeSelect.on('change', function() {
-    var countryName = $(this).find(':selected').attr('data-country');
-    if (countryName && $countrySelect.val() !== countryName) {
-      $countrySelect.val(countryName).trigger('change.select2');
-    }
-  });  
+  lockSelect2($('#MyAccountform select[name="country"]'), '100%');
+  lockSelect2($('#MyAccountform select[name="country_code"]'), '70px');
+  lockSelect2($('#MyAccountform select[name="country_code2"]'), '70px');
 </script>
 
 <script>
-  // Primary Delivery Location: Country <-> phone code (searchable, kept in sync)
-  var $billCountry = $('#MyAccountform select[name="billing_country"]');
-  var $billCode = $('#MyAccountform select[name="billing_country_code"]');
-  var $billCode2 = $('#MyAccountform select[name="billing_country_code2"]'); // Alternative Mobile
-
-  $billCountry.select2({
-    width: '100%',
-    minimumResultsForSearch: 0
-  });
-
-  var billCodeOptions = {
-    width: '70px',
-    minimumResultsForSearch: 0,
-    dropdownAutoWidth: true, // open list isn't squeezed into the 70px box
-    templateSelection: function(option) {
-      // Collapsed box shows only "+91"; the open list shows "+91 (India)"
-      var value = option.text.split(' ')[0];
-      return value || option.text;
-    }
-  };
-  $billCode.select2(billCodeOptions);
-  $billCode2.select2(billCodeOptions);
-
-  // Select the phone-code option of a given country. Matched by country NAME
-  // (data-country), never by the code value, because several countries share a
-  // code (+1, +44, +7). Only Select2's display is refreshed ('change.select2')
-  // so the handlers below can't trigger each other.
-  function setCodeForCountry($code, countryName) {
-    var $target = $code.find('option').filter(function() {
-      return $(this).attr('data-country') === countryName;
-    }).first();
-
-    if ($target.length && !$target.prop('selected')) {
-      $code.find('option').prop('selected', false);
-      $target.prop('selected', true);
-      $code.trigger('change.select2');
-    }
-  }
-
-  // Country changed -> both phone codes follow it
-  $billCountry.on('change', function() {
-    var countryName = $(this).val();
-    setCodeForCountry($billCode, countryName);
-    setCodeForCountry($billCode2, countryName);
-  });
-
-  // Mobile code changed -> Country (and the alternative code) follow it
-  $billCode.on('change', function() {
-    var countryName = $(this).find(':selected').attr('data-country');
-    if (countryName && $billCountry.val() !== countryName) {
-      $billCountry.val(countryName).trigger('change.select2');
-      setCodeForCountry($billCode2, countryName);
-    }
-  });
+  // Primary Delivery Location: country and codes are fixed to India / +91 too.
+  lockSelect2($('#MyAccountform select[name="billing_country"]'), '100%');
+  lockSelect2($('#MyAccountform select[name="billing_country_code"]'), '70px');
+  lockSelect2($('#MyAccountform select[name="billing_country_code2"]'), '70px');
 </script>
 
 <script>
@@ -600,7 +461,6 @@
   window.history.pushState({
     path: accounturl
   }, '', accounturl);
-  $('#country_code').next('.select2-container').css('pointer-events', 'none');
   //$("#country").select2();
   //$("#country_code").select2();
   $("#MyAccountform").submit(function(e) {
