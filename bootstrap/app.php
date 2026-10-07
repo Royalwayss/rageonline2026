@@ -17,15 +17,14 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\Admin::class,
         ]);
 
-        // If your payment gateway webhook/callback routes (Razorpay, Phonepe,
-        // Payu, Ccavenue) need CSRF exemption, add their URIs here.
-        // Uncomment and fill in once confirmed:
-        // $middleware->validateCsrfTokens(except: [
-        //     'webhook-razorpay',
-        //     'phonepe/callback',
-        //     'payu-money-callback',
-        //     'ccavenue/response',
-        // ]);
+        // CSRF exemption for webhook/callback routes.
+        // Delhivery cannot send a CSRF token, so its webhook is exempt.
+        // Payment gateway routes (Razorpay, Phonepe, Payu, Ccavenue) can be
+        // added here too once confirmed:
+        //     'webhook-razorpay', 'phonepe/callback', 'payu-money-callback', 'ccavenue/response'
+        $middleware->validateCsrfTokens(except: [
+            'delhivery/webhook',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

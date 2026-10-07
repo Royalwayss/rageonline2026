@@ -33,6 +33,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Front\IndexController;
 use App\Http\Controllers\Front\CcavenueController;
 use App\Http\Controllers\Front\CronJobController;
+use App\Http\Controllers\Front\DelhiveryWebhookController;
 use App\Http\Controllers\Front\CustomerController;
 use App\Http\Controllers\Front\ListingController;
 use App\Http\Controllers\Admin\OrdersController;
@@ -307,8 +308,9 @@ Route::group([], function(){
 	Route::post('/remove-points',[ListingController::class, 'removePoints']);
 	Route::post('/apply-gift',[ListingController::class, 'applyGift']);
 	Route::post('/get-order-summery',[ListingController::class, 'get_order_summery']);
-	 Route::post('/product-quick-view',[ListingController::class, 'product_quick_view'])->name('product_quick_view');
-	 Route::get('/feed/{type}',[CronJobController::class, 'feed']);
+	Route::post('/product-quick-view',[ListingController::class, 'product_quick_view'])->name('product_quick_view');
+	Route::get('/feed/{type}',[CronJobController::class, 'feed']);
+	Route::post('delhivery/webhook',[DelhiveryWebhookController::class, 'handle']);
 	
 	Route::group(['middleware' => ['auth']], function () {
 		Route::get('account/{slug}',[CustomerController::class, 'account']);
