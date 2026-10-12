@@ -93,23 +93,9 @@
                     @endif
                 </div>
 
-                <div class="review-stars">
-                    @for($i = 1; $i <= 5; $i++)
-                        @if($i <= $product_review['rating'])
-                            <i class="fa-solid fa-star"></i>
-                        @else
-                            <i class="fa-regular fa-star"></i>
-                        @endif
-                    @endfor
-                </div>
-
-                @if(!empty($product_review['review_title']))
-                <h4>{{ $product_review['review_title'] }}</h4>
-                @endif
-
-                <p>{{ $product_review['review_content'] }}</p>
-
-                @if(!empty($product_review['images']))
+                
+                <div class="rev-text">
+                     @if(!empty($product_review['images']))
                 <?php $explode_images = explode(',', $product_review['images']); ?>
                 <div class="review-images">
                     @foreach($explode_images as $review_img)
@@ -119,6 +105,25 @@
                     @endforeach
                 </div>
                 @endif
+                    <div class="">
+<div class="review-stars">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= $product_review['rating'])
+                            <i class="fa-solid fa-star"></i>
+                        @else
+                            <i class="fa-regular fa-star"></i>
+                        @endif
+                    @endfor
+                </div>
+                        @if(!empty($product_review['review_title']))
+                        <h4>{{ $product_review['review_title'] }}</h4>
+                        @endif
+                        
+                        <p>{{ $product_review['review_content'] }}</p>
+                    </div>
+
+               
+                </div>
 
             </div>
             @endforeach

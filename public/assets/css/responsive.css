@@ -640,7 +640,16 @@ section{
   .account-page {
     padding: 25px 0 60px;
   }
-
+  .main-header{
+    position: relative;
+    background: var(--theme-brown);
+  }
+  .main-header.scrolled {
+    position: fixed;
+}
+body:has(.inner-page){
+  padding-top: 0;
+}
   .account-page .container-fluid {
     padding-left: 14px;
     padding-right: 14px;

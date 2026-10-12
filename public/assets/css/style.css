@@ -497,7 +497,7 @@ body:has(.inner-page) {
     color: var(--theme-white);
 }
 
-.collection-card::before {
+/* .collection-card::before {
     content: "";
     position: absolute;
     top: 0;
@@ -505,7 +505,7 @@ body:has(.inner-page) {
     background-color: #0000005c;
     width: 100%;
     height: 100%;
-}
+} */
 
 .collection-card img {
     width: 100%;
@@ -546,7 +546,7 @@ body:has(.inner-page) {
 
 .collection-link {
     position: absolute;
-    bottom: 20px;
+    bottom: 40px;
     left: 20px;
 }
 
@@ -2347,7 +2347,21 @@ button.notify {
     padding: 32px 0;
     border-bottom: 1px solid #ded8d2;
 }
-
+.review-images{
+    width: 100px;
+    border: 1px solid #f1f1f1;
+    padding: 14px;
+}
+.review-images img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+.rev-text {
+    display: flex;
+    gap: 16px;
+    margin-top: 15px;
+}
 .review-meta {
     display: flex;
     justify-content: space-between;
@@ -2761,6 +2775,7 @@ button.notify {
 
 .cart-items {
     border-top: 1px solid #e1ddd8;
+    padding-top: 20px;
 }
 
 .cart-item {
@@ -7009,6 +7024,8 @@ a.contact-visual-item {
     font-size: 14px;
     font-weight: 600;
     color: #211a17;
+    display: flex;
+    gap: 10px;
 }
 
 .selected-size-pill {
