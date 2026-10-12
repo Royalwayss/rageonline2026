@@ -13,12 +13,16 @@ class DelhiveryWebhookController extends Controller
      * POST /delhivery/webhook?token=YOUR_SECRET
      * Delhivery pushes a scan update here every time a shipment status changes.
      */
-    public function handle(Request $request)
+    public function checkwebhook(Request $request)
     {
-        // 1. Shared secret check (put DELHIVERY_WEBHOOK_TOKEN in .env, add it to the URL you give Delhivery)
+        // 1. Shared secret check - only enforced when DELHIVERY_WEBHOOK_TOKEN is set in .env.
+        // Token can come from a header (X-Webhook-Token) or the URL (?token=...)
         $secret = env('DELHIVERY_WEBHOOK_TOKEN');
-        if (empty($secret) || !hash_equals($secret, (string) $request->query('token'))) {
-            return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
+        if (!empty($secret)) {
+            $given = (string) ($request->header('X-Webhook-Token') ?: $request->query('token'));
+            if (!hash_equals($secret, $given)) {
+                return response()->json(['status' => false, 'message' => 'Unauthorized'], 401);
+            }
         }
 
         $payload = $request->all();
@@ -36,6 +40,11 @@ class DelhiveryWebhookController extends Controller
             }
 
             $order = Order::where('waybill', $waybill)->first();
+
+            // Fallback: createOrder() sends our order id as "order", Delhivery returns it as ReferenceNo
+            if (!$order && !empty($shipment['ReferenceNo']) && is_numeric($shipment['ReferenceNo'])) {
+                $order = Order::find((int) $shipment['ReferenceNo']);
+            }
             if (!$order) {
                 return response()->json(['status' => true, 'message' => 'Order not found, ignored']);
             }
@@ -44,9 +53,19 @@ class DelhiveryWebhookController extends Controller
 
             if ($newStatus && $order->order_status !== $newStatus) {
                 // Never move a finished order backwards
-                if (!in_array($order->order_status, ['Delivered', 'Cancelled'])) {
-                    $order->order_status = $newStatus;
-                    $order->save();
+                if (!in_array($order->order_status, [ 'Cancelled'])) { //'Delivered',
+                    
+
+                    // Delivered: credit reward points (runs only on the first change to Delivered)
+                    if ($newStatus === 'Delivered') {
+						 $order->order_status = $newStatus;
+                         $order->save();
+                        try {
+                            Order::creditRewardPoints($order->id);
+                        } catch (\Throwable $e) {
+                            Log::error('Delhivery webhook creditRewardPoints failed for order ' . $order->id . ': ' . $e->getMessage());
+                        }
+                    }
 
                     // Optional: add a row to your order history table here if you keep one
                     // e.g. $order->histories()->create(['order_status' => $newStatus, 'comment' => $statusText]);

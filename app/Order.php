@@ -16,7 +16,7 @@ use App\ProductAttributeLog;
 class Order extends Model
 {
     //
-    protected $fillable = ['id','user_id','company_name','gstin','payment_method','txn_id','coupon_code','mobile','coupon_discount','prepaid_discount','prepaid_discount_percentage','total_order_discount','order_discount','order_discount_percentage','shipping_charges','subtotal','grand_total_without_round_of','amount_redeemed','points_redeemed','round_of','grand_total','payment_status','order_status','comments','webhook_payment_response','gift_id','gift_name','gift_mrp','delivery_method','awb_number','invoice_no','invoice_date','ip_address','created_at','updated_at','manifest_resp'];
+    protected $fillable = ['id','user_id','company_name','gstin','payment_method','txn_id','coupon_code','mobile','coupon_discount','prepaid_discount','prepaid_discount_percentage','total_order_discount','order_discount','order_discount_percentage','shipping_charges','subtotal','grand_total_without_round_of','amount_redeemed','points_redeemed','round_of','grand_total','payment_status','order_status','comments','webhook_payment_response','gift_id','gift_name','gift_mrp','delivery_method','awb_number','invoice_no','invoice_date','loyalty_points_for_this_order','ip_address','created_at','updated_at','manifest_resp'];
 
     public function getuser(){
     	return $this->belongsTo('App\User','user_id');
@@ -186,21 +186,28 @@ class Order extends Model
 		
 		$order = Order::with(['order_products'])->where('id', $orderId)->first();
         
-		$orderTotal = $order['grand_total'];
-		
-		$userId = $order['user_id'];
-		
-		$points = (int) floor($orderTotal * 0.10); 
-		
-		User::where('id', $userId)->increment('loyalty_points', $points);
+		if(empty($order->loyalty_points_for_this_order)){
+			
+			$orderTotal = $order['grand_total'];
+			
+			$userId = $order['user_id'];
+			
+			$points = (int) floor($orderTotal * 0.10); 
+			
+			Order::update('loyalty_points_for_this_order', $points)->where('id', $orderId);
+			
+			User::where('id', $userId)->increment('loyalty_points', $points);
 
-		LoyaltyPointLog::insert([
-			'user_id'     => $userId,
-			'order_id'    => $orderId,
-			'points'      => $points,
-			'type'        => 'earned',
-			'description' => 'Reward points for Order #' . $orderId,
-		]);
+			LoyaltyPointLog::insert([
+				'user_id'     => $userId,
+				'order_id'    => $orderId,
+				'points'      => $points,
+				'type'        => 'earned',
+				'description' => 'Reward points for Order #' . $orderId,
+			]);
+			
+		}
+		
 		
 		
 	  }

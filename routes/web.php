@@ -107,7 +107,7 @@ Route::prefix('/admin')->group(function(){
 		Route::match(['get', 'post'], '/update-image-sort', [ProductsController::class, 'updateImageSort']);
 		Route::match(['get', 'post'], '/remove-product-sizechartimage', [ProductsController::class, 'removeProductSizechartImage']);
 		Route::match(['get', 'post'], '/stocks', [ProductsController::class, 'stocks']);
-		
+		Route::post('/duplicate-product', [ProductsController::class, 'duplicateProduct']);
 		// Product Stocks
 		Route::get('/product-attributes',[ProductAttributeController::class, 'index'])->name('product_attributes');
 		Route::get('/product-attributes/fetch', [ProductAttributeController::class, 'fetch'])->name('product.attributes.fetch');

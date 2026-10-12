@@ -118,7 +118,7 @@ class ProductsController extends Controller
                 $deletePro = '</a><a  title="Delete Product"  class="btn btn-sm red margin-top-10 delete"  onclick="return ConfirmDelete()" href="'.url('admin/delete-product/'.$product['id']).'"> <i class="fa fa-times"></i>
                     </a>';
                 $actionValues='
-                    <a target="_blank" title="Edit" class="btn btn-sm green margin-top-10" href="'.url('/admin/add-edit-product/'.$product['id']).'"> <i class="fa fa-edit"></i>
+                    <a data-target="_blank" title="Edit" class="btn btn-sm green margin-top-10" href="'.url('/admin/add-edit-product/'.$product['id']).'"> <i class="fa fa-edit"></i>
                     '.$deletePro;
                 $num = ++$i;
                 if(!empty($product['productimages'][0])){
@@ -426,6 +426,102 @@ class ProductsController extends Controller
     	}
         $getCategories = $this->getcategories();
     	return view('admin.products.add-edit-product')->with(compact('title','productdata','productImages','getCategories','productCats'));
+    }
+
+    /**
+     * POST admin/duplicate-product
+     * Copies a product using the new name / code / attribute SKU from the popup.
+     * New seo_url is built from the new name + new code (same rule as add/edit).
+     * Attribute SKU "T855-M" becomes "<new attribute sku>-M".
+     */
+    public function duplicateProduct(Request $request){
+        $data = $request->all();
+        $name = trim($data['duplicate_product_name'] ?? '');
+        $code = trim($data['duplicate_product_code'] ?? '');
+
+        if($name == '' || $code == ''){
+            return redirect()->back()->with('flash_message_error','Product name and product code are required.');
+        }
+
+        $source = Product::find($data['source_product_id'] ?? 0);
+        if(!$source){
+            return redirect()->back()->with('flash_message_error','Source product not found.');
+        }
+
+        if(Product::where('product_code',$code)->exists()){
+            return redirect()->back()->with('flash_message_error','This product code already exists. Please use a different product code.');
+        }
+
+        // seo_url: same rule as addEditProduct (name + '-' + code), made unique
+        $slug = strtolower(str_replace(' ', '-', $name));
+        $slug = strtolower(str_replace('.', '', $slug));
+        $slug = strtolower(str_replace(',', '', $slug));
+        $slug .= '-'.strtolower(str_replace(' ', '', $code));
+        $baseSlug = $slug;
+        $n = 1;
+        while(Product::where('seo_url',$slug)->exists()){
+            $slug = $baseSlug.'-'.$n++;
+        }
+
+        // new attribute sku prefix (popup value, fallback = part of code before first "-")
+        $newSkuPrefix = trim($data['duplicate_attribute_sku'] ?? '');
+        if($newSkuPrefix == ''){
+            $newSkuPrefix = trim(explode('-', $code)[0]);
+        }
+
+        $newProduct = null;
+        DB::transaction(function() use ($source,$name,$code,$slug,$newSkuPrefix,$data,&$newProduct){
+            // 1. product
+            $newProduct = $source->replicate();
+            $newProduct->product_name = $name;
+            $newProduct->product_code = $code;
+            $newProduct->seo_url = $slug;
+            $newProduct->source_product_id = $source->id; // original product this was duplicated from
+            $newProduct->status = 0; // inactive until reviewed
+            $newProduct->save();
+
+            // 2. categories
+            $catIds = ProductCategory::where('product_id',$source->id)->pluck('category_id')->toArray();
+            if(!empty($catIds)){
+                $newProduct->product_categories()->attach($catIds);
+            }
+            /*
+            // 3. image rows (same image files are reused, nothing is copied on disk)
+            foreach(ProductImage::where('product_id',$source->id)->get() as $img){
+                $newImg = $img->replicate();
+                $newImg->product_id = $newProduct->id;
+                $newImg->save();
+            } */
+
+            // 4. attributes (only if the Attributes checkbox was ticked)
+            if(!empty($data['duplicate_attributes'])){
+                foreach(ProductAttribute::where('product_id',$source->id)->get() as $attr){
+                    $oldSku = (string) $attr->sku;
+                    if(strpos($oldSku,'-') !== false){
+                        $newSku = $newSkuPrefix.substr($oldSku, strpos($oldSku,'-')); // T855-M => newprefix-M
+                    }else{
+                        $newSku = $newSkuPrefix.'-'.$attr->size;
+                    }
+                    $newAttr = $attr->replicate();
+                    $newAttr->product_id = $newProduct->id;
+                    $newAttr->sku = $newSku;
+                    $newAttr->stock = 0; // do not double-count stock
+                    $newAttr->status = 1;
+                    $newAttr->save();
+
+                    $stock_logs = new ProductAttributeLog;
+                    $stock_logs->attribute_id = $newAttr->id;
+                    $stock_logs->action = '1';
+                    $stock_logs->qty = 0;
+                    $stock_logs->stock_remaining = 0;
+                    $stock_logs->message = 'New Attribute Added (duplicated from product '.$source->product_code.')';
+                    $stock_logs->admin_id = Auth::guard('admin')->user()->id;
+                    $stock_logs->save();
+                }
+            }
+        });
+
+        return redirect('admin/add-edit-product/'.$newProduct->id)->with('flash_message_success','Product duplicated successfully. It is Inactive - review it and enable when ready.');
     }
 
     public function updateImageSort(Request $request){

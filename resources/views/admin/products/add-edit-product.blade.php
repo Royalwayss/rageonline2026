@@ -49,6 +49,15 @@ use App\Productcolor;
         @if(Session::has('flash_message_success'))
             <div role="alert" class="alert alert-success alert-dismissible fade in"> <button aria-label="Close" data-dismiss="alert" style="text-indent: 0;" class="close" type="button"><span aria-hidden="true">×</span></button> <strong>Success!</strong> {!! session('flash_message_success') !!} </div>
         @endif
+        @if(!empty($productdata['source_product_id']))
+            <?php $sourceProduct = \DB::table('products')->where('id',$productdata['source_product_id'])->select('id','product_name','product_code')->first(); ?>
+            @if($sourceProduct)
+                <div role="alert" class="alert alert-info">
+                    <i class="fa fa-copy"></i> This product is a duplicate of
+                    <strong><a href="{{ url('admin/add-edit-product/'.$sourceProduct->id) }}" target="_blank">{{ $sourceProduct->product_name }} ({{ $sourceProduct->product_code }})</a></strong>
+                </div>
+            @endif
+        @endif
         <div class="row">
             <div class="col-md-12 ">
                 <div class="portlet blue-hoki box ">
@@ -56,6 +65,11 @@ use App\Productcolor;
                         <div class="caption">
                             <i class="fa fa-gift"></i>{{ $title }}
                         </div>
+                        @if(!empty($productdata['id']))
+                        <div class="actions">
+                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#duplicateProductModal"><i class="fa fa-copy"></i> Duplicate Product</button>
+                        </div>
+                        @endif
                     </div>
                     <div class="portlet-body form">
                         <form id="addEditProduct" role="form" class="form-horizontal" method="post" @if(!empty($productdata['id'])) action="{{ url('admin/add-edit-product/'.$productdata['id']) }}" @else action="{{ url('admin/add-edit-product') }}" @endif enctype="multipart/form-data"> 
@@ -484,6 +498,71 @@ use App\Productcolor;
         </div>
     </div>
 </div>
+<!-- Duplicate Product popup -->
+@if(!empty($productdata['id']))
+<div class="modal fade" id="duplicateProductModal" tabindex="-1" role="dialog" aria-labelledby="duplicateProductModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form id="duplicateProductForm" action="{{ url('admin/duplicate-product') }}" method="post">
+                @csrf
+                <input type="hidden" name="source_product_id" value="{{ $productdata['id'] }}">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="duplicateProductModalLabel">Duplicate Product</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="duplicate_product_name">Product Name <span class="red">*</span></label>
+                        <input type="text" class="form-control" name="duplicate_product_name" id="duplicate_product_name" placeholder="Product Name" autocomplete="off" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="duplicate_product_code">Product Code <span class="red">*</span></label>
+                        <input type="text" class="form-control" name="duplicate_product_code" id="duplicate_product_code" placeholder="Product Code" autocomplete="off" required>
+                    </div>
+                    <div class="checkbox">
+                        <label for="duplicate_attributes">
+                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="duplicate_attributes" id="duplicate_attributes" checked value="1">Including Attributes
+                        </label>
+                    </div>
+                    <div class="form-group" id="duplicate_attribute_sku_wrap" style1="display:none;">
+                        <label for="duplicate_attribute_sku">Attribute SKU</label>
+                        <input type="text" class="form-control" name="duplicate_attribute_sku" id="duplicate_attribute_sku" placeholder="Attribute SKU" autocomplete="off">
+                        <span class="help-block">Filled automatically from the Product Code (the part before the first "-").</span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Duplicate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    // Duplicate Product popup: Attribute SKU is auto-filled from Product Code (T765-FAWN => T765)
+    (function () {
+        var codeInput = document.getElementById('duplicate_product_code');
+        var attrCheck = document.getElementById('duplicate_attributes');
+        var skuWrap   = document.getElementById('duplicate_attribute_sku_wrap');
+        var skuInput  = document.getElementById('duplicate_attribute_sku');
+        var skuEdited = false;
+
+        function skuFromCode(code) {
+            return code.trim().split('-')[0].trim();
+        }
+        function fillSku() {
+            if (!skuEdited) { skuInput.value = skuFromCode(codeInput.value); }
+        }
+
+        attrCheck.addEventListener('change', function () {
+            skuWrap.style.display = this.checked ? 'block' : 'none';
+            if (this.checked) { skuEdited = false; fillSku(); }
+        });
+        codeInput.addEventListener('input', fillSku);
+        skuInput.addEventListener('input', function () { skuEdited = true; });
+    })();
+</script>
+@endif
 <!-- Append Table Rows -->
 <table class="table table-hover table-bordered table-striped imagesamplerow" style="display:none;">
     <tbody>
