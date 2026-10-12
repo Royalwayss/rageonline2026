@@ -21,7 +21,7 @@ $categories = Category::getcategories();
             <div class="swiper-slide">
                 <a href="{{ !empty($banner->link) ? $banner->link : url('winter-collection') }}">
                     <img class="d-none d-md-block" src="{{ asset('images/banners/'.$banner->image) }}" alt="{{ !empty($banner->description) ? $banner->description : 'Rage Collection' }}">
-                    <img class="d-block d-md-none" src="{{ asset('images/banners/hero-mobile.jpg') }}" alt="{{ !empty($banner->description) ? $banner->description : 'Rage Collection' }}">
+                    <img class="d-block d-md-none" src="{{ asset('images/banners/'.$banner->mobile_image) }}" alt="{{ !empty($banner->description) ? $banner->description : 'Rage Collection' }}">
                 </a>
             </div>
             @empty
@@ -71,16 +71,14 @@ $categories = Category::getcategories();
                         ?>
 
                         @foreach($winter_subcategories as $subcategory)
-                            <?php
+                            @if(!empty($subcategory['image']) && $subcategory['show_on_home'] == '1')
+							<?php
                                 $chapter_no++;
-                                $chapter_product = Product::where('category_id', $subcategory['id'])
-                                    ->where('status', 0)
-                                    ->orderBy('id', 'desc')
-                                    ->first();
+                                $chapter_product = $subcategory['image'];
                                 if (!$chapter_product) {
                                     continue;
                                 }
-                                $chapter_image = !empty($chapter_product->product_image) ? asset('images/ProductImages/medium/'.$chapter_product->product_image->image) : asset('images/no-image-found.jpg');
+                                $chapter_image = !empty($chapter_product) ? asset('images/CategoryImages/'.$chapter_product) : asset('images/no-image-found.jpg');
                                 $chapter_roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
                             ?>
                             <div class="swiper-slide">
@@ -102,6 +100,7 @@ $categories = Category::getcategories();
 
                                 </div>
                             </div>
+							@endif
                         @endforeach
 
                     </div>

@@ -138,6 +138,7 @@ class CategoryController extends Controller
             $category->meta_description =  $data['meta_description'];
            /* $category->sort =  $data['sort'];*/
             $category->seo_unique =  $data['seo_unique'];
+            $category->show_on_home = (isset($data['show_on_home']) && $data['show_on_home'] == 1) ? 1 : 0;
             if(isset($data['filters'])){
                 $category->filters =  implode(',', $data['filters']);
             }
@@ -227,6 +228,22 @@ class CategoryController extends Controller
         }
     }
 	
+	public function removeCategoryImage(Request $request){
+		if($request->ajax()){
+			$data = $request->all();
+			$category = Category::find($data['id']);
+			if($category){
+				$file = public_path('/images/CategoryImages/'.$category->image);
+				if(!empty($category->image) && file_exists($file)){
+					unlink($file);
+				}
+				$category->image = '';
+				$category->save();
+			}
+			echo 1;
+		}
+	}
+
 	public function removeCategorySizechartImage(Request $request){
 		if($request->ajax()){
 			$data = $request->all();

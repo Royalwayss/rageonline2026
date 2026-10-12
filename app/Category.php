@@ -9,7 +9,7 @@ class Category extends Model
 {
     //
     public function subcategories(){
-    	return $this->hasMany('App\Category','parent_id')->select('id','name','parent_id','seo_unique','filters','description','image')->orderby('sort','ASC')->where('status',1);
+    	return $this->hasMany('App\Category','parent_id')->select('id','name','parent_id','seo_unique','filters','show_on_home','description','image')->orderby('sort','ASC')->where('status',1);
     }
 
     public function subcat(){

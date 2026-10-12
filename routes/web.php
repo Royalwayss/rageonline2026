@@ -91,7 +91,7 @@ Route::prefix('/admin')->group(function(){
 		Route::match(['get', 'post'], '/add-edit-category/{id?}', [CategoryController::class, 'addEditCatgeory']);
 		Route::match(['get', 'post'], '/CheckSeoUnique', [CategoryController::class, 'CheckSeoUnique']);
         Route::match(['get', 'post'], '/remove-category-sizechartimage', [CategoryController::class, 'removeCategorySizechartImage']);
-
+        Route::match(['get', 'post'], '/remove-category-image', [CategoryController::class, 'removeCategoryImage']);
 		// Product Routes
 		Route::match(['get', 'post'], '/products', [ProductsController::class, 'products']);
 		Route::match(['get', 'post'], '/compress_product_images', [ProductsController::class, 'compress_product_images']); 

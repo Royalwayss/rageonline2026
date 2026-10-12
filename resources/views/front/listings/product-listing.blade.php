@@ -73,7 +73,7 @@
 							
 							@empty(count($getproducts)) 
 							<div class="listing-empty-state">
-								<i class="fa-solid fa-magnifying-glass"></i>
+							<!--	<i class="fa-solid fa-magnifying-glass"></i> -->
 								<h3>No Products Found</h3>
 								@if(!empty($search))
 								<p>We couldn't find any pieces matching your current filters. Try adjusting or clearing them to see more results.</p>

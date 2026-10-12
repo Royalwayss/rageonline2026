@@ -71,12 +71,64 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="form-group">
+								
+								 <div class="form-group">
                                     <label class="col-md-3 control-label"></label>
                                     <div class="col-md-6">
                                         <span>Size - 1774 X 887</b></span>
                                     </div>
                                 </div>
+								
+								<div class="form-group ">
+                                    <label class="col-md-3 control-label">Select Mobile Banner Image : </label>
+                                    <div class="col-md-4">
+                                        <div data-provides="fileinput" class="fileinput fileinput-new">
+                                            <div style="" class="fileinput-new thumbnail">
+                                                @if(!empty($bannerdata['image']))
+                                                    <?php $path = "images/banners/".$bannerdata['mobile_image']; ?>
+                                                    @if(file_exists($path))
+                                                        <img style="height:100px;" class="img-responsive"  src="{{ asset('images/banners/'.$bannerdata['mobile_image'])}}">
+                                                    @endif
+                                                @else
+                                                    <img style="height:100px;" class="img-responsive"  src="{{ asset('images/default.png') }}">
+                                                @endif
+                                            </div>
+                                            <div style="max-width: 200px; max-height: 150px; line-height: 10px;" class="fileinput-preview fileinput-exists thumbnail"></div>
+                                            <div>
+                                                <div class="form-group">
+                                                    <span class="btn default btn-file">
+                                                    <span class="fileinput-new">
+                                                    Select Image </span>
+                                                    <span class="fileinput-exists">
+                                                    Select Image </span>
+                                                    <input type="file" name="mobile_image">
+                                                    </span>
+                                                    <a data-dismiss="fileinput" class="btn default fileinput-exists" href="javascript:;">
+                                                    Remove </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+								
+								
+								 <div class="form-group">
+                                    <label class="col-md-3 control-label"></label>
+                                    <div class="col-md-6">
+                                        <span>Size - 1000 X 1250</b></span>
+                                    </div>
+                                </div>
+								
+								
+								
+								
+								
+								
+								
+								
+								
+								
+                               
                                 <div class="form-group">
                                     <label class="col-md-3 control-label">Description :</label>
                                     <div class="col-md-4">

@@ -1562,7 +1562,7 @@ class ListingController extends Controller
                 }
 				Order::update_stock($orderid);
 				
-				Order::creditRewardPoints($orderid);
+			/*	Order::creditRewardPoints($orderid); */
 				
                 return redirect()->action([\App\Http\Controllers\Front\ListingController::class, 'thanks']);
             }

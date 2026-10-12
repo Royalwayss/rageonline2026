@@ -194,7 +194,7 @@ class Order extends Model
 			
 			$points = (int) floor($orderTotal * 0.10); 
 			
-			Order::update('loyalty_points_for_this_order', $points)->where('id', $orderId);
+			Order::where('id', $orderId)->update(['loyalty_points_for_this_order' => $points]);
 			
 			User::where('id', $userId)->increment('loyalty_points', $points);
 

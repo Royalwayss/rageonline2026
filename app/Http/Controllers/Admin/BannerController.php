@@ -101,6 +101,27 @@ class BannerController extends Controller
 					$banner->image = $bannerFilename;
 				}
 			}
+			
+			
+			
+			if ($request->hasFile('mobile_image')) {
+				if ($request->file('mobile_image')->isValid()) {
+					$file = $request->file('mobile_image');
+					$destination = public_path('/images/banners/');
+					if (!empty($bannerdata) && $bannerdata['image'] != "" && file_exists($destination.$bannerdata['image'])) {
+						//unlink($destination.$bannerdata['image']);
+					}
+					$ext = $file->getClientOriginalExtension();
+					$bannerFilename = "banner-".Str::random(5).date('h-i-s').".".$ext;
+					$file->move($destination, $bannerFilename);
+					$banner->mobile_image = $bannerFilename;
+				}
+			}
+			
+			
+			
+			
+			
             $banner->save();
             return redirect()->action('App\Http\Controllers\Admin\BannerController@bannerImages')->with('flash_message_success',$message);
         }

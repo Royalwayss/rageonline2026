@@ -68,6 +68,13 @@
                                     </div>
                                 </div>
 
+                                <div class="form-group">
+                                    <label class="col-md-3 control-label">Show on Home Page :</label>
+                                    <div class="col-md-4">
+                                        <input type="checkbox" name="show_on_home" value="1" style="margin-top:10px;width:22px;height:22px;" @if(!empty($categorydata['show_on_home'])) checked @endif/>
+                                    </div>
+                                </div>
+
                                 <div class="form-group ">
                                     <label class="col-md-3 control-label">Select Main image: </label>
                                     <div class="col-md-5">
@@ -76,7 +83,7 @@
                                             <?php if(!empty($categorydata['image'])){
                                                 $path = "images/CategoryImages/".$categorydata['image']; 
                                             if(file_exists($path)) { ?>
-                                                <img style="height:100px;widtyh:100px;" class="img-responsive"  src="{{ asset('images/CategoryImages/'.$categorydata['image'])}}">
+                                                <img style="height:100px;widtyh:100px;" class="img-responsive" id="CategoryImage-{{ $categorydata['id'] }}" src="{{ asset('images/CategoryImages/'.$categorydata['image'])}}">
                                             <?php }else{?>
                                                     <img style="height:100px;widtyh:100px;" class="img-responsive"  src="{{ asset('images/default.png') }}">
                                             <?php } } else { ?>
@@ -98,13 +105,16 @@
                                                     Remove </a>
                                                 </div>
                                             </div>
+											@if(!empty($categorydata['image']))
+											 <a href="javascript:;" data-attr-id="{{ $categorydata['id'] }}" class="btn btn-sm red DeleteCategoryImage">Remove Image </a>
+											@endif
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
                                     <label class="col-md-3 control-label"></label>
                                     <div class="col-md-7">
-                                     <label> <b style="color:green;"> Note:- Upload image having (1920 X 1070) dimensions</b></label>
+                                     <label> <b style="color:green;"> Note:- Upload image having (1122 X 1402) dimensions</b></label>
                                     </div>
                                 </div> 
                                 <div class="form-group ">
@@ -213,6 +223,24 @@
         </div>
     </div>
 </div>
+<script>
+$(document).on('click','.DeleteCategoryImage',function(){
+        var id = $(this).attr('data-attr-id');
+        $(this).hide();
+        $.ajax({
+            data : {id:id},
+            url : "/admin/remove-category-image",
+            type : "get",
+            success:function(resp){
+                alert('Image has been removed successfully');
+                $("#CategoryImage-"+id).attr("src", "<?php echo asset('images/default.png'); ?>");
+            },
+            error:function(){
+
+            }
+        })
+    });
+</script>
 <script>
 $(document).on('click','.DeleteSizeChart',function(){ 
         var id = $(this).attr('data-attr-id');
