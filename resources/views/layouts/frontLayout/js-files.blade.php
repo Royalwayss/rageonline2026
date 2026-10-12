@@ -1,5 +1,5 @@
 <?php
- $js_file_version = "?v=3.5";
+ $js_file_version = "?v=3.6";
 if(isset($page)){ $page = $page; } else { $page = '';} 
 
  ?>

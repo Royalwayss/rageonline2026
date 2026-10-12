@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     pinBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
                     setTimeout(() => {
                         pinBtn.innerHTML = 'Check';
-                        pinMsg.innerHTML = `<span style="color:#287444; font-weight:500;"><i class="fa-solid fa-truck"></i> Delivery to <strong>${val}</strong>: Expected in 3–5 business days. Express White-Glove delivery eligible.</span>`;
+                        pinMsg.innerHTML = `<span style="color:#287444; font-weight:500;"><i class="fa-solid fa-truck"></i> Delivery to <strong>${val}</strong>: Expected in 3–5 business days.</span>`;
                     }, 500);
                 } else {
                     pinMsg.innerHTML = '<span style="color:#932f2f;">Please enter a valid 6-digit postal code.</span>';

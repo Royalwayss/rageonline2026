@@ -291,7 +291,7 @@ label.size_disabled:not(.active) span {
                             <!-- LUXURY TRUST STRIP -->
                             <div class="luxury-trust-badges">
                                 <div class="trust-item">
-                                    <i class="fa-solid fa-gem"></i>
+                                        <i class="fa-solid fa-crown"></i>
                                     <div>
                                         <h6>Premium Quality Assured</h6>
                                         <span>Crafted with care for lasting elegance</span>
@@ -322,13 +322,13 @@ label.size_disabled:not(.active) span {
 
                             <!-- DELIVERY -->
                             <div class="delivery-check">
-                                <h5>Check Delivery & Services</h5>
+                                <h5>Check Delivery Availability</h5>
                                 <div class="pincode-box">
-                                    <input type="text" id="pincode" placeholder="Enter postal code" maxlength="6" onkeypress="return isNumberKey(event)">
+                                    <input type="text" id="pincode" placeholder="Enter your 6-digit PIN code" maxlength="6" onkeypress="return isNumberKey(event)">
                                     <button type="button" id="pincode-check" onclick="get_pincode_details()">Check</button>
                                 </div>
                                 <div id="pincode_msg"></div>
-                                <p>Enter your pincode to verify express white-glove dispatch and estimated delivery.</p>
+                                <p>Please enter PIN code to check delivery availability </p>
                             </div>
 
                             <!-- INFO ACCORDION -->
