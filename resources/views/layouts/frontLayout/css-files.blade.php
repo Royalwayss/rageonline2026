@@ -1,4 +1,4 @@
-<?php $css_file_version = "?v=2.12"; ?>  
+<?php $css_file_version = "?v=2.13"; ?>  
 <!-- css files -->
    
 	  <link href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" rel="stylesheet">
