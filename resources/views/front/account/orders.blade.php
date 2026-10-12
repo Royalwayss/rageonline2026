@@ -643,7 +643,7 @@
                                         @endif
 
                                         @if($check_order_return_exchange['cancel'] == 1)
-                                        <a href="{{ url('order-cancel/'.$order->id) }}" class="order-view-btn">
+                                        <a href="{{ url('order-cancel/'.$order->id) }}" class="order-view-btn" onclick="return confirm('Are you sure you want to cancel order #{{ $order->id }}? This action cannot be undone.');">
                                             <span>Cancel</span>
                                         </a>
                                         @endif

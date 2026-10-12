@@ -293,8 +293,8 @@ label.size_disabled:not(.active) span {
                                 <div class="trust-item">
                                     <i class="fa-solid fa-gem"></i>
                                     <div>
-                                        <h6>Authentic Craft</h6>
-                                        <span>Made with traditional craftsmanship</span>
+                                        <h6>Premium Quality Assured</h6>
+                                        <span>Crafted with care for lasting elegance</span>
                                     </div>
                                 </div>
                                 <div class="trust-item">
