@@ -1,0 +1,54 @@
+/* Shared phone-number field: a searchable Select2 phone code ("+91") sitting flush
+   against the number input inside ONE bordered box.
+
+   Markup:
+     <div class="rage-phone-group">
+         <select name="country_code" class="rage-phone-code"> ... </select>   (Select2 applied)
+         <input type="tel" name="mobile" class="form-control rage-phone-number">
+     </div>
+
+   Every selector is namespaced with .rage-phone-*, so it can't change the look of any
+   other form (the existing .mobile-input markup on other pages is not touched). */
+
+.rage-phone-group {
+    display: flex;
+    align-items: stretch;
+    border: 1px solid #d8d0c5;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+/* Select2 override - make it look like the flush "+91" box, not its default styling */
+.rage-phone-group .select2-container {
+    width: 70px !important;
+    flex-shrink: 0;
+    margin: 0 !important;
+}
+.rage-phone-group .select2-container .select2-selection--single {
+    border: none !important;
+    border-right: 1px solid #d8d0c5 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    height: 46px !important;
+    padding: 0 !important;
+}
+.rage-phone-group .select2-container .select2-selection__rendered {
+    line-height: 46px !important;
+    padding: 0 12px !important;
+    font-size: 14px !important;
+    color: #2b2b2b !important;
+}
+.rage-phone-group .select2-container .select2-selection__arrow {
+    display: none !important;
+}
+
+.rage-phone-group .rage-phone-number {
+    border: none !important;
+    box-shadow: none !important;
+    flex: 1;
+    min-width: 0;
+}
+.rage-phone-group .rage-phone-number:focus {
+    outline: none;
+    box-shadow: none;
+}
