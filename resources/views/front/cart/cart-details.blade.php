@@ -16,8 +16,15 @@
     $shipping = Cart::CalculateShipping($cartitems);
     $couponamount = 0;
     if (Session::has('couponinfo')) {
-        $couponamount = CouponCode::getCouponAmount(Session::get('couponinfo'), $subtotal);
+        //$couponamount = CouponCode::getCouponAmount(Session::get('couponinfo'), $subtotal);
     }
+	
+
+	if(!empty($summery['discount'])){
+		$couponamount = $summery['discount'];
+	}
+	
+	
 ?>
 
 <div class="row">
