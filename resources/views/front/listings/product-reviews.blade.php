@@ -1,5 +1,5 @@
 <?php
-    $reviews = $productdetails['product_reviews'];
+    $reviews = $productdetails['product_reviews'] ?? [];
     $review_count = count($reviews);
 
     $star_counts = [5 => 0, 4 => 0, 3 => 0, 2 => 0, 1 => 0];
@@ -27,10 +27,11 @@
         <div class="review-summary">
             <div class="row">
 
+                @if($review_count > 0)
                 <div class="col-lg-4 col-md-5 col-12">
                     <div class="rating-overview">
 
-                        <strong>{{ $average_rating }}</strong>
+                        <strong>{{ $review_count > 0 ? $average_rating : '0.0' }}</strong>
 
                         <div class="rating-stars">
                             @for($i = 1; $i <= 5; $i++)
@@ -67,9 +68,11 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-12 col-12">
-                    <div class="write-review-wrap">
-                        <p>Have you purchased this piece?</p>
+                @endif
+
+                <div class="{{ $review_count > 0 ? 'col-lg-3 col-md-12 col-12' : 'col-12' }}">
+                    <div class="write-review-wrap"@if($review_count == 0) style="text-align:center; display:flex; flex-direction:column; align-items:center;"@endif>
+                        <p>{{ $review_count > 0 ? 'Have you purchased this piece?' : 'No reviews yet. Be the first to review this product.' }}</p>
                         <button type="button" class="write-review-btn" data-bs-toggle="modal" data-bs-target="#reviewModal">
                             Write A Review
                         </button>

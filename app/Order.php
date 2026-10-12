@@ -331,6 +331,12 @@ class Order extends Model
 			$cancel  = '';
 			$return   = '';
 			$exchange   = '';
+			
+			
+			if(Order::where('order_status',"!=",'Cancelled')->where('user_id',Auth::user()->id)->where('id',$order_id)->count() == 1){
+				$cancel  = 1;
+			}
+			
 			$order = Order::with('order_products')->where('order_status','Delivered')->where('user_id',Auth::user()->id)->where('id',$order_id)->first(); 
 			
 			if(!empty($order)){
@@ -342,9 +348,9 @@ class Order extends Model
 				
 				
 				if($diff < 86400){
-					$cancel  = 1;
+					//$cancel  = 1;
 				}	
-                 $cancel  = 1;
+                 //$cancel  = 1;
                 if($diff < 172800){
 					
 					foreach($order->order_products as $order_product){
