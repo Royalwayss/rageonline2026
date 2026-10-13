@@ -62,11 +62,11 @@
                             <div>
                                 <span class="cart-collection">{{ $cartitem['product']['category']['name'] }}</span>
 
-                                <h3>
+                                <h4>
                                     <a href="{{ url('product/'.$cartitem['product']['seo_url']) }}">
                                         {{ $cartitem['product']['product_name'] }}
                                     </a>
-                                </h3>
+                                </h4>
                             </div>
 
                             <a href="javascript:;" class="cart-remove removeCartProduct" data-cart="{{ $cartitem['id'] }}">
@@ -256,7 +256,13 @@
                 Continue Shopping
             </a>
 
-            <p style="font-weight: 500; font-size: 13px; margin-top:16px;">
+            <p style="
+    font-weight: 400;
+    font-size: 16px;
+    margin-top: 16px;
+    color: #777;
+    font-family: unset;
+">
                 Note: Return request will be accepted within 24 hours only once the order gets delivered.
             </p>
 

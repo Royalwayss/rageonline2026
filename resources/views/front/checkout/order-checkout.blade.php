@@ -50,9 +50,9 @@
     <section class="checkout-page">
         <div class="container-fluid">
 
-            <div class="checkout-head">
+            <div class="cart-head">
                 <span>Secure Checkout</span>
-                <h1>Checkout</h1>
+                <h2>Checkout</h2>
             </div>
 
             <form name="checkout" id="OrderPlace" method="post" action="javascript:;">

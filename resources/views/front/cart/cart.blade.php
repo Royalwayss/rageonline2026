@@ -7,7 +7,7 @@
 
             <div class="cart-head">
                 <span>Your Selection</span>
-                <h1>Shopping Bag</h1>
+                <h2>Shopping Bag</h2>
                 <p>Review your selected pieces before checkout.</p>
             </div>
 

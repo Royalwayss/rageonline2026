@@ -122,8 +122,7 @@ section{
     gap: 2px;
 }
 .detail-breadcrumb{
-    text-transform: lowercase;
-    display: flex;
+      display: flex;
     flex-wrap: wrap;
     gap: 2px;
     margin-bottom: 25px;

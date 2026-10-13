@@ -322,17 +322,16 @@ label.size_disabled:not(.active) span {
 
                             <!-- DELIVERY -->
                             <div class="delivery-check">
-                                <h5>Check Delivery Availability</h5>
+                                <span class="option-head mb-0">Check Delivery Availability</span>
                                 <div class="pincode-box">
                                     <input type="text" id="pincode" placeholder="Enter your 6-digit PIN code" maxlength="6" onkeypress="return isNumberKey(event)">
                                     <button type="button" id="pincode-check" onclick="get_pincode_details()">Check</button>
                                 </div>
                                 <div id="pincode_msg"></div>
-                                <p>Please enter PIN code to check delivery availability </p>
                             </div>
 
                             <!-- INFO ACCORDION -->
-                            <div class="product-accordion" id="accordionExample">
+                            <!-- <div class="product-accordion" id="accordionExample">
                                 <div class="accordion-item active">
                                     <button type="button" class="accordion-head">
                                         Product Details & Specifications
@@ -344,9 +343,51 @@ label.size_disabled:not(.active) span {
                                         @if(!empty($productdetails['fabric_description']))
                                         <p><strong>Fabric Description:</strong> {!! $productdetails['fabric_description'] !!}</p>
                                         @endif
+                                        <p><strong>Manufactured and Marketed by:</strong> Rage Knit</p>
+                                        <p><strong>Manufacturer Address:</strong>Phase-6, HA-54, Opposite Sham Dharam Kanta, Focal Point Phase 6, Ludhiana, Punjab – 141010, India</p>
+                                        <p><strong>Country of Origin:</strong>India</p>
+ 
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
+
+                                <div class="product-details">
+                                    <span class="option-head mb-0">Product Details & Specifications</span>
+
+                                    <div class="product-details-content">
+                                        <div class="product-detail-row">
+                                            <span>Category</span>
+                                            <p>{{ $productdetails['category']['name'] }}</p>
+                                        </div>
+
+                                        <div class="product-detail-row">
+                                            <span>Product Code</span>
+                                            <p>{{ $productdetails['product_code'] }}</p>
+                                        </div>
+
+                                        @if(!empty($productdetails['fabric_description']))
+                                        <div class="product-detail-row">
+                                            <span>Fabric Description</span>
+                                            <p>{!! $productdetails['fabric_description'] !!}</p>
+                                        </div>
+                                        @endif
+
+                                        <div class="product-detail-row">
+                                            <span>Manufactured and Marketed by</span>
+                                            <p>Rage Knit</p>
+                                        </div>
+
+                                        <div class="product-detail-row">
+                                            <span>Manufacturer Address</span>
+                                            <p>Phase-6, HA-54, Opposite Sham Dharam Kanta, Focal Point Phase 6, Ludhiana, Punjab – 141010, India</p>
+                                        </div>
+
+                                        <div class="product-detail-row">
+                                            <span>Country of Origin</span>
+                                            <p>India</p>
+                                        </div>
+                                    </div>
+                                </div>
 
                         </div>
                     </div>

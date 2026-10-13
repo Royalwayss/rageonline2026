@@ -36,8 +36,7 @@ h1,
 h2,
 h3,
 h4,
-h5,
-h6 {
+h5 {
     font-family: "Cormorant", serif;
 }
 
@@ -559,12 +558,14 @@ body:has(.inner-page) {
     margin-bottom: 30px;
 }
 
-.heading-wrap span {
+.heading-wrap span, .related-head span, .cart-head > span {
     color: #b4a89a;
     text-transform: uppercase;
     font-weight: 500;
     display: inline-block;
     margin-bottom: 8px;
+    font-size: 14px;
+    letter-spacing: 1px;
 }
 
 .craft-img img {
@@ -810,11 +811,11 @@ a.border-btn.link-btn {
     align-items: center;
     gap: 8px;
     margin-bottom: 14px;
-    color: #8c8c8c;
+    color: #777;
 }
 
 .breadcrumb-wrap a {
-    color: #8c8c8c;
+    color: #777;
     text-decoration: none;
 }
 
@@ -850,7 +851,7 @@ a.border-btn.link-btn {
 
 .sort-box span {
     white-space: nowrap;
-    letter-spacing: 1px;
+    color: #777;
 }
 
 .sort-box select {
@@ -868,7 +869,6 @@ a.border-btn.link-btn {
     padding: 0 18px;
     border: 1px solid #222;
     background: #fff;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
@@ -1779,7 +1779,7 @@ a.border-btn.link-btn {
 .detail-price.card-box .sale-price {
     color: #111;
     font-weight: 500;
-    font-size: 18px;
+    font-size: 16px;
 }
 
 .detail-price del {
@@ -1797,13 +1797,10 @@ a.border-btn.link-btn {
 
 .detail-tax {
     margin: 6px 0 0;
-    color: #999;
+    color: #777;
+    font-size: 13px;
 }
 
-.detail-tax {
-    margin: 0;
-    color: #999;
-}
 
 .detail-description {
     padding: 24px 0;
@@ -1902,7 +1899,7 @@ button.notify {
     justify-content: center;
     border: 1px solid #d8d5d1;
     cursor: pointer;
-    padding: 4px;
+    padding: 0 10px;
 }
 
 .size-options input:checked + span {
@@ -1963,12 +1960,14 @@ button.notify {
 
 .delivery-check {
     padding: 28px 0;
-    border-bottom: 1px solid #e4e0dc;
 }
 
 .delivery-check h5 {
     margin: 0 0 15px;
+    text-transform: uppercase;
+    font-size: 18px;
 }
+
 
 .pincode-box {
     display: flex;
@@ -2096,17 +2095,8 @@ button.notify {
     margin-bottom: 35px;
 }
 
-.related-head span {
-    display: block;
-    margin-bottom: 8px;
-    color: #978e86;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
 .related-head h2 {
     margin: 0;
-    font-weight: 400;
 }
 
 .related-products .row {
@@ -2755,13 +2745,6 @@ button.notify {
     margin-bottom: 35px;
 }
 
-.cart-head > span {
-    display: block;
-    margin-bottom: 6px;
-    color: #9b9188;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
 
 .cart-head h1 {
     margin: 0 0 8px;
@@ -2769,10 +2752,6 @@ button.notify {
     font-weight: 400;
 }
 
-.cart-head p {
-    margin: 0;
-    color: #777;
-}
 
 .cart-items {
     border-top: 1px solid #e1ddd8;
@@ -2793,7 +2772,7 @@ button.notify {
 
 .cart-product-img img {
     width: 100%;
-    height: 230px;
+    height: 160px;
     display: block;
     object-fit: contain;
 }
@@ -2817,11 +2796,10 @@ button.notify {
     font-size: 12px;
 }
 
-.cart-product-top h3 {
+.cart-product-top h4 {
     margin: 0;
-
-    font-weight: 400;
-    font-size: 28px;
+font-size: 18px;
+    font-weight: 800;
 }
 
 .cart-product-top h3 a {
@@ -2839,7 +2817,7 @@ button.notify {
 .cart-variant {
     display: flex;
     gap: 20px;
-    margin-top: 15px;
+    margin-top: 5px;
     color: #777;
 }
 
@@ -2847,7 +2825,7 @@ button.notify {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 28px;
+    margin-top: 12px;
 }
 
 .cart-price {
@@ -2867,8 +2845,8 @@ button.notify {
 }
 
 .quantity-box {
-    width: 130px;
-    height: 44px;
+    width: 100px;
+    height: 35px;
     display: flex;
     border: 1px solid #d8d5d1;
 }
@@ -3097,8 +3075,8 @@ button.notify {
 
 .checkout-summary > h3 {
     margin: 0 0 25px;
-
     font-weight: 400;
+    font-size: 24px;
 }
 
 /* PRODUCT */
@@ -5753,7 +5731,7 @@ a.contact-visual-item {
 .order-prod-pricing {
     display: flex;
     gap: 28px;
-    align-items: center;
+    align-items: start;
 }
 
 .price-col .lbl {
@@ -6395,7 +6373,7 @@ a.contact-visual-item {
 .rage-search-input-group input::placeholder {
     font-family: "Geist", sans-serif;
     font-size: 16px;
-    color: #a89f93;
+    color: #777;
     font-weight: 300;
 }
 
@@ -6878,7 +6856,7 @@ a.contact-visual-item {
 
 .detail-rating-quick .code-sku {
     margin-right: auto;
-    color: #a89f93;
+    color: #777;
     font-size: 12px;
     letter-spacing: 0.5px;
 }
@@ -6946,21 +6924,23 @@ a.contact-visual-item {
     color: var(--theme-brown);
     margin-top: 3px;
     flex-shrink: 0;
+    width: 24px;
 }
 
 .trust-item h6 {
-    font-family: "Geist", sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 400;
     color: #211a17;
-    margin: 0 0 2px;
+    margin: 0 0 1px;
+    letter-spacing: 1px;
 }
 
 .trust-item span {
     display: block;
-    font-size: 12px;
-    color: #8c8277;
+    font-size: 13px;
+    color: #777;
     line-height: 1.35;
+    letter-spacing: 0.5px;
 }
 
 /* Sticky Add to Bag Bar */
@@ -8597,5 +8577,41 @@ button.filter-clear-btn {
     .swiper-pagination-bullet-active {
         width: 22px !important;
         height: 6px !important;
+    }
+}
+
+
+.product-details-content {
+    padding: 5px 0;
+}
+
+.product-detail-row {
+    display: flex;
+    gap: 20px;
+    padding: 12px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.product-detail-row span {
+    flex: 0 0 190px;
+    color: #777;
+    font-size: 14px;
+}
+
+.product-detail-row p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 576px) {
+    .product-detail-row {
+        display: block;
+    }
+
+    .product-detail-row span {
+        display: block;
+        margin-bottom: 5px;
     }
 }
