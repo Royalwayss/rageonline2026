@@ -817,6 +817,9 @@ body:has(.inner-page){
     width: 42px;
     height: 44px;
   }
+  .product-detail-info h1{
+    font-size: 22px;
+  }
 }
 
 @media (max-width: 480px) {

@@ -30,23 +30,24 @@
 
                 <ul class="nav nav-pills login-tabs" role="tablist">
                     <li class="nav-item">
-                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#emailLogin"
+                        <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#mobileLogin" type="button">
+                            Mobile OTP
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="nav-link " data-bs-toggle="pill" data-bs-target="#emailLogin"
                             type="button">
                             Email Login
                         </button>
                     </li>
 
-                    <li class="nav-item">
-                        <button class="nav-link" data-bs-toggle="pill" data-bs-target="#mobileLogin" type="button">
-                            Mobile OTP
-                        </button>
-                    </li>
+                    
                 </ul>
 
                 <div class="tab-content">
 
                     <!-- EMAIL LOGIN -->
-                    <div class="tab-pane fade show active" id="emailLogin">
+                    <div class="tab-pane fade " id="emailLogin">
 
                         <form class="rage-form rage-form-login login" id="SignInForm" action="javascript:;">
                             @csrf
@@ -96,7 +97,7 @@
 
 
                     <!-- MOBILE OTP LOGIN -->
-                    <div class="tab-pane fade" id="mobileLogin">
+                    <div class="tab-pane fade show active" id="mobileLogin">
 
                         <div class="alert-message alert alert-danger print-error-msg otp-err-message">
                             <ul class="mb-0"></ul>
