@@ -680,7 +680,7 @@ class ListingController extends Controller
 				$stock_class = 'out-of-stock';
 			    $sizeStockText  = 'Out of Stock';
 				$finalprice = 0;
-                $pricings = array('price'=>$finalprice,'product_price'=>$produt_details['product_price']);
+                $pricings = array('price'=>$finalprice,'product_price'=>@$produt_details['product_price']);
                 return response()->json(['status'=>false,'sizeStockText'=>$sizeStockText,'data'=>$pricings,'message'=>'Selected size is not available at the moment','wishlist_count'=>$check_wishlist_count,'button'=>$button]);
             }
         }

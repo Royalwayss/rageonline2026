@@ -38,9 +38,9 @@ class Order extends Model
         $checkCouponUsed = DB::table('orders')->where('user_id',Auth::user()->id)->where('coupon_code',$couponcode)->wherein('payment_status',['cod','captured'])->count();
         return $checkCouponUsed;
     }
-	public function sendOrderEmail($orderid=''){
+	public function sendOrderEmail($orderid=''){ 
 		       if($orderid == ''){
-				   return '';
+				   return ''; 
 			   }
                if(env('MAIL_MODE') =="live" ){
 				     

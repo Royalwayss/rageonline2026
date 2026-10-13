@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Front;
-
 use App\Http\Controllers\Controller;
 use App\Order;
 use Illuminate\Http\Request;
@@ -12,7 +11,7 @@ class DelhiveryWebhookController extends Controller
     /**
      * POST /delhivery/webhook?token=YOUR_SECRET
      * Delhivery pushes a scan update here every time a shipment status changes.
-     */
+     */ 
     public function checkwebhook(Request $request)
     {
         // 1. Shared secret check - only enforced when DELHIVERY_WEBHOOK_TOKEN is set in .env.
