@@ -33,8 +33,8 @@ class ListingController extends Controller
 {
     //
     public function cart(){    
-		if(!Session::has('couponinfo')){
-		CouponCode::applycouponcode('welcome10');
+		if(!Session::has('couponinfo') && Auth::check()){
+		   CouponCode::applycouponcode('welcome10');
 		}
 		CouponCode::checkCouponStatus();
     	$title ="Cart";
