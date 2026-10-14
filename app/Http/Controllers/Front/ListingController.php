@@ -33,6 +33,9 @@ class ListingController extends Controller
 {
     //
     public function cart(){    
+		if(!Session::has('couponinfo')){
+		CouponCode::applycouponcode('welcome10');
+		}
 		CouponCode::checkCouponStatus();
     	$title ="Cart";
     	$metakeywords ="";
@@ -1008,7 +1011,7 @@ class ListingController extends Controller
                     'status'=>false,
                     'type' =>'login',
                     'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
-                    'message' =>'You need to login to apply this coupon'
+                    'message' =>'You need to login to apply this coupon <a href="'.url('login').'"> Click here to login</a>'
                 ]);
             }
         }

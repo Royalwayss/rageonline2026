@@ -161,41 +161,35 @@ class CouponCode extends Model
         return true;
     }
 
-    public static function availableCoupons($cartitems){
-        $priceArr = array();$totalitems =0;$catids =array();
-        foreach($cartitems as $ckey=> $cart){
-            $catids[] = $cart['product']['category_id'];
-            $totalitems += $cart['qty'];
-            $priceDetails = Cart::calProPricing($cart);
-            $priceArr[] =  $priceDetails['prosubtotal'];
-        }
-        $catids = array_unique($catids);
-        $producttotal = array_sum($priceArr);
-		/*->where('min_qty','<=',$totalitems)
-                            ->where('max_qty','>=',$totalitems)
-                            ->where('min_amount','<=',$producttotal)
-                            ->where('max_amount','>=',$producttotal) */
-        $coupons = CouponCode::where('expiry_date','>=',date('Y-m-d'))
-                            ->where('status',1)
-                            ->where('visible',1)
-                            ->where(function ($q) {
-                                $q->whereRaw('FIND_IN_SET("'.Auth::user()->email.'",user_emails)')->orwhere('user_emails','=','');
-                            })
-                            ->get()
-                            ->toArray();
-        $availableCoupons = array();
-        //this below code is not as much good we can do it in more better way later
-        foreach($coupons as $ckey=> $coupon){
-            //Check coupon used in orders
-            if($coupon['coupon_type'] =='Single Time'){
-                $checkCouponUsed = Order::checkCouponUsed($coupon['code']);
-                if($checkCouponUsed == 0){
-                    $availableCoupons[$ckey] = $coupon;
-                }
-            }else{
-                $availableCoupons[$ckey] = $coupon;
-            }
-        }
-        return $availableCoupons;
-    }
+		   public static function availableCoupons($cartitems){
+			$coupons = CouponCode::where('expiry_date', '>=', date('Y-m-d'))
+								->where('status', 1)
+								->where('visible', 1)
+								->where(function ($q) {
+									if (Auth::check()) {
+										$q->whereRaw('FIND_IN_SET(?, user_emails)', [Auth::user()->email])
+										  ->orWhereNull('user_emails')
+										  ->orWhere('user_emails', '=', '');
+									} else {
+										// guest: only coupons not tied to specific users
+										$q->whereNull('user_emails')
+										  ->orWhere('user_emails', '=', '');
+									}
+								})
+								->get()
+								->toArray();
+
+			$availableCoupons = array();
+			foreach ($coupons as $coupon) {
+				$availableCoupons[] = $coupon;
+				/*if ($coupon['coupon_type'] == 'Single Time') {
+					if (Order::checkCouponUsed($coupon['code']) == 0) {
+						$availableCoupons[] = $coupon;
+					}
+				} else {
+					$availableCoupons[] = $coupon;
+				} */
+			}
+			return $availableCoupons;
+		}
 }

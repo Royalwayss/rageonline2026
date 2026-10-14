@@ -163,7 +163,7 @@ label.size_disabled:not(.active) span {
                             <h1>{{ $productdetails['product_name'] }}</h1>
 
                             <div class="detail-rating-quick">
-                                <span class="code-sku">SKU: {{ $productdetails['product_code'] }}</span>
+                                <span class="code-sku detail-product-code">Product Code: {{ $productdetails['product_code'] }}</span>
                             </div>
 
                             <div class="detail-price">

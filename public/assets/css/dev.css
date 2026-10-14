@@ -357,3 +357,7 @@ header.header .account-nested-sub-menu li a {
 }
 
 .rage-country-code{ width:100px; }
+.detail-product-code{ 
+    font-weight: 500;
+    font-size: 15px !important; 
+}

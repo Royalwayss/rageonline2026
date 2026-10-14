@@ -52,7 +52,6 @@ class AddressController extends Controller
         $rules = [
             'full_name' => 'required|regex:/^[a-zA-Z ]+$/u|max:255',
             'mobile'    => 'required|numeric|digits_between:7,15',
-            'alternative_number' => 'required|numeric|digits_between:7,15',
             'address'   => 'bail|required',
             'postcode'  => 'required|numeric|digits:6',
             'city'      => 'required|regex:/^[a-zA-Z ]+$/u|max:255',

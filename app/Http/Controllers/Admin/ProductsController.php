@@ -362,11 +362,13 @@ class ProductsController extends Controller
                 foreach($data['attr_id'] as $attrKeyId => $attrIdDetails){
                     $get_attr = ProductAttribute::find($attrIdDetails);  
                     $proAttrUpdate = ProductAttribute::find($attrIdDetails);  
+                    $proAttrUpdate->sku = $data['attr_sku'][$attrKeyId];  
+                    $proAttrUpdate->size = $data['attr_size'][$attrKeyId];  
                     $proAttrUpdate->price = $data['attr_price'][$attrKeyId];  
                     $proAttrUpdate->color = $data['attr_color'][$attrKeyId];  
                     $proAttrUpdate->stock = $data['attr_stock'][$attrKeyId];  
                     $proAttrUpdate->save();
-                    
+                   
 					
 					if($get_attr->stock != $data['attr_stock'][$attrKeyId]){
 						$stock_logs = new ProductAttributeLog;

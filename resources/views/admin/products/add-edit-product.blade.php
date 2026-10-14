@@ -390,19 +390,24 @@ use App\Productcolor;
                                             <table class="table table-hover table-bordered table-striped">
                                                 <tbody>
                                                     <tr>
-                                                        <th width="15%" class="text-center">SKU</th>
-                                                        <th width="15%" class="text-center">Size</th>
+                                                        <th width="20%" class="text-center">SKU</th>
+                                                        <th width="20%" class="text-center">Size</th>
 														 <th width="15%" class="text-center" style="display:none">Color</th>
-                                                        <th width="15%" class="text-center">Stock</th>
-                                                        <th width="25%" class="text-center">Price</th>
-                                                        <th width="25%" class="text-center">Actions</th>
-                                                        <th width="25%" class="text-center">#</th>
+                                                        <th width="10%" class="text-center">Stock</th>
+                                                        <th width="15%" class="text-center">Price</th>
+                                                        <th width="10%" class="text-center">Actions</th>
+                                                        <th width="10%" class="text-center">#</th>
                                                     </tr>
                                                     @foreach($productdata['attributes'] as $proAttr)
                                                         <input type="hidden" name="attr_id[]" value="{{$proAttr['id']}}">
                                                         <tr class="blockIdWrap">
-                                                            <td>{{$proAttr['sku']}}</td>
-                                                            <td>{{$proAttr['size']}}</td>
+                                                            
+                                                            <td>
+                                                                <input type="text" class="form-control" name="attr_sku[]"  placeholder="Sku" value="{{$proAttr['sku']}}" />
+                                                            </td>
+															<td>
+                                                                <input type="text" class="form-control" name="attr_size[]" placeholder="Size" value="{{$proAttr['size']}}" />
+                                                            </td>
                                                             <td style="display:none">
                                                                 <input type="text" class="form-control" name="attr_color[]" placeholder="Color" value="{{$proAttr['color']}}" />
                                                             </td>
@@ -414,7 +419,7 @@ use App\Productcolor;
                                                             </td>
                                                             <td>
                                                                 <input name="radio{{$proAttr['id']}}" data-attrid="{{$proAttr['id']}}" value="yes" class="changeStatus" type="radio" @if($proAttr['status'] ==1) checked @endif> Active
-                                                                <input name="radio{{$proAttr['id']}}" data-attrid="{{$proAttr['id']}}" value="no" class="changeStatus" type="radio" @if($proAttr['status'] ==0) checked @endif> Inactive</td>
+                                                                <br><input name="radio{{$proAttr['id']}}" data-attrid="{{$proAttr['id']}}" value="no" class="changeStatus" type="radio" @if($proAttr['status'] ==0) checked @endif> Inactive</td>
                                                             <td>
                                                                 <a class="btn btn-danger" href="{{url('/admin/remove-attribute/'.$proAttr['id'])}}/{{$productdata['id']}}" onclick="return confirm('Are you sure ?')"><i class="fa fa-times"></i></a>
                                                             </td>

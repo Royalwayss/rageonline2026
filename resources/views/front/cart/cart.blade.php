@@ -79,11 +79,13 @@
                         $('#AppendCartDetails').html(resp.view);
                         $('#couponInput').val('');
                         alertclasss = "danger";
+						 printErrorMsg(resp.message);  
                     } else {
                         $('#AppendCartDetails').html(resp.view);
                         alertclasss = "success";
+						printSuccessMsg( resp.message);
                     }
-                    $('#PrintMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible"><button type="button" class="close" data-bs-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
+                    //$('#PrintMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible"><button type="button" class="close" data-bs-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
                     $('.PleaseWaitDiv').hide();
                 },
                 error: function() {
@@ -252,7 +254,7 @@
         }
     }
 
-    function update_qty(qty, cartid) {
+    function update_qty(qty, cartid) { 
         $('.PleaseWaitDiv').show();
 
         $.ajax({
@@ -277,7 +279,13 @@
                 if (resp.message != "") {
                     //$('#CartMessages').html('<div class="alert alert-' + alertclasss + ' alert-dismissible"><button type="button" class="close" data-bs-dismiss="alert">&times;</button><span>' + resp.message + '</span></div>');
                    
-					printSuccessMsg( resp.message);
+					if(resp.status){
+						printSuccessMsg( resp.message);
+					}else{
+						printErrorMsg( resp.message);
+					}
+					
+					
 				}
                 $("#Cartindixdiv").focus();
             },

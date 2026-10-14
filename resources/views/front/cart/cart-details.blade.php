@@ -128,7 +128,7 @@
                     </div>
                 </form>
 
-                @if(Auth::check())
+
                     <?php $coupons = CouponCode::availableCoupons($cartitems); ?>
                     @if($coupons)
                     <div class="available-coupons">
@@ -150,7 +150,7 @@
                         @endforeach
                     </div>
                     @endif
-                @endif
+               
             </div>
 
          <?php /*  <div class="summary-row">

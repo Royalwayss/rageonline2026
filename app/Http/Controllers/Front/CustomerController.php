@@ -1227,7 +1227,7 @@ class CustomerController extends Controller
         
     }
     
-    public function get_pincode_details(Request $request){
+    public function get_pincode_details11(Request $request){
 		if($request->pincode == ''){
 			$message = 'Enter the Pincode';
 			$status = false;
@@ -1247,6 +1247,65 @@ class CustomerController extends Controller
 		}
 		return response()->json(['status'=>$status,'message'=>$message]);
 	}
+	 public function get_pincode_details(Request $request){
+					$pincode = trim((string) $request->pincode);
+				 
+					if($pincode == ''){
+						return response()->json(['status'=>false,'message'=>'Enter the Pincode']);
+					}
+					if(!preg_match('/^[1-9][0-9]{5}$/', $pincode)){
+						return response()->json(['status'=>false,'message'=>'Enter a valid 6-digit Pincode']);
+					}
+				 
+					$serviceable = null;
+				 
+					try {
+						$response = Http::timeout(8)
+							->withHeaders([
+								'Authorization' => 'Token '.env('DELHIVERY_API_TOKEN'),
+								'Accept'        => 'application/json',
+							])
+							->get('https://track.delhivery.com/c/api/pin-codes/json/', [
+								'filter_codes' => $pincode,
+							]);
+				 
+						if($response->successful()){
+							$codes = $response->json('delivery_codes') ?? [];
+				 
+							if(empty($codes)){
+								$serviceable = false;
+							}else{
+								$info        = $codes[0]['postal_code'] ?? [];
+								$prepaid     = (($info['pre_paid'] ?? 'N') == 'Y');
+								$cod         = (($info['cod'] ?? 'N') == 'Y') || (($info['cash'] ?? 'N') == 'Y');
+								$serviceable = ($prepaid || $cod);
+							}
+						}else{
+							//Log::warning('Delhivery pincode API failed: HTTP '.$response->status().' '.$response->body());
+						}
+					} catch (\Throwable $e) {
+						//Log::error('Delhivery pincode API error: '.$e->getMessage());
+					}
+				 
+					// API not reachable: fall back to the local pincodelists table
+					if($serviceable === null){
+						$serviceable = DB::table('pincodelists')
+										->where('pincode', $pincode)
+										->where(function($q){ $q->where('prepaid','yes')->orWhere('cod','yes'); })
+										->exists();
+					}
+				 
+					if($serviceable){
+						return response()->json(['status'=>true,'message'=>'This pin code is serviceable.']);
+					}
+					return response()->json(['status'=>false,'message'=>'This pin code is not serviceable at all']);
+	}
+
+
+
+	
+	
+	
 	public function checksms(){
 	    Order::sendSms();
 	}
