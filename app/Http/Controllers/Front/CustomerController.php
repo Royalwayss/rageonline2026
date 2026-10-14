@@ -14,6 +14,7 @@ use App\Cart;
 use Session;
 use Redirect;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
 use DB;
 use Image;
 use Hash;
@@ -31,6 +32,7 @@ use App\Pincodelist;
 use App\SMS;
 use App\Pincode;
 use App\CustomFunction;
+
 use PDF;
 use Cookie;
 
@@ -1258,11 +1260,11 @@ class CustomerController extends Controller
 					}
 				 
 					$serviceable = null;
-				 
+				
 					try {
 						$response = Http::timeout(8)
 							->withHeaders([
-								'Authorization' => 'Token '.env('DELHIVERY_API_TOKEN'),
+								'Authorization' => 'Token '.env('DELHIVERY_API_KEY'),
 								'Accept'        => 'application/json',
 							])
 							->get('https://track.delhivery.com/c/api/pin-codes/json/', [
@@ -1284,15 +1286,16 @@ class CustomerController extends Controller
 							//Log::warning('Delhivery pincode API failed: HTTP '.$response->status().' '.$response->body());
 						}
 					} catch (\Throwable $e) {
+						 
 						//Log::error('Delhivery pincode API error: '.$e->getMessage());
 					}
 				 
 					// API not reachable: fall back to the local pincodelists table
 					if($serviceable === null){
-						$serviceable = DB::table('pincodelists')
+						/*$serviceable = DB::table('pincodelists')
 										->where('pincode', $pincode)
 										->where(function($q){ $q->where('prepaid','yes')->orWhere('cod','yes'); })
-										->exists();
+										->exists(); */
 					}
 				 
 					if($serviceable){
