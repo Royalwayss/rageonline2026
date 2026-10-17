@@ -3,13 +3,15 @@
 <link rel="stylesheet" href="{!!asset('css/backend_css/select2.min.css')!!}">
 <link rel="stylesheet" href="{!!asset('css/backend_css/bootstrap/css/select2-bootstrap4.min.css')!!}">
 <style>
-    #sortTags { list-style: none; margin: 0; padding: 15px; border: 1px dashed #c2cad8; min-height: 60px; background: #fafbfc; }
-    #sortTags li { display: inline-block; margin: 4px; padding: 7px 12px; background: #3598dc; color: #fff; border-radius: 4px !important; cursor: move; font-size: 13px; user-select: none; }
-    #sortTags li.inactive-product { background: #95a5a6; }
-    #sortTags li .tag-no { display: inline-block; min-width: 22px; margin-right: 6px; padding: 0 5px; background: rgba(0,0,0,.2); border-radius: 3px !important; text-align: center; }
-    #sortTags li .tag-code { display: inline-block; margin-right: 6px; padding: 0 6px; background: #a18357; color: #333; font-weight: 600; border-radius: 3px !important; }
-    #sortTags li.sortable-ghost { opacity: .4; }
-    .select2-container { width: 100% !important; }
+    #sortTags { list-style: none; margin: 0; padding: 14px; border: 1px solid #cfd8e6; border-radius: 8px; min-height: 60px; background: #f6f8fc; }
+#sortTags li { display: inline-block; margin: 4px; padding: 6px 12px 6px 6px; background: #fff; color: #1e2a4a; border: 1.5px solid #b9c6dc; border-left: 4px solid #3b6fb6; border-radius: 8px !important; cursor: move; font-size: 13px; user-select: none; box-shadow: 0 1px 3px rgba(30,42,74,.10); transition: box-shadow .15s, border-color .15s, transform .15s; }
+#sortTags li:hover { border-color: #3b6fb6; box-shadow: 0 4px 10px rgba(59,111,182,.22); transform: translateY(-1px); }
+#sortTags li.inactive-product { background: #f3f4f7; color: #7a8499; border-color: #cfd4de; border-left-color: #9aa3b5; border-style: solid; }
+#sortTags li .tag-no { display: inline-block; min-width: 24px; margin-right: 6px; padding: 1px 6px; background: #1e2a4a; color: #fff; border-radius: 4px !important; text-align: center; font-size: 12px; }
+#sortTags li.inactive-product .tag-no { background: #9aa3b5; }
+#sortTags li .tag-code { display: inline-block; margin-right: 6px; padding: 1px 7px; background: #e3f6ee; color: #0b7a55; font-weight: 600; border-radius: 4px !important; }
+#sortTags li.inactive-product .tag-code { background: #e8eaef; color: #6b7487; }
+#sortTags li.sortable-ghost { opacity: .4; }
 </style>
 <div class="page-content-wrapper">
     <div class="page-content">

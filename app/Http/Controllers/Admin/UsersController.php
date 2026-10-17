@@ -133,15 +133,16 @@ class UsersController extends Controller
     // Admin only: makes a 1-minute signed link that logs into the storefront as the selected customer.
     // The login itself happens on a non-admin URL, so it is stored in the storefront session, not the admin session.
     public function loginAsUser($id){
-        $user = User::find($id);
-        if(empty($user)){
-            return Redirect()->action('App\\Http\\Controllers\\Admin\\UsersController@users')->with('flash_message_error','User not found.');
-        }
-        if($user->status == 0){
-            return Redirect()->action('App\\Http\\Controllers\\Admin\\UsersController@users')->with('flash_message_error','This account is deactivated, activate it first to login.');
-        }
-         return redirect('account/dashboard');
-    }
+		$user = User::find($id);
+		if(empty($user)){
+			return Redirect()->action('App\\Http\\Controllers\\Admin\\UsersController@users')->with('flash_message_error','User not found.');
+		}
+		if($user->status == 0){
+			return Redirect()->action('App\\Http\\Controllers\\Admin\\UsersController@users')->with('flash_message_error','This account is deactivated, activate it first to login.');
+		}
+		Auth::guard('web')->login($user);
+		return redirect('account/dashboard');
+	}
 
     // Public URL (signed, expires in 1 minute) - storefront session
     public function impersonateLogin($id){

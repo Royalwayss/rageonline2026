@@ -530,7 +530,7 @@ class ProductsController extends Controller
 
     // GET admin/products-sort
     public function productsSort(Request $request){
-        Session::put('active','products');
+        Session::put('active','product_sorts'); 
         $title = "Products Sort";
         $getCategories = $this->getcategories();
         return view('admin.products.products-sort')->with(compact('title','getCategories'));
@@ -593,8 +593,7 @@ class ProductsController extends Controller
                 break;
             default: // current - saved product_sort, products without a sort number go last (newest first)
                 $query->orderByRaw('products.product_sort IS NULL')
-                      ->orderBy('products.product_sort','asc')
-                      ->orderBy('products.id','desc');
+                      ->orderBy('products.product_sort','asc');
                 break;
         }
 
