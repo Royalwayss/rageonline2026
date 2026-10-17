@@ -12,6 +12,7 @@ use App\State;
 use DB;
 use Cookie;
 use Session;
+use Illuminate\Support\Facades\Auth;
 use Crypt;
 use Illuminate\Support\Facades\Mail;
 class UsersController extends Controller
@@ -63,6 +64,8 @@ class UsersController extends Controller
                 }
                 $actionValues='
                     <a title="Edit User" class="btn btn-sm green margin-top-10" href="'.url('admin/add-edit-user/'.$user['id']).'"> <i class="fa fa-edit"></i>
+                    </a>
+                    <a title="Login as this user" target="_blank" class="btn btn-sm blue margin-top-10" href="'.url('admin/login-as-user/'.$user['id']).'"> <i class="fa fa-sign-in"></i> Login
                     </a>';
                 $num = ++$i;
                 $records["data"][] = array(     
@@ -125,6 +128,29 @@ class UsersController extends Controller
             return Redirect()->action('App\Http\Controllers\Admin\UsersController@users')->with('flash_message_success',$message);
         }
     	return view('admin.users.add-edit-user')->with(compact('title','userdata','states'));
+    }
+
+    // Admin only: makes a 1-minute signed link that logs into the storefront as the selected customer.
+    // The login itself happens on a non-admin URL, so it is stored in the storefront session, not the admin session.
+    public function loginAsUser($id){
+        $user = User::find($id);
+        if(empty($user)){
+            return Redirect()->action('App\\Http\\Controllers\\Admin\\UsersController@users')->with('flash_message_error','User not found.');
+        }
+        if($user->status == 0){
+            return Redirect()->action('App\\Http\\Controllers\\Admin\\UsersController@users')->with('flash_message_error','This account is deactivated, activate it first to login.');
+        }
+         return redirect('account/dashboard');
+    }
+
+    // Public URL (signed, expires in 1 minute) - storefront session
+    public function impersonateLogin($id){
+        $user = User::find($id);
+        if(empty($user) || $user->status == 0){
+            abort(403);
+        }
+        Auth::guard('web')->login($user);
+        return redirect('/');
     }
 
     public function CheckUserEmail(Request $request){

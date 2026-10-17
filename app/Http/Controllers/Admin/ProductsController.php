@@ -526,6 +526,110 @@ class ProductsController extends Controller
         return redirect('admin/add-edit-product/'.$newProduct->id)->with('flash_message_success','Product duplicated successfully. It is Inactive - review it and enable when ready.');
     }
 
+    /* =====================  PRODUCTS SORT  ===================== */
+
+    // GET admin/products-sort
+    public function productsSort(Request $request){
+        Session::put('active','products');
+        $title = "Products Sort";
+        $getCategories = $this->getcategories();
+        return view('admin.products.products-sort')->with(compact('title','getCategories'));
+    }
+
+    // POST admin/products-sort/fetch  (ajax) - products of a category in the chosen default order
+    public function productsSortFetch(Request $request){
+        $categoryId = (int) $request->input('category_id');
+        $sortType   = $request->input('sort_type');
+        $status     = $request->input('status');
+
+        if(!$categoryId || !in_array($sortType, ['current','highest_sale','new_to_old','old_to_new']) || !in_array($status, ['active','deactive','all'])){
+            return response()->json(['status'=>false,'message'=>'Please select category, sort type and status.']);
+        }
+
+        // selected category + its sub categories + sub-sub categories (same as the storefront listing)
+        $catIds = array($categoryId);
+        $level1 = DB::table('categories')->where('parent_id',$categoryId)->pluck('id')->toArray();
+        $catIds = array_merge($catIds,$level1);
+        if(!empty($level1)){
+            $level2 = DB::table('categories')->whereIn('parent_id',$level1)->pluck('id')->toArray();
+            $catIds = array_merge($catIds,$level2);
+        }
+
+        $query = DB::table('products')
+                    ->where('products.is_delete','no')
+                    ->where(function($q) use ($catIds){
+                        $q->whereIn('products.category_id',$catIds)
+                          ->orWhereIn('products.id',function($sub) use ($catIds){
+                              $sub->select('product_id')->from('product_categories')->whereIn('category_id',$catIds);
+                          });
+                    });
+
+        if($status == 'active'){
+            $query->where('products.status',1);
+        }elseif($status == 'deactive'){
+            $query->where('products.status',0);
+        }
+
+        $select = ['products.id','products.product_name','products.product_code','products.status'];
+
+        switch($sortType){
+            case 'highest_sale':
+                // units sold per product, cancelled / failed orders are not counted
+                $sold = DB::table('order_products')
+                            ->join('orders','orders.id','=','order_products.order_id')
+                            ->where('orders.is_delete','no')
+                            ->whereNotIn('orders.order_status',['Cancelled','Payment Failure','Payment Refunded','Abandoned'])
+                            ->select('order_products.product_id', DB::raw('SUM(order_products.product_qty) as total_sold'))
+                            ->groupBy('order_products.product_id');
+                $query->leftJoinSub($sold,'sold','sold.product_id','=','products.id');
+                $select[] = DB::raw('COALESCE(sold.total_sold,0) as total_sold');
+                $query->orderByRaw('COALESCE(sold.total_sold,0) DESC')->orderBy('products.id','desc');
+                break;
+            case 'new_to_old':
+                $query->orderBy('products.created_at','desc')->orderBy('products.id','desc');
+                break;
+            case 'old_to_new':
+                $query->orderBy('products.created_at','asc')->orderBy('products.id','asc');
+                break;
+            default: // current - saved product_sort, products without a sort number go last (newest first)
+                $query->orderByRaw('products.product_sort IS NULL')
+                      ->orderBy('products.product_sort','asc')
+                      ->orderBy('products.id','desc');
+                break;
+        }
+
+        $products = $query->select($select)->get();
+
+        $list = array();
+        foreach($products as $product){
+            $list[] = array(
+                'id'     => $product->id,
+                'name'   => $product->product_name,
+                'code'   => $product->product_code,
+                'status' => (int) $product->status,
+                'sold'   => isset($product->total_sold) ? (int) $product->total_sold : null,
+            );
+        }
+        return response()->json(['status'=>true,'products'=>$list]);
+    }
+
+    // POST admin/products-sort/save  (ajax) - saves the dragged order as product_sort 1..n
+    public function productsSortSave(Request $request){
+        $ids = $request->input('product_ids');
+        if(!is_array($ids) || empty($ids)){
+            return response()->json(['status'=>false,'message'=>'No products to save.']);
+        }
+        $ids = array_values(array_unique(array_filter(array_map('intval',$ids))));
+
+        DB::transaction(function() use ($ids){
+            foreach($ids as $position => $id){
+                DB::table('products')->where('id',$id)->update(['product_sort' => $position + 1]);
+            }
+        });
+
+        return response()->json(['status'=>true,'message'=>'Product order saved successfully.']);
+    }
+
     public function updateImageSort(Request $request){
         if($request->ajax()){
             $data  = $request->all();

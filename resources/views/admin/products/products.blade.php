@@ -48,6 +48,11 @@
                                     <div class="btn-group">
                                        <a  href="{{ route('product_attributes') }}" class="btn btn-primary">Stock Management</a>
                                     </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="btn-group">
+                                       <a href="{{ url('admin/products-sort') }}" class="btn btn-primary">Products Sort</a>
+                                    </div>
                                 </div> 
                         <div class="actions">
                             <div class="btn-group" style="float: right;">
@@ -153,8 +158,3 @@
       });
 </script>
 @stop
-
-
-
-
-

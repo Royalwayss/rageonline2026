@@ -2,6 +2,38 @@
 @section('content')
 <link rel="stylesheet" href="{{ asset('css/backend_css/dashboard.css') }}?v=2.5" />
 <style>
+/* ---------- layout: 2 equal columns, cards in the same row have the same height ---------- */
+#dashboard-analytics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 0 !important; }
+#dashboard-analytics:before, #dashboard-analytics:after { display: none !important; }
+#dashboard-analytics > [class*="col-"] { width: auto !important; float: none !important; padding: 0 !important; max-width: none !important; }
+@media (max-width: 991px) { #dashboard-analytics { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- report card ---------- */
+.report-box { height: 100%; background: #fff; border: 1px solid #e3e8f0 !important; border-radius: 10px !important; box-shadow: 0 1px 4px rgba(30, 42, 74, .07); padding: 14px 16px !important; margin: 0 !important; overflow: hidden; }
+.report-box .dashboard-analytics > .row { margin: 0 !important; }
+
+/* ---------- filter bar (always one row) ---------- */
+.report-box .filter-form, .report-box .filter-form .row { display: flex; flex-wrap: nowrap; align-items: center; gap: 6px; width: 100%; margin: 0 0 10px !important; padding: 0 !important; }
+.report-box .filter-form:before, .report-box .filter-form:after, .report-box .filter-form .row:before, .report-box .filter-form .row:after { display: none !important; }
+.report-box .filter-form .row { margin: 0 !important; }
+.report-box .filter-form [class*="col-"] { float: none !important; width: auto !important; flex: 1 1 0; min-width: 0; padding: 0 !important; margin: 0 !important; }
+.report-box .filter-form [class*="col-"]:has(input[type="submit"]) { flex: 0 0 auto; }
+.report-box .filter-form select, .report-box .filter-form input[type="date"] { width: 100%; height: 28px; padding: 0 5px; border: 1px solid #d5dbe6; border-radius: 5px; background: #f8fafd; font-size: 12px; color: #3b4559; outline: none; }
+.report-box .filter-form select:focus, .report-box .filter-form input[type="date"]:focus { border-color: #5b8ad0; background: #fff; }
+.report-box .filter-form input[type="submit"] { width: auto; height: 28px; padding: 0 14px; border: 0; border-radius: 5px; background: #3b6fb6; color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.report-box .filter-form input[type="submit"]:hover { background: #2d5a98; }
+
+/* ---------- analytics number tiles (Sales, Users, Prepaid, COD...) ---------- */
+#analytics-report > .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 !important; }
+#analytics-report > .row:before, #analytics-report > .row:after { display: none !important; }
+#analytics-report .analytics-box { width: auto !important; float: none !important; margin: 0 !important; height: auto !important; min-height: 78px !important; background: #f8fafd; border: 1px solid #e3e8f0 !important; border-radius: 8px !important; box-shadow: none !important; }
+
+/* ---------- module count tiles ---------- */
+.portlet-body .dashboard-stat2:not(.analytics-box) { border-radius: 10px !important; border: 1px solid #e3e8f0; box-shadow: 0 1px 4px rgba(30, 42, 74, .07); transition: transform .15s, box-shadow .15s; }
+.portlet-body .dashboard-stat2:not(.analytics-box):hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(30, 42, 74, .12); }
+
+/* ---------- charts ---------- */
+.report-box canvas { max-width: 100%; }
 </style>
 <?php
 	$months = months();
@@ -408,6 +440,7 @@
    			labels: xValues,
    			datasets: [{
    				backgroundColor: barColors,
+   				borderRadius: 4,
    				data: yValues
    			}]
    		},
@@ -421,12 +454,10 @@
    				}
    			},
    			scales: {
-   				yAxes: [{
-   				ticks: {
-   					beginAtZero: true
-   				}
-   				}]
+   				y: { beginAtZero: true, grid: { color: '#eef1f6' }, ticks: { callback: function(v){ return Number(v).toLocaleString('en-IN'); } } },
+   				x: { grid: { display: false } }
    			},
+   			maintainAspectRatio: true,
    		}
    	});
    }
@@ -443,6 +474,7 @@
    			labels: xValues,
    			datasets: [{
    				backgroundColor: barColors,
+   				borderRadius: 4,
    				data: yValues
    			}]
    		},
@@ -456,12 +488,10 @@
    				}
    			},
    			scales: {
-   				yAxes: [{
-   				ticks: {
-   					beginAtZero: true
-   				}
-   				}]
+   				y: { beginAtZero: true, grid: { color: '#eef1f6' }, ticks: { callback: function(v){ return Number(v).toLocaleString('en-IN'); } } },
+   				x: { grid: { display: false } }
    			},
+   			maintainAspectRatio: true,
    		}
    	});
    }
@@ -478,6 +508,7 @@
    			labels: xValues,
    			datasets: [{
    				backgroundColor: barColors,
+   				borderRadius: 4,
    				data: yValues
    			}]
    		},
@@ -492,12 +523,10 @@
    				}
    			},
    			scales: {
-   				yAxes: [{
-   				ticks: {
-   					beginAtZero: true
-   				}
-   				}]
+   				y: { beginAtZero: true, grid: { color: '#eef1f6' }, ticks: { callback: function(v){ return Number(v).toLocaleString('en-IN'); } } },
+   				x: { grid: { display: false } }
    			},
+   			maintainAspectRatio: true,
    		}
    	});
    }

@@ -85,6 +85,7 @@ Route::prefix('/admin')->group(function(){
 		Route::match(['get', 'post'], '/users', [UsersController::class, 'users']);
 		Route::match(['get', 'post'], '/add-edit-user/{id?}', [UsersController::class, 'addEditUser']);
 		Route::match(['get', 'post'], '/CheckUserEmail', [UsersController::class, 'CheckUserEmail']);
+		Route::get('/login-as-user/{id}', [UsersController::class, 'loginAsUser']);
 
 		// Category Routes
 		Route::match(['get', 'post'], '/categories', [CategoryController::class, 'categories']);
@@ -108,6 +109,9 @@ Route::prefix('/admin')->group(function(){
 		Route::match(['get', 'post'], '/remove-product-sizechartimage', [ProductsController::class, 'removeProductSizechartImage']);
 		Route::match(['get', 'post'], '/stocks', [ProductsController::class, 'stocks']);
 		Route::post('/duplicate-product', [ProductsController::class, 'duplicateProduct']);
+		Route::get('/products-sort', [ProductsController::class, 'productsSort']);
+		Route::post('/products-sort/fetch', [ProductsController::class, 'productsSortFetch']);
+		Route::post('/products-sort/save', [ProductsController::class, 'productsSortSave']);
 		// Product Stocks
 		Route::get('/product-attributes',[ProductAttributeController::class, 'index'])->name('product_attributes');
 		Route::get('/product-attributes/fetch', [ProductAttributeController::class, 'fetch'])->name('product.attributes.fetch');

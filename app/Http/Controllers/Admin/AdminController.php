@@ -186,6 +186,28 @@ class AdminController extends Controller
 			
 			$section_data['total_sales'] = $total_sales;
 			
+			// Prepaid vs COD (same filters as total sales): sales amount, orders and items sold
+			$payment_split = DB::table('orders')
+				->leftJoin(DB::raw('(SELECT order_id, SUM(product_qty) AS total_items FROM order_products GROUP BY order_id) oi'),'oi.order_id','=','orders.id')
+				->selectRaw("CASE WHEN orders.payment_method = 'cod' THEN 'cod' ELSE 'prepaid' END AS pay_type, COUNT(orders.id) AS total_orders, SUM(orders.grand_total) AS total_sales, SUM(COALESCE(oi.total_items,0)) AS total_items");
+			if(!empty($form_data['from_date'])){
+				$payment_split = $payment_split->whereDate('orders.created_at', '>=',$form_data['from_date']);
+			}
+			if(!empty($form_data['to_date'])){
+				$payment_split = $payment_split->whereDate('orders.created_at', '<=',$form_data['to_date']);
+			}
+			$payment_split = $payment_split->where('orders.is_delete','no')
+				->where('orders.order_status','!=','Cancelled')
+				->where('orders.order_status','!=','Abandoned')
+				->where('orders.order_status','!=','Cancelled by User')
+				->groupBy('pay_type')
+				->get();
+			$section_data['cod'] = ['total_orders'=>0,'total_sales'=>0,'total_items'=>0];
+			$section_data['prepaid'] = ['total_orders'=>0,'total_sales'=>0,'total_items'=>0];
+			foreach($payment_split as $split){
+				$section_data[$split->pay_type] = ['total_orders'=>(int)$split->total_orders,'total_sales'=>(float)$split->total_sales,'total_items'=>(int)$split->total_items];
+			}
+			
 			
 			$users = new User;
             if(!empty($form_data['from_date'])){
