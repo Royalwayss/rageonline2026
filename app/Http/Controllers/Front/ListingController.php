@@ -162,11 +162,12 @@ class ListingController extends Controller
 	            }
     		}
 			
-    		$getproducts = $getproducts->whereExists( function ($query)  {
-                $query->from('categories')
-                ->whereRaw('products.category_id = categories.id')
-                ->where('status',1);
-            })->paginate(1000);
+    		$getproducts = $getproducts->where('products.is_delete','!=','yes')
+			->whereExists( function ($query) {
+				$query->from('categories')
+					->whereRaw('products.category_id = categories.id')
+					->where('status',1);
+			})->paginate(1000);
 			
 			//echo "<pre>"; print_r($getproducts['product_name']); exit;
 			
@@ -253,6 +254,7 @@ class ListingController extends Controller
 							  ->where('categories.status', 1);
 					})
 					->where('products.status', 1)
+					->where('products.is_delete','!=','yes')
 					->orderby('id', 'DESC') 
 					->paginate(1000); 
                     $title = $string;
@@ -278,7 +280,7 @@ class ListingController extends Controller
                         $query->from('categories')
                         ->whereRaw('products.category_id = categories.id')
                         ->where('categories.status',1);
-                    })->where('products.status',1)->orderby($field,$val)->paginate(1000);                
+                    })->where('products.status',1)->where('products.is_delete','!=','yes')->orderby($field,$val)->paginate(1000);                
                    // $getproducts = Product::with('attributes')->join('categories','categories.id','=','products.category_id')->where('categories.status',1)->select('products.*','categories.name')->where('products.status',1)->orderby($field,$val)->paginate(1000);
 			}
 			
@@ -344,6 +346,7 @@ class ListingController extends Controller
                       ->whereRaw('products.category_id = categories.id')
                       ->where('categories.status', 1);
             })
+            ->where('products.is_delete','!=','yes')
             ->where('products.status', 1);
 
         $total = $baseQuery->count();

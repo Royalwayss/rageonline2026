@@ -67,7 +67,7 @@ class Product extends Model
         ->withExists(['wishlist as is_wishlisted' => function($query){
             $query->where('user_id', Auth::id());
         }])
-        ->where('seo_url',$proseo)->where('status',1)->first();
+        ->where('seo_url',$proseo)->where('products.is_delete','!=','yes')->where('status',1)->first();
         $getproductdetails = json_decode(json_encode($getproductdetails),true);
         $response = array('status'=>false);
         if(!empty($getproductdetails)){
@@ -119,6 +119,7 @@ class Product extends Model
 				->join('product_categories', 'product_categories.product_id', '=', 'products.id')
 				->where($attribute_name, '!=', NULL)
 				->where('products.status', 1)
+				->where('products.is_delete','!=','yes')
 				->where(function($query) use ($explode) { 
 					$query->whereIn('product_categories.category_id', $explode)
 						  ->orWhereIn('products.category_id', $explode);

@@ -53,6 +53,7 @@ class IndexController extends Controller
 				$q->where('user_id', Auth::id());
 			}])
 			->where(['status'=>1,'best_seller'=>'yes'])
+			->where('products.is_delete','!=','yes')
 			->orderby('id','DESC')
 			->skip(0)
 			->take(10)
@@ -60,16 +61,33 @@ class IndexController extends Controller
 		
 		return view('front.home2')->with(compact('catseo','title','metakeywords','metadescription','banners','best_seller_products'));
     }
-	 public function home2(){ 
-	    $catseo = 'home';
-    	$title="Winter Dresses  Online - Buy Women Kurtis, Cardigans, Knitted Tops, Kaftans, Sweaters, Jackets, Coats, Stoles, Capes & Ponchos | Rage";
-    	$metakeywords ="women jackets, women cardigans, women sweaters, women capes, women ponchos, ladies kurtis, woolen kurtis, women winter clothing, women clothing online, knitted tops";
-    	$metadescription="Discover wide range of women cardigans, coats, jackets, knitted tops, kurtis, sweaters & ponchos. Rage is one of the leading brand for women's in India offer online shopping for ladies cardigans, long coats, woolen kurtis, western dresses, designer tops, capes, tunics, stoles & stylish ponchos. Show online now!";
-        $showPoup = $this->checkVistor();
-		$new_arrival_products = Product::with(['attributes','productimages','category'])->where(['status'=>1,'new_arrival'=>'yes'])->orderby('id','DESC')->skip(0)->take(10)->get();
-		$best_seller_products = Product::with(['attributes','productimages','category'])->where(['status'=>1,'best_seller'=>'yes'])->orderby('id','DESC')->skip(0)->take(10)->get();
-		return view('front.home2')->with(compact('catseo','title','metakeywords','metadescription','new_arrival_products','best_seller_products'));
-    }
+		public function home2(){ 
+				$catseo = 'home';
+				$title="Winter Dresses  Online - Buy Women Kurtis, Cardigans, Knitted Tops, Kaftans, Sweaters, Jackets, Coats, Stoles, Capes & Ponchos | Rage";
+				$metakeywords ="women jackets, women cardigans, women sweaters, women capes, women ponchos, ladies kurtis, woolen kurtis, women winter clothing, women clothing online, knitted tops";
+				$metadescription="Discover wide range of women cardigans, coats, jackets, knitted tops, kurtis, sweaters & ponchos. Rage is one of the leading brand for women's in India offer online shopping for ladies cardigans, long coats, woolen kurtis, western dresses, designer tops, capes, tunics, stoles & stylish ponchos. Show online now!";
+				$showPoup = $this->checkVistor();
+
+				$activeCategory = function ($query) {
+					$query->from('categories')
+						->whereRaw('products.category_id = categories.id')
+						->where('categories.status',1);
+				};
+
+				$new_arrival_products = Product::with(['attributes','productimages','category'])
+					->where(['products.status'=>1,'products.new_arrival'=>'yes'])
+					->where('products.is_delete','!=','yes')
+					->whereExists($activeCategory)
+					->orderby('products.id','DESC')->skip(0)->take(10)->get();
+
+				$best_seller_products = Product::with(['attributes','productimages','category'])
+					->where(['products.status'=>1,'products.best_seller'=>'yes'])
+					->where('products.is_delete','!=','yes')
+					->whereExists($activeCategory)
+					->orderby('products.id','DESC')->skip(0)->take(10)->get();
+
+				return view('front.home2')->with(compact('catseo','title','metakeywords','metadescription','new_arrival_products','best_seller_products'));
+		}
 	public function home3(){ 
 	    $catseo = 'home';
     	$title="Winter Dresses  Online - Buy Women Kurtis, Cardigans, Knitted Tops, Kaftans, Sweaters, Jackets, Coats, Stoles, Capes & Ponchos | Rage";
