@@ -49,6 +49,7 @@
                                                 <div class="name-wrap">
                                                     <h4><a href="{{ $product_link }}">{{ $product['product_name'] }}</a></h4>
                                                 </div>
+												<span class="product-code" title="Product Code">{{ $product['product_code'] }}</span>
                                                 <div class="detail-price card-box">
                                                     {!! productPriceHtml($product) !!}
                                                 </div>
@@ -89,5 +90,3 @@
 							
 							
                         </div>
-                   
-                

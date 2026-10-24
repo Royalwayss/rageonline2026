@@ -23,7 +23,7 @@
 
     @if(count($wishlists) > 0)
     <div class="row">
-        @foreach($wishlists as $wishlist)
+        @foreach($wishlists as $wishlist) 
         <div class="col-lg-4 col-md-4 col-6 wishlist-card" data-wishlist-id="{{ $wishlist->id }}">
             <div class="prod-card">
                 <div class="prod-img">
@@ -51,21 +51,16 @@
                 </div>
 
                 <div class="prod-info">
-                    <div class="name-wrap d-block">
-                        <a href="{{ url('product/'.$wishlist->product->seo_url) }}">
-                            <h4>{{ $wishlist->product->product_name }}</h4>
-                        </a>
-                        <span class="detail-price card-box">
-                            {!! productPriceHtml($wishlist->product) !!}
-                        </span>
-                        <!-- <p class="wishlist-meta">
-                            Size: {{ $wishlist->size }} &nbsp;|&nbsp; Item No: {{ $wishlist->product->product_code }} &nbsp;|&nbsp; Color: {{ $wishlist->product->color }}
-                        </p> -->
-
-                        @if($wishlist->product->status != 1)
-                        <p class="text-danger"><strong>Product is not available</strong></p>
-                        @endif
+                    <div class="name-wrap">
+                        <h4><a href="{{ url('product/'.$wishlist->product->seo_url) }}">{{ $wishlist->product->product_name }}</a></h4>
                     </div>
+                    <span class="product-code" title="Product Code">{{ $wishlist->product->product_code }}</span>
+                    <div class="detail-price card-box">
+                        {!! productPriceHtml($wishlist->product) !!}
+                    </div>
+                    @if($wishlist->product->status != 1)
+                    <p class="text-danger"><strong>Product is not available</strong></p>
+                    @endif
                 </div>
             </div>
         </div>

@@ -446,7 +446,7 @@ label.size_disabled:not(.active) span {
                                     <div class="name-wrap">
                                         <h4>{{ $relProduct['product_name'] }}</h4>
                                     </div>
-
+                                    <span class="product-code" title="Product Code">{{ $relProduct->product_code }}</span>
                                     <div class="detail-price card-box">
                                         {!! productPriceHtml($relProduct) !!}
                                     </div>

@@ -88,7 +88,8 @@ class CouponCode extends Model
 				
 				if(!empty($check_order_count)){
 					     Session::forget('couponinfo');
-                         $response = array('status'=> false,'message'=>'This coupon only for new user.');
+                        /* $response = array('status'=> false,'message'=>'This coupon only for new user.'); */
+                         $response = array('status'=> false,'message'=>'Oops! You’ve already used this coupon!');
 				         return $response; die();
 				}
 			}

@@ -361,3 +361,36 @@ header.header .account-nested-sub-menu li a {
     font-weight: 500;
     font-size: 15px !important; 
 }
+
+
+.prod-card .prod-info { text-align: left; padding: 14px 8px 8px; }
+
+/* name: always 2 lines high, long names are cut with ... */
+.prod-card .name-wrap { height: 44px; margin-bottom: 8px; display: flex; align-items: center; justify-content: flex-start; }
+.prod-card .name-wrap h4 {
+    margin: 0;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: .5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.prod-card .name-wrap h4 a { color: #2b1d17; }
+
+.prod-card .product-code {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #8a8f99;
+    user-select: none;
+}
+
+.prod-card .detail-price { display: flex; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 6px 8px; }
+.prod-card .detail-price .sale-price { font-size: 16px; font-weight: 600; color: #2b1d17; }
+.prod-card .detail-price del { font-size: 13px; color: #9a9a9a; }
+.prod-card .detail-price .discount { padding: 2px 8px; font-size: 12px; font-weight: 600; color: #fff; background: #a58355; border-radius: 3px; }

@@ -49,7 +49,7 @@
                 </div>
                 <div class="ambassador-content">
                     <span class="ambassador-tag">Actor & Fashion Maven</span>
-                    <h3>Amyra Dastur</h3>
+                    <h3>Giselle Montiro</h3>
                     <p class="ambassador-desc">Channelling refined ease and high-fashion elegance in artisanal tunics and sculpted cardigans.</p>
                 </div>
             </div>

@@ -6,6 +6,7 @@
         <div class="search-prod-info">
             <span class="search-prod-cat">{{ $product->category->name ?? '' }}</span>
             <h6 class="search-prod-title">{{ $product->product_name }}</h6>
+			<span class="product-code" title="Product Code">{{ $product->product_code }}</span>
             <div class="search-prod-price-wrap">
                 {!! productPriceHtml($product) !!}
             </div>

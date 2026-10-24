@@ -860,6 +860,7 @@ class ListingController extends Controller
 				
 				return response()->json([
                     'status'=>false,
+					'totalItems'=>Cart::totalitems(),
                     'message' =>"Cart item already deleted",
                     'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                 ]);
@@ -873,6 +874,7 @@ class ListingController extends Controller
 				}
 				return response()->json([
                     'status'=>false,
+					'totalItems'=>Cart::totalitems(),
                     'message' =>"Product Qty must be greater than or equal to 1",
                     'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                 ]);
@@ -888,6 +890,7 @@ class ListingController extends Controller
 				}
 				return response()->json([
                     'status'=>false,
+					'totalItems'=>Cart::totalitems(),
                     'message' =>"We're sorry! The requested quantity not avialable at this moment.",
                     'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
                 ]);
@@ -903,6 +906,7 @@ class ListingController extends Controller
 				}
 			return response()->json([
                 'status'=>true,
+				'totalItems'=>Cart::totalitems(),
                 'message' =>"Quantity has been updated successfully",
                 'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints'))
             ]);
@@ -1094,25 +1098,25 @@ class ListingController extends Controller
                 Session::forget('giftSession');
                 $cart->delete();
                 $cartitems = Cart::cartitems();
-                $totalItems = count($cartitems);
+                
                 $user  = User::where('id',Auth()->user()->id)->first();
 				$availablePoints = $user->loyalty_points;
 				return response()->json([
                     'status'=>true,
                     'message' =>'Cart item has been deleted successfully',
                     'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
-                    'totalItems' => $totalItems
+                    'totalItems'=>Cart::totalitems()
                 ]);
             }else{
                 $cartitems = Cart::cartitems();
-                $totalItems = count($cartitems);
+                
                 $user  = User::where('id',Auth()->user()->id)->first();
 				$availablePoints = $user->loyalty_points;
 				return response()->json([
                     'status'=>false,
                     'message' =>'Cart item already deleted',
                     'view' => (String)View::make('front.cart.cart-details')->with(compact('cartitems','availablePoints')),
-                    'totalItems' => $totalItems
+                    'totalItems'=>Cart::totalitems(),
                 ]);
             }
         }

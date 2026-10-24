@@ -67,6 +67,11 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Countryside Factory Outlet, Manawala, Near Delhi Public School, 143115</span>
                         </div>
+						<a href="tel:+911832993605" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 183 299 3605</span>
+						</a>
+						
                     </div>
                 </div>
 
@@ -77,6 +82,11 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>HG Eaton Plaza, Opp 5 Star Diamond Dhaba, Handiaya Chowk, Handiaya, 148107</span>
                         </div>
+						<a href="tel:+91 167 929 3087" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 167 929 3087</span>
+						</a>
+						
                     </div>
                 </div>
 
@@ -97,6 +107,11 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Rage Knit Eastwood Village, Shop No. A-70, G.T. Road, Khajrula, 144411</span>
                         </div>
+						<a href="tel:+911824291426" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 182 429 1426</span>
+						</a>		
+						
                     </div>
                 </div>
 
@@ -107,6 +122,12 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Shop No. 13, Ground Floor, Amayra Emporio, NH-205, Kharar Kurali Road, 140301</span>
                         </div>
+						
+						<a href="tel:+911605013702" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 160 501 3702</span>
+						</a>
+						
                     </div>
                 </div>
 
@@ -117,6 +138,10 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Maximus Mall, Shop No. 7, 6878 + MRX, MDR44, Chilgari, 176215</span>
                         </div>
+					   <a href="tel:+91 189 245 8122" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 189 245 8122</span>
+						</a>
                     </div>
                 </div>
 
@@ -137,6 +162,10 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>435-L, Gulati Chowk, Model Town, 141002</span>
                         </div>
+						<a href="tel:+911614652296" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 161 465 2296</span>
+                        </a>
                     </div>
                 </div>
 
@@ -147,6 +176,10 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Shop No. 3, Carnival Complex, Mall Road</span>
                         </div>
+						<a href="tel:+91 161 465 2462" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 161 465 2462</span>
+						</a>
                     </div>
                 </div>
 
@@ -157,6 +190,10 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Shop No. LG-10, Ground Floor, Westend Mall, Ferozpur Road</span>
                         </div>
+						<a href="tel:+911614648747" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 161 464 8747</span>
+						</a>
                     </div>
                 </div>
 
@@ -177,6 +214,10 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>10-B, Block-B, Sarabha Nagar, Malhar Road</span>
                         </div>
+						<a href="tel:+911614649908" class="ebo-info-item">
+							<i class="fa-solid fa-phone"></i>
+							<span>+91 161 464 9908</span>
+						</a>
                     </div>
                 </div>
 

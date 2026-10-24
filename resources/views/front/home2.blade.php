@@ -174,6 +174,7 @@ $categories = Category::getcategories();
                                     <div class="name-wrap">
                                         <h4>{{ $product->product_name }}</h4>
                                     </div>
+									<span class="product-code" title="Product Code">{{ $product->product_code }}</span>
                                     <div class="detail-price card-box">
                                         {!! productPriceHtml($product) !!}
                                     </div>
@@ -287,7 +288,7 @@ $categories = Category::getcategories();
                         <div class="celebrity-card" style="position: relative;">
                             <a href="{{ url('lookbook') }}" aria-label="Amyra Dastur" style="position: absolute; inset: 0; z-index: 1;"></a>
                             <img src="{{ asset('assets/images/Amyra.png') }}" alt="Amyra Dastur">
-                            <h3>Amyra Dastur</h3>
+                            <h3>Giselle Montiro</h3>
                         </div>
                     </div>
                     <div class="swiper-slide">
