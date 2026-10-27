@@ -164,6 +164,7 @@
                                         $currently_availablePoints = $availablePoints;
                                     }
               ?>
+			  @if(env('LOYALTY_POINTS_MODE') == 'live')
 			  @if(!empty($currently_availablePoints))
 			  <div class="coupon-box redeem-box">
                                 <label>Redeem Points</label>
@@ -179,6 +180,7 @@
                                 </div>
 								<div id="Address-points_to_redeem" class="points-err"></div>
                </div>
+			   @endif
 			   @endif
 			
 			

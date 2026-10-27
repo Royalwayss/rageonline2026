@@ -182,6 +182,9 @@ class Order extends Model
 	 
 	 
 	  public static function creditRewardPoints($orderId){ 
+			if(env('LOYALTY_POINTS_MODE') != 'live'){
+				return;
+			}
 		  
 		
 		$order = Order::with(['order_products'])->where('id', $orderId)->first();
@@ -215,6 +218,9 @@ class Order extends Model
 	  
 	  public static function redeemRewardPoints($orderId)
 		{ 
+				if(env('LOYALTY_POINTS_MODE') != 'live'){
+					return;
+				}
 			
 			$order = Order::where('id', $orderId)->first();
 
@@ -242,7 +248,9 @@ class Order extends Model
 		
 		 public static function creditRewardPointsWhileCancelOrder($orderId){ 
 		  
-		
+		   if(env('LOYALTY_POINTS_MODE') != 'live'){
+					return;
+				}
 			$order = Order::with(['order_products'])->where('id', $orderId)->first();
 			
 			if($order['payment_method'] == 'razorpay' && !empty($order['points_redeemed'])){

@@ -21,7 +21,7 @@
                 <button type="button" class="locator-tab-btn @if(!isset($_GET['state'])) active @endif" id="tabBtnEbo" onclick="switchLocatorTab('ebo')">
                     <i class="fa-solid fa-store"></i>
                     <span>All Outlets</span>
-                    <span class="tab-count-badge">13 Outlets</span>
+                    <span class="tab-count-badge">17 Outlets</span>
                 </button>
                 <button type="button" class="locator-tab-btn @if(isset($_GET['state'])) active @endif" id="tabBtnMbo" onclick="switchLocatorTab('mbo')">
                     <i class="fa-solid fa-shop"></i>
@@ -45,6 +45,7 @@
                 <button type="button" class="ebo-pill" onclick="filterEboStores('Dharamshala', this)">Dharamshala</button>
                 <button type="button" class="ebo-pill" onclick="filterEboStores('Jammu', this)">Jammu</button>
                 <button type="button" class="ebo-pill" onclick="filterEboStores('Ludhiana', this)">Ludhiana</button>
+                <button type="button" class="ebo-pill" onclick="filterEboStores('Patiala', this)">Patiala</button>
             </div>
 
             <!-- Stores Grid -->
@@ -112,6 +113,16 @@
 							<span>+91 182 429 1426</span>
 						</a>		
 						
+                    </div>
+                </div>
+
+                <div class="ebo-card" data-city="Jalandhar">
+                    <h4>Jalandhar, Punjab</h4>
+                    <div class="ebo-info-list">
+                        <div class="ebo-info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Rage Knit, 406, Lajpat Nagar, Jalandhar-144001</span>
+                        </div>
                     </div>
                 </div>
 
@@ -218,6 +229,37 @@
 							<i class="fa-solid fa-phone"></i>
 							<span>+91 161 464 9908</span>
 						</a>
+                    </div>
+                </div>
+
+
+                <div class="ebo-card" data-city="Patiala">
+                    <h4>Patiala, Punjab</h4>
+                    <div class="ebo-info-list">
+                        <div class="ebo-info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Shop No F-101A, Block-F, Rage Patiala, The Empire Gedi Route, Multanpur, Patiala-140701</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ebo-card" data-city="Patiala">
+                    <h4>Patiala, Punjab</h4>
+                    <div class="ebo-info-list">
+                        <div class="ebo-info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Patiala-2, Shop No 173, Golddust City Centre, Vill Ramgarh, Patiala-140601</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ebo-card" data-city="Patiala">
+                    <h4>Ferozpur, Punjab</h4>
+                    <div class="ebo-info-list">
+                        <div class="ebo-info-item">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Rage Ferozpur, Shop No ES 29/7, Mallwal Road, Ferozpur-152002</span>
+                        </div>
                     </div>
                 </div>
 

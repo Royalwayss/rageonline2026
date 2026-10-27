@@ -7,7 +7,7 @@ if(!isset($catseo)) { $catseo = ''; }
 if(!isset($page)) { $page = ''; } 
 ?>
 <head>
-@if(env('WEBSITE_MODE') != 'live')
+@if(env('WEBSITE_MODE') == 'live')
 <!-- Google tag (gtag.js) -->
 
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-27XWVMZ09B"></script>

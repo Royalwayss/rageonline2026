@@ -67,12 +67,15 @@
                 <div class="stat-num">{{ $wishlist_count }}</div>
                 <div class="stat-lbl">Wishlist Items</div>
             </a>
-            @if(!empty(Auth::user()->loyalty_points))
-            <div class="stat-pill privilege-points">
-                <div class="stat-num">{{ Auth::user()->loyalty_points }}</div>
-                <div class="stat-lbl">Rage Luxe Pts</div>
-            </div>
-            @endif
+            @if(env('LOYALTY_POINTS_MODE') == 'live')
+				@if(!empty(Auth::user()->loyalty_points))
+				<div class="stat-pill privilege-points">
+					<div class="stat-num">{{ Auth::user()->loyalty_points }}</div>
+					<div class="stat-lbl">Rage Luxe Pts</div>
+				</div>
+				@endif 
+            @endif 
+			
         </div>
     </div>
 
