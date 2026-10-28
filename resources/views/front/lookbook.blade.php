@@ -90,6 +90,67 @@
                 </div>
             </div>
 
+
+            <!-- 7. Farah Karimaee -->
+            <div class="ambassador-card">
+                <div class="ambassador-img-wrap">
+                    <img src="{{ asset('assets/images/farah-karimee.jpg') }}" alt="Farah Karimaee in Rage">
+                </div>
+                <div class="ambassador-content">
+                    <span class="ambassador-tag">Model & Actress</span>
+                    <h3>Farah Karimee</h3>
+                    <p class="ambassador-desc">Celebrating free-spirited elegance through expressive prints, rich textures, and effortlessly sophisticated winterwear.</p>
+                </div>
+            </div>
+
+            <!-- 8. Angela Jonsson -->
+            <div class="ambassador-card">
+                <div class="ambassador-img-wrap">
+                    <img src="{{ asset('assets/images/angela-jonsson.jpg') }}" alt="Angela Jonsson in Rage">
+                </div>
+                <div class="ambassador-content">
+                    <span class="ambassador-tag">Model & Actress</span>
+                    <h3>Angela Jonsson</h3>
+                    <p class="ambassador-desc">Bringing bold patterns and vibrant knitwear together in a statement of modern elegance for the House of Rage.</p>
+                </div>
+            </div>
+
+            <!-- 9. Sameera Reddy -->
+            <div class="ambassador-card">
+                <div class="ambassador-img-wrap">
+                    <img src="{{ asset('assets/images/sameera-reddy.jpg') }}" alt="Sameera Reddy in Rage">
+                </div>
+                <div class="ambassador-content">
+                    <span class="ambassador-tag">Actor & Style Icon</span>
+                    <h3>Sameera Reddy</h3>
+                    <p class="ambassador-desc">Embodying understated sophistication with refined knitwear and graceful silhouettes crafted for effortless everyday luxury.</p>
+                </div>
+            </div>
+
+            <!-- 10. Amrit Maghera -->
+            <div class="ambassador-card">
+                <div class="ambassador-img-wrap">
+                    <img src="{{ asset('assets/images/amrit-maghera.jpg') }}" alt="Amrit Maghera in Rage">
+                </div>
+                <div class="ambassador-content">
+                    <span class="ambassador-tag">International Model & Actress</span>
+                    <h3>Amrit Maghera</h3>
+                    <p class="ambassador-desc">Blending urban edge with relaxed refinement through contemporary layers and versatile winter essentials.</p>
+                </div>
+            </div>
+
+            <!-- 11. Izabelle Leite -->
+            <div class="ambassador-card">
+                <div class="ambassador-img-wrap">
+                    <img src="{{ asset('assets/images/isabelle-leite.jpg') }}" alt="Izabelle Leite in Rage">
+                </div>
+                <div class="ambassador-content">
+                    <span class="ambassador-tag">Model & Actress</span>
+                    <h3>Izabelle Leite</h3>
+                    <p class="ambassador-desc">Showcasing expressive knitwear and modern femininity through artistic detailing and effortlessly chic styling.</p>
+                </div>
+            </div>
+
         </div>
 
         <!-- MINIMAL CTA -->
