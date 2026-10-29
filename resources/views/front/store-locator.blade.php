@@ -46,6 +46,7 @@
                 <button type="button" class="ebo-pill" onclick="filterEboStores('Jammu', this)">Jammu</button>
                 <button type="button" class="ebo-pill" onclick="filterEboStores('Ludhiana', this)">Ludhiana</button>
                 <button type="button" class="ebo-pill" onclick="filterEboStores('Patiala', this)">Patiala</button>
+                <button type="button" class="ebo-pill" onclick="filterEboStores('Ferozpur', this)">Ferozpur</button>
             </div>
 
             <!-- Stores Grid -->
@@ -253,7 +254,7 @@
                     </div>
                 </div>
 
-                <div class="ebo-card" data-city="Patiala">
+                <div class="ebo-card" data-city="Ferozpur">
                     <h4>Ferozpur, Punjab</h4>
                     <div class="ebo-info-list">
                         <div class="ebo-info-item">
