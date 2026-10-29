@@ -8,10 +8,14 @@ use App\Cart;
 use App\Product;
 use App\User;
 use App\Category;
+use App\Razorpay;
 use App\ProductAttribute;
 use Illuminate\Support\Str; 
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+use App\Order;
+use App\OrderHistory;
 use  Session;
 class CronJobController extends Controller
 {
@@ -247,13 +251,167 @@ class CronJobController extends Controller
 	
 	   
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+    /*
+     * Check Razorpay payment status for unpaid orders and update the database.
+     * /check-payment-status        -> checks razorpay orders of the last 2 days that are not captured yet
+     * /check-payment-status/{id}   -> checks one order (orders.id)
+     * Uses orders.razorpay_order_id (order_xxx) and Razorpay::credentials() for the keys.
+     */
+    public function checkPaymentStatus($id = null){
+        
+		
+		$credentials = Razorpay::credentials();
+		
+		$keyId     = $credentials['RAZORPAY_KEY'];
+        $keySecret = $credentials['RAZORPAY_SECRET_KEY'];
+
+        $query = Order::where('payment_method','razorpay')->whereNotNull('razorpay_order_id')->where('razorpay_order_id','!=','');
+        
+		if(!empty($id)){
+            $query->where('id',$id);
+        }else{
+            $query->where(function($q){
+                $q->whereNull('payment_status')->orWhere('payment_status','!=','captured')->orWhereNull('razorpay_payment_id')->orWhere('razorpay_payment_id','');
+            })->where('created_at','>=',date('Y-m-d H:i:s', strtotime('-2 days')));
+        }
+		
+        $orders = $query->orderby('id','desc')->take(50)->get();
+        
+        $result = [];
+        foreach($orders as $order){
+            $rzpOrderId = trim($order->razorpay_order_id);
+            $auth       = Http::withBasicAuth($keyId, $keySecret);
+
+            $captured = null;
+            $failed   = 0;
+            $payments = [];
+            $paid     = false;
+            $orderInfo = null;
+            $error    = null;
+            $payError = null;
+
+            // 1) Razorpay order itself: status = created / attempted / paid
+            $r1 = $auth->get('https://api.razorpay.com/v1/orders/'.$rzpOrderId);
+            if($r1->successful()){
+                $orderInfo = $r1->json();
+                if((isset($orderInfo['status']) && $orderInfo['status'] == 'paid') || (!empty($orderInfo['amount_paid']) && $orderInfo['amount_paid'] > 0)){
+                    $paid = true;
+                }
+            }else{
+                $error = $r1->body();
+            }
+
+            // 2) Payments made against that order
+            $r2 = $auth->get('https://api.razorpay.com/v1/orders/'.$rzpOrderId.'/payments');
+            if($r2->successful()){
+                $json     = $r2->json();
+                $payments = isset($json['items']) ? $json['items'] : [];
+            }
+
+            // 3) If a payment id is saved on the order (txn_id = pay_xxx), check that payment directly
+            $payId = '';
+            foreach(['txn_id','razorpay_payment_id'] as $col){
+                if(!empty($order->$col) && strpos(trim($order->$col),'pay_') === 0){
+                    $payId = trim($order->$col);
+                    break;
+                }
+            }
+            if(empty($payments) && $payId != ''){
+                $r3 = $auth->get('https://api.razorpay.com/v1/payments/'.$payId);
+                if($r3->successful()){
+                    $payments = [$r3->json()];
+                }else{
+                    $payError = $r3->body();
+                }
+            }
+
+            foreach($payments as $payment){
+                if(isset($payment['status']) && $payment['status'] == 'captured'){
+                    $captured = $payment;
+                    break;
+                }
+                if(isset($payment['status']) && $payment['status'] == 'failed'){
+                    $failed++;
+                }
+            }
+
+            if($captured || $paid){
+                $new = 'captured';
+            }elseif(count($payments) > 0 && $failed == count($payments)){
+                $new = 'failed';
+            }elseif(!empty($payments) && isset($payments[0]['status']) && $payments[0]['status'] == 'authorized'){
+                $new = 'authorized';
+            }else{
+                $new = $order->payment_status; // no payment found - leave as is
+            }
+
+            if($new != $order->payment_status){
+                $response = $captured ? $captured : ($payments ? $payments : $orderInfo);
+                $webhook_payment_response = json_encode($response);
+                
+                if($new == 'captured'){
+                    $paymentId = $captured ? $captured['id'] : ($payId != '' ? $payId : null);
+
+                    // update only once (so stock / reward points are never processed twice)
+                    $affected = Order::where('id',$order->id)
+                        ->where(function($q){ $q->whereNull('payment_status')->orWhere('payment_status','!=','captured'); })
+                        ->update([
+                            'razorpay_payment_id'      => $paymentId,
+                            'payment_status'           => 'captured',
+                            'order_status'             => 'Payment Captured',
+                            'webhook_payment_response' => $webhook_payment_response,
+                        ]);
+
+                    if($affected){
+                        // same process as RazorpayController::dopayment()
+                       // OrderHistory::where('order_id',$order->id)->delete();
+                        $requestdata['order_status'] = 'Payment Captured';
+                        $requestdata['comments']     = 'Payment has been received';
+                        $requestdata['order_id']     = $order->id;
+                        OrderHistory::create($requestdata);
+
+                        if(env('MAIL_MODE') == "live"){
+                            (new Order)->sendOrderEmail($order->id);
+                        }
+                        Order::update_stock($order->id);
+                       /* Order::creditRewardPoints($order->id);*/
+						
+                    }
+                }else{
+                    Order::where('id',$order->id)->update(['payment_status'=>$new, 'webhook_payment_response'=>$webhook_payment_response]);
+                }
+            }
+
+            // save razorpay_payment_id if it is not saved in orders table yet
+            $latest = $captured ? $captured : (!empty($payments) ? $payments[0] : null);
+            $savedPaymentId = null;
+            if($latest && !empty($latest['id']) && empty($order->razorpay_payment_id)){
+                $upd = ['razorpay_payment_id'=>$latest['id']];
+                if(empty($order->webhook_payment_response)){
+                    $upd['webhook_payment_response'] = json_encode($latest);
+                }
+                Order::where('id',$order->id)->update($upd);
+                $savedPaymentId = $latest['id'];
+            }
+
+            $result[] = [
+                'order_id'          => $order->id,
+                'razorpay_order_id' => $rzpOrderId,
+                'razorpay_order_status' => $orderInfo['status'] ?? null,
+                'amount_paid'       => $orderInfo['amount_paid'] ?? null,
+                'payments_found'    => count($payments),
+                'payment_id_saved'  => $savedPaymentId,
+                'old_status'        => $order->payment_status,
+                'new_status'        => $new,
+                'key_mode'          => substr($keyId,0,8),
+                'payment_id_checked'=> $payId,
+                'error'             => $error,
+                'payment_error'     => $payError,
+            ];
+        }
+
+        return response()->json($result);
+    }
+
 }

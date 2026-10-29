@@ -11,7 +11,7 @@ class Razorpay extends Model
 
     public static function credentials()
      {
-		 $mode = env('RAZORPAY_MODE');
+		 $mode = env('RAZORPAY_MODE'); 
 		 if($mode == 'live'){ 
 			 $RAZORPAY_KEY = env('LIVE_RAZORPAY_KEY'); 
 			 $RAZORPAY_SECRET_KEY = env('LIVE_RAZORPAY_SECRET_KEY'); 
