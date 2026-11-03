@@ -315,6 +315,8 @@ Route::group([], function(){
 	Route::post('/product-quick-view',[ListingController::class, 'product_quick_view'])->name('product_quick_view');
 	Route::get('/feed/{type}',[CronJobController::class, 'feed']);
 	Route::get('/check-payment-status',[CronJobController::class, 'checkPaymentStatus']);
+	Route::get('/track-your-order',[CustomerController::class, 'trackOrderPage']);
+	Route::post('/track-your-order/check',[CustomerController::class, 'trackOrderCheck']);
 	Route::post('delhivery/webhook',[DelhiveryWebhookController::class, 'handle']);
 	
 	Route::group(['middleware' => ['auth']], function () {

@@ -1200,6 +1200,117 @@ class CustomerController extends Controller
         return redirect('/');
     }
 	
+	/* ---------- Public order tracking (no login): registered email + order id ---------- */
+	public function trackOrderPage(){
+		$title = 'Track Your Order';
+		return view('front.track.track-order')->with(compact('title'));
+	}
+
+	public function trackOrderCheck(Request $request){
+		$validator = Validator::make($request->all(), [
+			'email'    => 'required|email|max:191',
+			'order_id' => 'required|integer|min:1',
+		], [
+			'email.required'    => 'Please enter your registered email.',
+			'email.email'       => 'Please enter a valid email address.',
+			'order_id.required' => 'Please enter your order ID.',
+			'order_id.integer'  => 'Order ID must be a number.',
+		]);
+
+		if($validator->fails()){
+			return response()->json(['status'=>false,'errors'=>$validator->errors()], 422);
+		}
+
+		// same message for wrong email / wrong order id (so nobody can guess which one is right)
+		$order = Order::with(['order_products','order_address','getuser'])->where('id',$request->order_id)->first();
+
+		if($order){
+			// collect every email saved on the order (order / order address) + the registered user's email
+			$emails = [];
+			foreach([$order->getAttributes(), $order->order_address ? $order->order_address->getAttributes() : []] as $attrs){
+				foreach($attrs as $key => $val){
+					if(stripos($key,'email') !== false && !empty($val)){
+						$emails[] = strtolower(trim($val));
+					}
+				}
+			}
+			if($order->getuser && !empty($order->getuser->email)){
+				$emails[] = strtolower(trim($order->getuser->email));
+			}
+			if(!in_array(strtolower(trim($request->email)), $emails, true)){
+				$order = null;
+			}
+		}
+
+		if(!$order){
+			return response()->json(['status'=>false,'errors'=>['order_id'=>['No order found for this email and order ID.']]], 422);
+		}
+
+		$items = [];
+		foreach($order->order_products as $op){
+			$items[] = [
+				'name'  => $op->product_name,
+				'code'  => $op->product_code,
+				'size'  => $op->product_size,
+				'qty'   => (int)$op->product_qty,
+				'price' => $op->product_price,
+			];
+		}
+
+		// Delhivery tracking
+		$trackingUrl = null;
+		$tracking    = null;
+		$isCancelled = stripos((string)$order->order_status, 'cancel') !== false; // Cancelled / Cancelled by User
+		if(!$isCancelled && !empty($order->waybill)){
+			$trackingUrl = 'https://www.delhivery.com/track-v2/package/'.$order->waybill;
+			try{
+				$delhivery = new \App\Services\DelhiveryService();
+				$raw = $delhivery->trackOrder($order->waybill);
+				if(is_object($raw) && method_exists($raw,'json')){ $raw = $raw->json(); }
+				if(is_string($raw)){ $raw = json_decode($raw,true); }
+				$raw = json_decode(json_encode($raw), true);
+
+				$shipment = $raw['ShipmentData'][0]['Shipment'] ?? null;
+				if($shipment){
+					$scans = [];
+					foreach(($shipment['Scans'] ?? []) as $scan){
+						$d = $scan['ScanDetail'] ?? $scan;
+						$scans[] = [
+							'date'     => $d['ScanDateTime'] ?? '',
+							'status'   => $d['Scan'] ?? '',
+							'location' => $d['ScannedLocation'] ?? '',
+							'remarks'  => $d['Instructions'] ?? '',
+						];
+					}
+					usort($scans, function($a,$b){ return strtotime($b['date']) <=> strtotime($a['date']); });
+					$tracking = [
+						'status' => $shipment['Status']['Status'] ?? '',
+						'scans'  => $scans,
+					];
+				}
+			}catch(\Throwable $e){
+				\Illuminate\Support\Facades\Log::warning('Track order failed for order '.$order->id.': '.$e->getMessage());
+			}
+		}
+
+		return response()->json([
+			'status' => true,
+			'order'  => [
+				'id'             => $order->id,
+				'date'           => $order->created_at ? date('d M Y, h:i A', strtotime($order->created_at)) : '',
+				'order_status'   => $order->order_status,
+				'payment_method' => strtoupper($order->payment_method),
+				'payment_status' => $order->payment_status,
+				'total'          => $order->grand_total,
+				'is_cancelled'   => $isCancelled,
+				'waybill'        => $isCancelled ? null : $order->waybill,
+				'tracking_url'   => $trackingUrl,
+				'tracking'       => $tracking,
+				'items'          => $items,
+			],
+		]);
+	}
+
 	public function trackOrder($order_id){  
 	        $order = Order::where('user_id',Auth::user()->id)->where('id',$order_id)->where('waybill','!=','')->firstOrFail();
 			if(!empty($order)){ 

@@ -174,6 +174,10 @@ foreach ($categories as $category) {
                     <i class="fa-regular fa-user"></i>
                 </a>
 
+                <a href="{{ url('track-your-order') }}" aria-label="Track Order" title="Track Order">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </a>
+
                 <a href="{{ url('cart') }}" class="bag-link">
                     BAG<span class="totalItems">({{ $totalItems }})</span>
                 </a>
