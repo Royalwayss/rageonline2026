@@ -638,7 +638,7 @@
 
                                         @if(!empty($order['waybill']))
                                         <br><a target="_blank" href="{{ url('track-order/'.$order->id) }}" class=" order-view-btn" >
-                                            <span>Track</span>
+                                            <span>Track Order</span>
                                         </a>
                                         @endif
 
